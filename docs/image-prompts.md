@@ -19,7 +19,7 @@ Midjourney makes the prettiest pictures, but it is weakest at keeping one charac
 ## A workflow that keeps the set consistent
 
 1. Generate **one** "hero" image: the athlete standing neutrally, in your chosen style. Keep it.
-2. For each exercise, upload the hero image to the tool as a reference and paste the prompt from the admin page, adding: *"Use the attached image as the character and style reference."*
+2. For each exercise, upload the hero image to the tool as a reference and paste the prompt from the coach page, adding: *"Use the attached image as the character and style reference."*
 3. Generate 3 to 4 options and pick the one with correct form.
 4. **Check every image like a coach would:** neutral spine, knees tracking over toes, correct grip, two arms, two legs, five fingers, and arrows pointing the right way. A wrong-looking picture teaches wrong form, so reject it and regenerate.
 5. Upload as PNG, JPG or WebP (under 5 MB). 1200 px wide is plenty.
