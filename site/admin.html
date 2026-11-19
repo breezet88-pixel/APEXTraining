@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://api.github.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex">
+  <title>Apex Training Coach</title>
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="admin.html"><img src="icons/icon.svg" alt="" width="28" height="28"><span>Apex Training coach</span></a>
+    <nav class="tabs" id="admin-tabs" aria-label="Coach" hidden>
+      <a href="#/workouts" data-tab="workouts">Workouts</a>
+      <a href="#/wod" data-tab="wod">Workout of the day</a>
+      <a href="#/comments" data-tab="comments">Comments</a>
+      <a href="#/donations" data-tab="donations">Donations</a>
+      <a href="./">View app</a>
+      <a href="#" id="logout">Sign out</a>
+    </nav>
+  </header>
+  <main id="app"><p class="muted pad">Loading…</p></main>
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://giscus.app; frame-src https://giscus.app; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>Apex Training</title>
+  <meta name="description" content="Today's workout, step-by-step exercise pictures and comments from other members. Free to use.">
+  <meta name="theme-color" content="#0f766e">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Apex Training">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="#/"><img src="icons/icon.svg" alt="" width="28" height="28"><span>Apex Training</span></a>
+    <nav class="tabs" aria-label="Main">
+      <a href="#/" id="tab-today">Today</a>
+      <a href="#/workouts" id="tab-workouts">Workouts</a>
+    </nav>
+    <button id="install" class="btn small" hidden>Install app</button>
+  </header>
+  <p id="banner" class="banner" role="status" hidden></p>
+  <main id="app" tabindex="-1"><p class="muted pad">Loading…</p></main>
+  <footer class="foot"><span>Apex Training is free to use.</span> <a id="support-link" href="#/support" hidden>♥ Support the coach</a></footer>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

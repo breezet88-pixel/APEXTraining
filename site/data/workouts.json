@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "workouts": [
+    {
+      "id": 1,
+      "title": "Full Body Starter",
+      "description": "Sample workout: edit or delete it on the coach page. Five moves that train your whole body with one dumbbell.",
+      "category": "Strength",
+      "level": "Beginner",
+      "duration_min": 30,
+      "published": true,
+      "updated_at": "2026-11-20T08:00:00.000Z",
+      "exercises": [
+        { "name": "Goblet Squat", "muscles": "Quads, glutes", "equipment": "Dumbbell", "sets": "3", "reps": "10-12", "rest_sec": 60, "cues": "Hold the dumbbell at your chest. Sit back and down, chest up, knees tracking over your toes.", "image": "" },
+        { "name": "Push-up", "muscles": "Chest, shoulders, triceps", "equipment": "None", "sets": "3", "reps": "8-10", "rest_sec": 60, "cues": "Hands under shoulders, body in a straight line. Drop to your knees if you need to.", "image": "" },
+        { "name": "One-arm Dumbbell Row", "muscles": "Back, biceps", "equipment": "Dumbbell, bench", "sets": "3", "reps": "10 each side", "rest_sec": 60, "cues": "Flat back, pull the elbow towards your hip, lower slowly.", "image": "" },
+        { "name": "Glute Bridge", "muscles": "Glutes, hamstrings", "equipment": "None", "sets": "3", "reps": "12", "rest_sec": 45, "cues": "Feet flat, push through your heels, squeeze at the top for one second.", "image": "" },
+        { "name": "Plank", "muscles": "Core", "equipment": "None", "sets": "3", "reps": "30 sec", "rest_sec": 45, "cues": "Elbows under shoulders, squeeze your glutes, do not let your hips sag.", "image": "" }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "20-Minute HIIT",
+      "description": "Sample workout: edit or delete it on the coach page. 40 seconds on, 20 seconds off, four rounds.",
+      "category": "HIIT",
+      "level": "Intermediate",
+      "duration_min": 20,
+      "published": true,
+      "updated_at": "2026-11-20T08:00:00.000Z",
+      "exercises": [
+        { "name": "Jumping Jacks", "muscles": "Full body", "equipment": "None", "sets": "4", "reps": "40 sec", "rest_sec": 20, "cues": "Land softly on the balls of your feet.", "image": "" },
+        { "name": "Burpees", "muscles": "Full body", "equipment": "None", "sets": "4", "reps": "40 sec", "rest_sec": 20, "cues": "Step back instead of jumping if your wrists or knees need it.", "image": "" },
+        { "name": "Mountain Climbers", "muscles": "Core, shoulders", "equipment": "None", "sets": "4", "reps": "40 sec", "rest_sec": 20, "cues": "Keep your hips level with your shoulders.", "image": "" }
+      ]
+    }
+  ]
+}

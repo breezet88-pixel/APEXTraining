@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "donate": { "url": "", "amount_url": "", "message": "", "amounts": [20, 50, 100, 200] },
+  "comments": { "enabled": false, "repo_id": "", "category": "", "category_id": "" }
+}

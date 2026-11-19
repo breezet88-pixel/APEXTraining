@@ -1,0 +1,12 @@
+{
+  "name": "apex-training",
+  "private": true,
+  "type": "module",
+  "description": "Apex Training: free workout app on GitHub Pages. No dependencies, no build step.",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node tools/serve.mjs",
+    "check": "node tools/check-data.mjs",
+    "test": "node --test tests/*.test.mjs"
+  }
+}
