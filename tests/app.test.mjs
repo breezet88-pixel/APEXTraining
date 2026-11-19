@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { cleanWorkouts, cleanSchedule, cleanSettings, cleanDonate, cleanComments, validDay, DataError } from '../site/js/validate.js';
+import { cleanWorkouts, cleanSchedule, cleanSettings, cleanDonate, cleanComments, cleanLibrary, checkLinks, validDay, DataError } from '../site/js/validate.js';
+import { libraryIndex, resolveWorkout } from '../site/js/common.js';
 import { createGitHub, bytesToBase64 } from '../site/js/github.js';
 import { buildWorkoutPage, fileName } from '../site/js/download.js';
 import { checkData } from '../tools/check-data.mjs';
@@ -53,6 +54,42 @@ test('donations and comments settings', () => {
   assert.throws(() => cleanComments({ enabled: true }), /fill in/);
   assert.throws(() => cleanComments({ repo_id: 'R_x" onload="x' }), /looks wrong/);
   assert.equal(cleanSettings({}).comments.enabled, false);
+});
+
+test('exercise library: the coach\'s 50 exercises load, with equipment groups and sources', () => {
+  const lib = cleanLibrary(JSON.parse(fs.readFileSync(path.join(ROOT, 'site/data/exercises.json'), 'utf8')));
+  assert.equal(lib.exercises.length, 50);
+  const count = (q) => lib.exercises.filter((x) => x.equipment === q).length;
+  assert.deepEqual(['Kettlebell', 'Dumbbell', 'Light barbell', 'Skillmill', 'SkiErg', 'Mat and bodyweight'].map(count), [12, 12, 6, 5, 3, 12]);
+  assert.equal(lib.exercises[0].name, 'Two-handed kettlebell swing');
+  assert.equal(lib.exercises[49].name, 'Side-plank hip lift');
+  assert.ok(lib.exercises.every((x) => x.movement && x.image_cue), 'every exercise has a movement and an image cue');
+  assert.match(lib.guide.image_rules, /same adult athlete/);
+  assert.ok(lib.equipment.find((q) => q.name === 'Skillmill').note.includes('Stop the belt'));
+});
+
+test('exercise library: bad entries are refused', () => {
+  const ok = { id: 1, name: 'Swing', equipment: 'Kettlebell', movement: 'm', image_cue: 'c' };
+  assert.throws(() => cleanLibrary({ exercises: [{ ...ok, name: '' }] }), /name is required/);
+  assert.throws(() => cleanLibrary({ exercises: [ok, ok] }), /share id 1/);
+  assert.throws(() => cleanLibrary({ exercises: [{ ...ok, image: '../x.png' }] }), /not a valid picture/);
+  assert.throws(() => cleanLibrary({ exercises: [{ ...ok, sources: [{ title: 'x', url: 'http://insecure.example' }] }] }), /https/);
+  assert.throws(() => cleanLibrary({ exercises: [{ ...ok, movement: 'x'.repeat(2001) }] }), /too long/);
+});
+
+test('workouts link to library exercises; broken links are refused', () => {
+  const lib = cleanLibrary({ exercises: [{ id: 7, name: 'Bird-dog', equipment: 'Mat and bodyweight', movement: 'Begin on hands and knees.', image_cue: 'c', image: 'images/' + 'c'.repeat(32) + '.png' }] });
+  const ws = cleanWorkouts({ workouts: [workout({ exercises: [{ library_id: 7, sets: '3', reps: '8', cues: 'Slow' }] })] });
+  assert.equal(ws.workouts[0].exercises[0].name, '', 'name comes from the library');
+  checkLinks(ws, lib);
+  const shown = resolveWorkout(ws.workouts[0], libraryIndex(lib)).exercises[0];
+  assert.equal(shown.name, 'Bird-dog');
+  assert.equal(shown.image, 'images/' + 'c'.repeat(32) + '.png');
+  assert.equal(shown.movement, 'Begin on hands and knees.');
+  assert.equal(shown.cues, 'Slow', 'workout notes kept');
+  const broken = cleanWorkouts({ workouts: [workout({ exercises: [{ library_id: 99 }] })] });
+  assert.throws(() => checkLinks(broken, lib), /no longer exists/);
+  assert.throws(() => cleanWorkouts({ workouts: [workout({ exercises: [{ sets: '3' }] })] }), /name is required/, 'a one-off exercise still needs a name');
 });
 
 // ---------------------------------------------------------------- saving to GitHub

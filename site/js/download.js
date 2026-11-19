@@ -17,7 +17,8 @@ export async function buildWorkoutPage(w, day, siteName, pictureAsDataUrl) {
       (pic && /^data:image\/(png|jpeg|webp|gif);base64,/.test(pic) ? `<img src="${pic}" alt="How to do ${esc(e.name)}">` : '') +
       (e.muscles ? `<p><b>Muscles:</b> ${esc(e.muscles)}</p>` : '') +
       (e.equipment ? `<p><b>Equipment:</b> ${esc(e.equipment)}</p>` : '') +
-      (e.cues ? `<p>${esc(e.cues)}</p>` : '') + '</section>');
+      (e.movement ? `<p>${esc(e.movement)}</p>` : '') +
+      (e.cues ? `<p>${e.movement ? '<b>Coach’s notes:</b> ' : ''}${esc(e.cues)}</p>` : '') + '</section>');
   }
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(w.title)} · ${esc(siteName)}</title>` +
     '<style>body{font:16px/1.5 system-ui,sans-serif;max-width:720px;margin:0 auto;padding:20px;color:#111}h1{margin:0 0 4px}.meta{color:#555;margin:0 0 12px}' +

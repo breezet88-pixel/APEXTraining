@@ -1,8 +1,8 @@
 // Apex Training coach page. The only place anything is added, changed or removed.
 // Each save is a commit to the GitHub repository (see github.js); GitHub Pages republishes the site.
 import { SITE } from './config.js';
-import { h, fill, todayIn } from './common.js';
-import { cleanWorkouts, cleanSchedule, cleanSettings, cleanDonate, IMAGE_PATH, DataError } from './validate.js';
+import { h, fill, todayIn, libraryIndex } from './common.js';
+import { cleanWorkouts, cleanSchedule, cleanSettings, cleanDonate, cleanLibrary, checkLinks, IMAGE_PATH, DataError } from './validate.js';
 import { createGitHub, bytesToBase64, GitHubError } from './github.js';
 
 const app = document.getElementById('app');
@@ -16,7 +16,7 @@ const DATA = (f) => `${SITE.root}/data/${f}`;
 const state = {
   gh: null,
   head: null,               // commit the data below was loaded from
-  workouts: null, schedule: null, settings: null,
+  workouts: null, schedule: null, settings: null, library: null,
   pending: new Map(),       // new pictures not saved yet: path -> base64
   previews: new Map(),      // path -> blob: URL, so new pictures show before GitHub Pages republishes
 };
@@ -34,32 +34,98 @@ function field(label, input) { const id = `f${++fieldSeq}`; input.id = id; retur
 
 // ---------- image prompt (paste into your AI image tool) ----------
 const DEFAULT_STYLE =
-  'Clean flat vector illustration in a consistent style: one gender-neutral athlete with a plain face, dark grey fitted sportswear, ' +
-  'solid white background, soft ground shadow, teal (#0f766e) used only to highlight the working muscles. ' +
-  'The same character, same line weight and same colours in every image of this series.';
+  'Clean flat vector illustration in a consistent style: the same adult athlete in every picture, plain face, dark grey fitted sportswear, ' +
+  'solid white background, soft ground shadow. Small teal (#0f766e) arrows show the direction of movement. ' +
+  'Same character, same line weight and same colours across the whole series. Landscape 4:3.';
+const DEFAULT_RULES = 'Show the same adult athlete in two separate panels: starting position and main movement or finishing position. ' +
+  'Use additional panels for exercises with several stages. Keep the entire body and equipment visible, with small arrows indicating movement.';
+const SAFE = 'Anatomically correct proportions and natural joint angles, exactly two arms and two legs, correct number of fingers. ' +
+  'No text or labels, no watermark, no extra people or equipment.';
 const getStyle = () => { try { return localStorage.getItem(STYLE_KEY) || DEFAULT_STYLE; } catch { return DEFAULT_STYLE; } };
 const setStyle = (v) => { try { localStorage.setItem(STYLE_KEY, v); } catch { /* ignore */ } };
+const rules = () => state.library?.guide?.image_rules || DEFAULT_RULES;
+const withKit = (x) => (x.equipment && !/bodyweight/i.test(x.equipment) ? ` (equipment: ${x.equipment})` : '');
+// A library exercise: uses its image cue and movement description.
+function libraryPrompt(x, style) {
+  return [
+    `Instructional fitness illustration of the exercise "${x.name || 'the exercise'}"${withKit(x)}.`,
+    rules(),
+    x.image_cue ? `What to show: ${x.image_cue}` : '',
+    x.movement ? `How the movement is done: ${x.movement}` : '',
+    SAFE,
+    `Style: ${style}`,
+  ].filter(Boolean).join('\n\n');
+}
+// A one-off exercise typed into a workout.
 function buildPrompt(ex, style) {
   return [
-    `Instructional fitness illustration showing ONE athlete performing "${ex.name || 'the exercise'}"${ex.equipment ? ` using ${ex.equipment}` : ''}.`,
-    'Two panels side by side, same athlete and same camera angle in both: LEFT = starting position, RIGHT = finishing position (peak of the movement). ' +
-      'Use a side view unless the movement is clearer from the front. Full body in frame, 4:3 landscape.',
-    ex.muscles ? `Softly highlight the working muscles: ${ex.muscles}.` : '',
+    `Instructional fitness illustration of the exercise "${ex.name || 'the exercise'}"${withKit(ex)}.`,
+    rules(),
+    ex.muscles ? `Working muscles: ${ex.muscles}.` : '',
     ex.cues ? `Correct form to show: ${ex.cues}` : '',
-    'Anatomically correct proportions, natural joint angles, neutral spine, exactly two arms and two legs, correct number of fingers. ' +
-      'No text, no labels, no arrows, no watermark, no extra equipment or people.',
+    SAFE,
     `Style: ${style}`,
-  ].filter(Boolean).join('\n');
+  ].filter(Boolean).join('\n\n');
 }
+
+// ---------- shared editor pieces ----------
+function sniff(b) {
+  if (b.length > 8 && b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47) return 'png';
+  if (b.length > 3 && b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return 'jpg';
+  const ascii = (s, e) => String.fromCharCode(...b.subarray(s, e));
+  if (b.length > 12 && ascii(0, 4) === 'RIFF' && ascii(8, 12) === 'WEBP') return 'webp';
+  if (b.length > 6 && ascii(0, 4) === 'GIF8') return 'gif';
+  return null;
+}
+
+// Picture upload + preview + remove, for any object with an `image` field.
+function pictureEditor(obj, label, status, redraw) {
+  const preview = h('img', { class: 'thumb', alt: 'Picture', hidden: !obj.image, src: obj.image ? picSrc(obj.image) : undefined });
+  const input = h('input', { type: 'file', accept: 'image/png,image/jpeg,image/webp,image/gif', onchange: async (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const bytes = new Uint8Array(await f.arrayBuffer());
+    const kind = sniff(bytes);
+    if (!kind || bytes.length > MAX_PICTURE) { say(status, 'Use a PNG, JPG, WebP or GIF picture up to 5 MB.', true); return; }
+    const name = `images/${[...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, '0')).join('')}.${kind}`;
+    state.pending.set(name, bytesToBase64(bytes));
+    state.previews.set(name, URL.createObjectURL(f));
+    obj.image = name;
+    preview.src = picSrc(name);
+    preview.hidden = false;
+    say(status, 'Picture added. It goes online when you save.');
+  } });
+  return h('div', {}, field(label, input), preview,
+    obj.image ? h('button', { class: 'btn danger small', type: 'button', onclick: () => { obj.image = ''; redraw(); } }, 'Remove picture') : null);
+}
+
+// "✨ Create image prompt" button with a copyable box.
+function promptEditor(makeText, status) {
+  const box = h('textarea', { readonly: true, rows: 10, 'aria-label': 'Image prompt' });
+  const wrap = h('div', { hidden: true }, box,
+    h('div', { class: 'toolrow' }, h('button', { class: 'btn small', type: 'button', onclick: async () => {
+      box.select();
+      try { await navigator.clipboard.writeText(box.value); say(status, 'Prompt copied. Paste it into your image tool.'); }
+      catch { say(status, 'Select the text and copy it.'); }
+    } }, 'Copy prompt')));
+  return h('div', {}, h('div', { class: 'toolrow' }, h('button', { class: 'btn ghost small', type: 'button', onclick: () => { box.value = makeText(); wrap.hidden = false; } }, '✨ Create image prompt')), wrap);
+}
+
+const styleEditor = () => h('details', { class: 'panel' }, h('summary', {}, 'Picture style used in every prompt'),
+  h('p', { class: 'muted' }, 'Keep this the same for every exercise so all your pictures look like one set.'),
+  h('textarea', { rows: 4, value: getStyle(), 'aria-label': 'Picture style', oninput: (e) => setStyle(e.target.value) }));
 
 // ---------- loading and saving ----------
 async function loadAll() {
   const head = await state.gh.headSha();
   const read = async (f, fallback) => { const t = await state.gh.readText(DATA(f), head); return t ? JSON.parse(t) : fallback; };
   const workouts = cleanWorkouts(await read('workouts.json', { workouts: [] }));
+  const library = cleanLibrary(await read('exercises.json', { exercises: [] }));
+  checkLinks(workouts, library);
   Object.assign(state, {
     head,
     workouts,
+    library,
     schedule: cleanSchedule(await read('schedule.json', { days: {} }), workouts),
     settings: cleanSettings(await read('settings.json', {})),
   });
@@ -67,13 +133,15 @@ async function loadAll() {
 
 // Apply a change to copies of the data, check it, and save it all as one commit.
 async function save(message, change) {
-  const next = { workouts: clone(state.workouts), schedule: clone(state.schedule), settings: clone(state.settings) };
+  const next = { workouts: clone(state.workouts), schedule: clone(state.schedule), settings: clone(state.settings), library: clone(state.library) };
   change(next);
   const workouts = cleanWorkouts(next.workouts);
+  const library = cleanLibrary(next.library);
+  checkLinks(workouts, library);
   const schedule = cleanSchedule(next.schedule, workouts);
   const settings = cleanSettings(next.settings);
 
-  const used = new Set(workouts.workouts.flatMap((w) => w.exercises.map((e) => e.image).filter(Boolean)));
+  const used = new Set([...workouts.workouts.flatMap((w) => w.exercises.map((e) => e.image)), ...library.exercises.map((x) => x.image)].filter(Boolean));
   const stored = (await state.gh.listFiles(`${SITE.root}/images`, state.head)).map((p) => p.slice(SITE.root.length + 1));
   for (const p of used) if (!stored.includes(p) && !state.pending.has(p)) throw new DataError(`A picture is missing (${p}). Upload it again.`);
   const json = (x) => `${JSON.stringify(x, null, 2)}\n`;
@@ -81,12 +149,13 @@ async function save(message, change) {
     { path: DATA('workouts.json'), text: json(workouts) },
     { path: DATA('schedule.json'), text: json(schedule) },
     { path: DATA('settings.json'), text: json(settings) },
+    { path: DATA('exercises.json'), text: json(library) },
     ...[...state.pending].filter(([p]) => used.has(p)).map(([p, b64]) => ({ path: `${SITE.root}/${p}`, base64: b64 })),
   ];
   const deletes = stored.filter((p) => IMAGE_PATH.test(p) && !used.has(p)).map((p) => `${SITE.root}/${p}`);
 
   const sha = await state.gh.commit({ message: `Coach: ${message}`, files, deletes, expectedHead: state.head });
-  Object.assign(state, { head: sha, workouts, schedule, settings });
+  Object.assign(state, { head: sha, workouts, schedule, settings, library });
   for (const [p] of [...state.pending]) if (used.has(p)) state.pending.delete(p);
 }
 
@@ -187,57 +256,48 @@ function editView(id) {
   const drawExercises = () => fill(exBox, wk.exercises.map((ex, i) => exerciseCard(ex, i)));
 
   function exerciseCard(ex, i) {
-    const preview = h('img', { class: 'thumb', alt: `${ex.name} picture`, hidden: !ex.image, src: ex.image ? picSrc(ex.image) : undefined });
     const upStatus = h('p', { role: 'status', class: 'muted' });
-    const fileInput = h('input', { type: 'file', accept: 'image/png,image/jpeg,image/webp,image/gif', onchange: async (e) => {
-      const f = e.target.files[0];
-      if (!f) return;
-      const bytes = new Uint8Array(await f.arrayBuffer());
-      const kind = sniff(bytes);
-      if (!kind || bytes.length > MAX_PICTURE) { say(upStatus, 'Use a PNG, JPG, WebP or GIF picture up to 5 MB.', true); return; }
-      const name = `images/${[...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, '0')).join('')}.${kind}`;
-      state.pending.set(name, bytesToBase64(bytes));
-      state.previews.set(name, URL.createObjectURL(f));
-      ex.image = name;
-      preview.src = picSrc(name);
-      preview.hidden = false;
-      say(upStatus, 'Picture added. It goes online when you save the workout.');
-    } });
-    const promptBox = h('textarea', { readonly: true, rows: 9, 'aria-label': 'Image prompt' });
-    const promptWrap = h('div', { hidden: true }, promptBox,
-      h('div', { class: 'toolrow' }, h('button', { class: 'btn small', type: 'button', onclick: async () => {
-        promptBox.select();
-        try { await navigator.clipboard.writeText(promptBox.value); say(upStatus, 'Prompt copied. Paste it into your image tool.'); }
-        catch { say(upStatus, 'Select the text and copy it.'); }
-      } }, 'Copy prompt')));
     const move = (d) => () => {
       const j = i + d;
       if (j < 0 || j >= wk.exercises.length) return;
       [wk.exercises[i], wk.exercises[j]] = [wk.exercises[j], wk.exercises[i]];
       drawExercises();
     };
-    return h('div', { class: 'panel' },
-      h('div', { class: 'list-item' }, h('strong', {}, `Exercise ${i + 1}`),
-        h('div', { class: 'toolrow' },
-          h('button', { class: 'btn ghost small', type: 'button', 'aria-label': 'Move up', onclick: move(-1) }, '↑'),
-          h('button', { class: 'btn ghost small', type: 'button', 'aria-label': 'Move down', onclick: move(1) }, '↓'),
-          h('button', { class: 'btn danger small', type: 'button', onclick: () => { wk.exercises.splice(i, 1); drawExercises(); } }, 'Remove'))),
+    const lib = ex.library_id ? libraryIndex(state.library).get(ex.library_id) : null;
+    const head = h('div', { class: 'list-item' }, h('strong', {}, `Exercise ${i + 1}${lib ? `: ${lib.name}` : ''}`),
+      h('div', { class: 'toolrow' },
+        h('button', { class: 'btn ghost small', type: 'button', 'aria-label': 'Move up', onclick: move(-1) }, '↑'),
+        h('button', { class: 'btn ghost small', type: 'button', 'aria-label': 'Move down', onclick: move(1) }, '↓'),
+        h('button', { class: 'btn danger small', type: 'button', onclick: () => { wk.exercises.splice(i, 1); drawExercises(); } }, 'Remove')));
+    const setsRow = h('div', { class: 'row' },
+      field('Sets', text(ex, 'sets', { placeholder: '3', maxlength: 20 })),
+      field('Reps or time', text(ex, 'reps', { placeholder: '10-12 or 40 sec', maxlength: 40 })),
+      field('Rest (seconds)', text(ex, 'rest_sec', { inputmode: 'numeric', placeholder: '60' })));
+    if (lib) {
+      return h('div', { class: 'panel' }, head,
+        h('p', { class: 'muted' }, lib.equipment || 'Library exercise', ' · ', h('a', { href: `#/library/${lib.id}` }, 'edit in the library'),
+          lib.image ? '' : h('span', { class: 'err' }, ' · no picture yet')),
+        lib.image ? h('img', { class: 'thumb', src: picSrc(lib.image), alt: `${lib.name} picture` }) : null,
+        setsRow,
+        field('Coach’s notes for this workout (optional)', bind(ex, 'cues', h('textarea', { maxlength: 1500, value: ex.cues || '', placeholder: 'e.g. Go light this week' }))));
+    }
+    return h('div', { class: 'panel' }, head,
       h('div', { class: 'row' },
         field('Exercise name', text(ex, 'name', { required: true, maxlength: 120 })),
         field('Muscles worked', text(ex, 'muscles', { placeholder: 'Quads, glutes' })),
         field('Equipment', text(ex, 'equipment', { placeholder: 'Dumbbell, or none' }))),
-      h('div', { class: 'row' },
-        field('Sets', text(ex, 'sets', { placeholder: '3', maxlength: 20 })),
-        field('Reps or time', text(ex, 'reps', { placeholder: '10-12 or 30 sec', maxlength: 40 })),
-        field('Rest (seconds)', text(ex, 'rest_sec', { inputmode: 'numeric', placeholder: '60' }))),
+      setsRow,
       field('Form cues / instructions', bind(ex, 'cues', h('textarea', { maxlength: 1500, value: ex.cues || '' }))),
-      h('div', { class: 'toolrow' }, h('button', { class: 'btn ghost small', type: 'button', onclick: () => { promptBox.value = buildPrompt(ex, getStyle()); promptWrap.hidden = false; } }, '✨ Create image prompt')),
-      promptWrap,
-      field('Exercise picture (from your image tool)', fileInput),
-      preview,
-      ex.image ? h('button', { class: 'btn danger small', type: 'button', onclick: () => { ex.image = ''; drawExercises(); } }, 'Remove picture') : null,
+      promptEditor(() => buildPrompt(ex, getStyle()), upStatus),
+      pictureEditor(ex, 'Exercise picture (from your image tool)', upStatus, drawExercises),
       upStatus);
   }
+
+  // "Add from the library": one dropdown grouped by equipment
+  const pickLib = h('select', { 'aria-label': 'Exercise from the library' },
+    h('option', { value: '' }, 'Choose an exercise from the library…'),
+    [...new Set(state.library.exercises.map((x) => x.equipment || 'Other'))].map((g) => h('optgroup', { label: g },
+      state.library.exercises.filter((x) => (x.equipment || 'Other') === g).map((x) => h('option', { value: x.id }, x.name)))));
 
   const published = h('input', { type: 'checkbox', id: 'pub', checked: !!wk.published, onchange: (e) => { wk.published = e.target.checked; } });
   const saveBtn = h('button', { class: 'btn', type: 'button', onclick: async () => {
@@ -265,23 +325,95 @@ function editView(id) {
       field('Description', bind(wk, 'description', h('textarea', { maxlength: 2000, value: wk.description || '' }))),
       h('p', {}, published, ' ', h('label', { for: 'pub' }, 'Published (shown in the app)')),
       h('p', { class: 'muted note' }, 'Hidden workouts are not shown in the app, but the repository is public, so do not put anything private in them.')),
-    h('details', { class: 'panel' }, h('summary', {}, 'Image style used in every prompt'),
-      h('p', { class: 'muted' }, 'Keep this the same for every exercise so all your pictures look like one set.'),
-      h('textarea', { rows: 4, value: getStyle(), 'aria-label': 'Image style', oninput: (e) => setStyle(e.target.value) })),
     exBox,
-    h('div', { class: 'toolrow' },
-      h('button', { class: 'btn ghost', type: 'button', onclick: () => { wk.exercises.push({ name: '', muscles: '', equipment: '', sets: '', reps: '', rest_sec: '', cues: '', image: '' }); drawExercises(); } }, '+ Add exercise'),
-      saveBtn),
+    h('div', { class: 'panel' },
+      h('div', { class: 'row' }, pickLib),
+      h('div', { class: 'toolrow' },
+        h('button', { class: 'btn', type: 'button', onclick: () => {
+          if (!pickLib.value) return;
+          wk.exercises.push({ library_id: Number(pickLib.value), sets: '', reps: '', rest_sec: '', cues: '' });
+          pickLib.value = '';
+          drawExercises();
+        } }, '+ Add from library'),
+        h('button', { class: 'btn ghost', type: 'button', onclick: () => { wk.exercises.push({ name: '', muscles: '', equipment: '', sets: '', reps: '', rest_sec: '', cues: '', image: '' }); drawExercises(); } }, '+ One-off exercise'))),
+    styleEditor(),
+    h('div', { class: 'toolrow' }, saveBtn),
     status);
 }
 
-function sniff(b) {
-  if (b.length > 8 && b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47) return 'png';
-  if (b.length > 3 && b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return 'jpg';
-  const ascii = (s, e) => String.fromCharCode(...b.subarray(s, e));
-  if (b.length > 12 && ascii(0, 4) === 'RIFF' && ascii(8, 12) === 'WEBP') return 'webp';
-  if (b.length > 6 && ascii(0, 4) === 'GIF8') return 'gif';
-  return null;
+
+// ---------- exercise library ----------
+function libraryView(saved = '') {
+  const status = h('p', { role: 'status', class: 'muted' }, saved);
+  const lib = state.library.exercises;
+  const done = lib.filter((x) => x.image).length;
+  let filter = '';
+  const listBox = h('div');
+  const groups = [...new Set(lib.map((x) => x.equipment || 'Other'))];
+  const chips = h('div', { class: 'chips' });
+  const draw = () => {
+    fill(chips, ['', 'missing', ...groups].map((g) => h('button', { class: `chip${g === filter ? ' on' : ''}`, onclick: () => { filter = g; draw(); } },
+      g === '' ? 'All' : g === 'missing' ? `No picture (${lib.length - done})` : g)));
+    const shown = lib.filter((x) => !filter || (filter === 'missing' ? !x.image : (x.equipment || 'Other') === filter));
+    fill(listBox, h('div', { class: 'panel' }, shown.length ? shown.map((x) => h('div', { class: 'list-item' },
+      h('div', {}, h('strong', {}, `${x.id}. ${x.name}`), ' ', x.image ? h('span', { class: 'tag' }, 'Picture ✓') : h('span', { class: 'tag draft' }, 'No picture'),
+        h('div', { class: 'muted' }, x.equipment || '—')),
+      h('a', { class: 'btn ghost small', href: `#/library/${x.id}` }, 'Edit'))) : h('p', { class: 'muted' }, 'Nothing here.')));
+  };
+  draw();
+  show(
+    h('div', { class: 'list-item' }, h('h1', {}, 'Exercise library'), h('a', { class: 'btn', href: '#/library/new' }, '+ New exercise')),
+    h('p', {}, `${lib.length} exercises · pictures added for ${done} of ${lib.length}.`),
+    h('p', { class: 'muted' }, 'Upload each exercise’s picture once here; every workout that uses the exercise shows it.'),
+    status, chips, listBox);
+}
+
+function libraryEditView(id) {
+  const found = id ? state.library.exercises.find((x) => x.id === id) : null;
+  if (id && !found) { show(h('p', { class: 'pad' }, 'Exercise not found.'), h('a', { href: '#/library' }, '← Exercise library')); return; }
+  const x = found ? clone(found) : { id: 0, name: '', equipment: '', movement: '', image_cue: '', image: '', sources: [] };
+  const status = h('p', { role: 'status', class: 'muted' });
+  const upStatus = h('p', { role: 'status', class: 'muted' });
+  const picBox = h('div');
+  const drawPic = () => fill(picBox, pictureEditor(x, 'Picture (from your image tool)', upStatus, drawPic));
+  drawPic();
+  const bind = (key, el) => { el.addEventListener('input', () => { x[key] = el.value; }); return el; };
+  const kit = h('datalist', { id: 'kit-list' }, [...new Set(state.library.exercises.map((e) => e.equipment).filter(Boolean))].map((q) => h('option', { value: q })));
+  const usedIn = id ? state.workouts.workouts.filter((w) => w.exercises.some((e) => e.library_id === id)) : [];
+  const saveBtn = h('button', { class: 'btn', type: 'button', onclick: async () => {
+    saveBtn.disabled = true;
+    const isNew = !x.id;
+    const ok = await trySave(status, `${isNew ? 'add' : 'update'} library exercise ${x.name}`, (d) => {
+      const item = clone(x);
+      if (isNew) { item.id = Math.max(0, ...d.library.exercises.map((e) => e.id)) + 1; d.library.exercises.push(item); x.id = item.id; }
+      else d.library.exercises = d.library.exercises.map((e) => (e.id === x.id ? item : e));
+    });
+    if (!ok && isNew) x.id = 0;
+    saveBtn.disabled = false;
+    if (ok && isNew) history.replaceState(null, '', `#/library/${x.id}`);
+  } }, 'Save exercise');
+  show(
+    h('a', { class: 'back', href: '#/library' }, '← Exercise library'),
+    h('div', { class: 'panel' },
+      h('div', { class: 'row' },
+        field('Exercise name', bind('name', h('input', { type: 'text', value: x.name, maxlength: 120, required: true }))),
+        field('Equipment', bind('equipment', h('input', { type: 'text', value: x.equipment, maxlength: 40, list: 'kit-list', placeholder: 'Kettlebell, Dumbbell, Mat and bodyweight…' })))),
+      kit,
+      field('Movement (how to do it, shown to members)', bind('movement', h('textarea', { rows: 6, maxlength: 2000, value: x.movement }))),
+      field('Image cue (what the picture should show)', bind('image_cue', h('textarea', { rows: 3, maxlength: 1000, value: x.image_cue }))),
+      x.sources?.length ? h('p', { class: 'muted note' }, 'Guidance: ', x.sources.map((s, i) => [i ? ' · ' : '', h('a', { href: s.url, target: '_blank', rel: 'noopener noreferrer' }, s.title)])) : null),
+    h('div', { class: 'panel' },
+      h('h2', {}, 'Picture'),
+      promptEditor(() => libraryPrompt(x, getStyle()), upStatus),
+      picBox, upStatus),
+    styleEditor(),
+    h('div', { class: 'toolrow' }, saveBtn,
+      x.id ? (usedIn.length
+        ? h('span', { class: 'muted' }, `Used in ${usedIn.map((w) => `“${w.title}”`).join(', ')}: remove it from ${usedIn.length > 1 ? 'those workouts' : 'that workout'} before deleting.`)
+        : confirmButton('Delete', `Delete “${x.name}” from the library?`, async () => {
+          if (await trySave(status, `delete library exercise ${x.name}`, (d) => { d.library.exercises = d.library.exercises.filter((e) => e.id !== x.id); })) { location.hash = '#/library'; }
+        })) : null),
+    status);
 }
 
 // ---------- workout of the day ----------
@@ -392,11 +524,14 @@ function route() {
   if (!state.gh) return;
   tabs.hidden = false;
   const path = (location.hash || '#/workouts').slice(1);
-  const tab = ['wod', 'comments', 'donations'].find((t) => path.startsWith(`/${t}`)) || 'workouts';
+  const tab = ['library', 'wod', 'comments', 'donations'].find((t) => path.startsWith(`/${t}`)) || 'workouts';
   tabs.querySelectorAll('[data-tab]').forEach((a) => a.classList.toggle('on', a.dataset.tab === tab));
   let m;
   if (path === '/workouts/new') editView(0);
   else if ((m = path.match(/^\/workouts\/(\d+)$/))) editView(Number(m[1]));
+  else if (path === '/library/new') libraryEditView(0);
+  else if ((m = path.match(/^\/library\/(\d+)$/))) libraryEditView(Number(m[1]));
+  else if (tab === 'library') libraryView();
   else if (tab === 'wod') wodView();
   else if (tab === 'comments') commentsView();
   else if (tab === 'donations') donationsView();

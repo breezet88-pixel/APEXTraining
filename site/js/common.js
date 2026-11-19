@@ -9,7 +9,7 @@ export function h(tag, attrs, ...kids) {
     else if (k === 'checked' || k === 'disabled' || k === 'hidden') el[k] = !!v;
     else el.setAttribute(k, v === true ? '' : v);
   }
-  for (const kid of kids.flat()) {
+  for (const kid of kids.flat(Infinity)) {
     if (kid === null || kid === undefined || kid === false) continue;
     el.append(kid instanceof Node ? kid : document.createTextNode(String(kid)));
   }
@@ -32,6 +32,16 @@ export function metaLine(w) {
   const n = w.exercises?.length ?? 0;
   return [w.level, w.duration_min ? `${w.duration_min} min` : '', n ? `${n} exercise${n === 1 ? '' : 's'}` : ''].filter(Boolean).join(' · ');
 }
+
+// The exercise library, and workout exercises that link to it: a linked exercise shows the library's
+// name, equipment, picture and movement description, plus the workout's own sets, reps, rest and notes.
+export const libraryIndex = (lib) => new Map((lib?.exercises || []).map((x) => [x.id, x]));
+export function resolveExercise(e, index) {
+  const x = e.library_id ? index.get(e.library_id) : null;
+  if (!x) return { ...e, movement: '' };
+  return { ...e, name: x.name, equipment: x.equipment, image: x.image, movement: x.movement };
+}
+export const resolveWorkout = (w, index) => ({ ...w, exercises: w.exercises.map((e) => resolveExercise(e, index)) });
 
 export function factsLine(e) {
   return [e.sets && e.reps ? `${e.sets} × ${e.reps}` : e.sets || e.reps, restLabel(e.rest_sec)].filter(Boolean).join(' · ');

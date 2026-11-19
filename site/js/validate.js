@@ -44,10 +44,12 @@ export function cleanWorkout(w, label = 'Workout') {
     exercises: exercises.map((e, i) => {
       const n = `Exercise ${i + 1}`;
       if (!e || typeof e !== 'object') fail(`${n} is not valid.`);
+      const libraryId = intOrNull(e.library_id, 1, 1e9, `${n} library link`);
       const image = text(e.image, 80, `${n} picture`);
       if (image && !IMAGE_PATH.test(image)) fail(`${n} picture is not a valid picture file.`);
       return {
-        name: text(e.name, 120, `${n} name`, true),
+        ...(libraryId ? { library_id: libraryId } : {}),
+        name: text(e.name, 120, `${n} name`, !libraryId), // a library exercise takes its name from the library
         muscles: text(e.muscles, 120, `${n} muscles`),
         equipment: text(e.equipment, 120, `${n} equipment`),
         sets: text(e.sets, 20, `${n} sets`),
@@ -66,6 +68,59 @@ export function cleanWorkouts(data) {
   const ids = new Set();
   for (const w of out) { if (ids.has(w.id)) fail(`Two workouts share id ${w.id}.`); ids.add(w.id); }
   return { version: 1, workouts: out };
+}
+
+// ---- exercise library (site/data/exercises.json) ----
+function sources(list, label) {
+  if (list === undefined || list === null) return [];
+  if (!Array.isArray(list) || list.length > 5) fail(`${label}: up to 5 sources.`);
+  return list.map((s, i) => ({
+    title: text(s?.title, 160, `${label} source ${i + 1} title`, true),
+    url: httpsUrl(s?.url, `${label} source ${i + 1} link`) || fail(`${label} source ${i + 1} needs a link.`),
+  }));
+}
+
+export function cleanLibrary(data) {
+  if (!data || !Array.isArray(data.exercises)) fail('exercises.json must contain an "exercises" list.');
+  if (data.exercises.length > 1000) fail('The library can hold up to 1000 exercises.');
+  const g = data.guide || {};
+  const exercises = data.exercises.map((e, i) => {
+    const label = `Library exercise ${i + 1}`;
+    if (!e || typeof e !== 'object') fail(`${label} is not valid.`);
+    const image = text(e.image, 80, `${label} picture`);
+    if (image && !IMAGE_PATH.test(image)) fail(`${label} picture is not a valid picture file.`);
+    return {
+      id: intOrNull(e.id, 1, 1e9, `${label} id`) ?? fail(`${label} has no id.`),
+      name: text(e.name, 120, `${label} name`, true),
+      equipment: text(e.equipment, 40, `${label} equipment`),
+      movement: text(e.movement, 2000, `${label} movement description`),
+      image_cue: text(e.image_cue, 1000, `${label} image cue`),
+      image,
+      sources: sources(e.sources, label),
+    };
+  });
+  const ids = new Set();
+  for (const e of exercises) { if (ids.has(e.id)) fail(`Two library exercises share id ${e.id}.`); ids.add(e.id); }
+  return {
+    version: 1,
+    guide: { intro: text(g.intro, 1500, 'Library introduction'), intro_sources: sources(g.intro_sources, 'Library introduction'), image_rules: text(g.image_rules, 1000, 'Picture rules') },
+    equipment: (data.equipment || []).map((q, i) => ({
+      name: text(q?.name, 40, `Equipment ${i + 1} name`, true),
+      note: text(q?.note, 600, `Equipment ${i + 1} note`),
+      sources: sources(q?.sources, `Equipment ${i + 1}`),
+    })),
+    exercises,
+  };
+}
+
+// Every workout exercise that links to the library must point at an exercise that exists.
+export function checkLinks(workouts, library) {
+  const ids = new Set(library.exercises.map((e) => e.id));
+  for (const w of workouts.workouts) {
+    w.exercises.forEach((e, i) => {
+      if (e.library_id && !ids.has(e.library_id)) fail(`Workout "${w.title}": exercise ${i + 1} links to a library exercise that no longer exists.`);
+    });
+  }
 }
 
 export function cleanSchedule(data, workouts) {

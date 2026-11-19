@@ -80,3 +80,6 @@ a.btn{display:inline-block;text-decoration:none;text-align:center;line-height:1.
 .steps li{margin:4px 0}
 code{font-size:.9em;background:var(--soft);padding:1px 5px;border-radius:5px}
 .okline{color:var(--accent);font-weight:600}
+.lib-group{margin:18px 0 8px}
+.lib-group h2{font-size:1.1rem;margin:0 0 4px}
+.detail h2{font-size:1.1rem;margin:18px 0 6px}

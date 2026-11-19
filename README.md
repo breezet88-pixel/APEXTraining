@@ -1,13 +1,13 @@
 # Apex Training
 
-A **free** workout app. Members view workouts, comment on them and download the **workout of the day**. Only the coach can add, change or remove anything.
+A **free** workout app. Members view workouts and the exercise library, comment on workouts and download the **workout of the day**. Only the coach can add, change or remove anything.
 
 It runs entirely on **GitHub**, free, with no server to look after:
 
 | Part | Where it lives |
 |---|---|
 | Website (member app + coach page) | **GitHub Pages**, published from the `site/` folder |
-| Workouts, workout-of-the-day schedule, donation settings | files in `site/data/` in this repository |
+| Exercise library (50 exercises), workouts, workout-of-the-day schedule, donation settings | files in `site/data/` in this repository |
 | Exercise pictures | files in `site/images/` in this repository |
 | Comments & reviews | this repository's **GitHub Discussions**, shown under each workout with [giscus](https://giscus.app) |
 
@@ -28,7 +28,8 @@ Free to use for everyone; donations are voluntary and unlock nothing. GitHub's P
 
 ## Everyday use
 
-- **Add or change a workout**: coach page → *Workouts*. Each exercise has a **✨ Create image prompt** button for your AI image tool ([docs/image-prompts.md](docs/image-prompts.md)); upload the picture on the same card. *Save* publishes to the repository.
+- **Exercise library**: coach page → *Exercise library*. It holds your 50 HIIT and functional exercises (kettlebell, dumbbell, light barbell, Skillmill, SkiErg, mat and bodyweight) with their movement descriptions, image cues, equipment safety notes and sources. Each one has a **✨ Create image prompt** button built from its image cue ([docs/image-prompts.md](docs/image-prompts.md)); upload the picture **once** there and every workout using that exercise shows it. The list shows how many pictures are still missing.
+- **Add or change a workout**: coach page → *Workouts* → pick exercises with *Add from library*, then set sets, reps, rest and optional notes. *One-off exercise* is there for anything not in the library. *Save* publishes to the repository.
 - **Workout of the day**: *Make today's workout* on a workout, or schedule days ahead on the *Workout of the day* tab. "Today" follows South African time (change `timezone` in `site/js/config.js`).
 - Changes reach members **about a minute** after saving, once GitHub Pages has republished.
 - **Moderating comments**: on GitHub → *Discussions*: delete, hide, lock or block.
@@ -56,7 +57,7 @@ npm run check    # validates site/data/*.json and pictures, as the publish workf
 site/            the published website
   index.html     member app          admin.html   coach page
   js/            app.js, admin.js, github.js (saving), validate.js (data rules), download.js, config.js
-  data/          workouts.json, schedule.json, settings.json
+  data/          exercises.json (library), workouts.json, schedule.json, settings.json
   images/        exercise pictures
 tests/           automated tests     tools/       local preview server, data check
 docs/            image prompts, donations

@@ -2,7 +2,7 @@
 // (GitHub Discussions), and download or save today's workout of the day.
 // Display only: the content comes from the data files the coach publishes.
 import { SITE } from './config.js';
-import { h, fill, metaLine, factsLine, todayIn } from './common.js';
+import { h, fill, metaLine, factsLine, todayIn, libraryIndex, resolveWorkout } from './common.js';
 import { buildWorkoutPage, fileName } from './download.js';
 
 const app = document.getElementById('app');
@@ -11,7 +11,7 @@ const show = (...nodes) => fill(app, ...nodes);
 const SAVED_KEY = 'apex.wod';
 const PIC_CACHE = 'apex-saved-v1';
 
-let data = null; // { workouts: [...published], schedule: {days}, settings }
+let data = null; // { workouts: [...published, library exercises filled in], schedule: {days}, settings, library, index }
 
 // ---------- data ----------
 async function getJson(name) {
@@ -22,8 +22,9 @@ async function getJson(name) {
 
 async function loadData() {
   try {
-    const [w, s, st] = await Promise.all([getJson('workouts.json'), getJson('schedule.json'), getJson('settings.json')]);
-    data = { workouts: (w.workouts || []).filter((x) => x.published), schedule: s.days || {}, settings: st };
+    const [w, s, st, lib] = await Promise.all([getJson('workouts.json'), getJson('schedule.json'), getJson('settings.json'), getJson('exercises.json').catch(() => ({ exercises: [] }))]);
+    const index = libraryIndex(lib);
+    data = { workouts: (w.workouts || []).filter((x) => x.published).map((x) => resolveWorkout(x, index)), schedule: s.days || {}, settings: st, library: lib, index };
     return true;
   } catch { return false; }
 }
@@ -37,7 +38,7 @@ function todaysWorkout() {
 // ---------- small bits ----------
 function setBanner(msg) { banner.textContent = msg || ''; banner.hidden = !msg; }
 function setTab(name) {
-  for (const t of ['today', 'workouts']) document.getElementById(`tab-${t}`).classList.toggle('on', t === name);
+  for (const t of ['today', 'workouts', 'exercises']) document.getElementById(`tab-${t}`).classList.toggle('on', t === name);
 }
 
 function card(w) {
@@ -54,12 +55,13 @@ function exerciseList(w) {
   return h('ol', { class: 'exercises' }, w.exercises.map((e) => {
     const facts = factsLine(e);
     return h('li', { class: 'ex' },
-      h('h2', {}, e.name),
+      h('h2', {}, e.library_id && data ? h('a', { href: `#/e/${e.library_id}` }, e.name) : e.name),
       facts ? h('p', { class: 'facts' }, facts) : null,
       e.image ? h('img', { src: e.image, alt: `How to do ${e.name}`, loading: 'lazy' }) : null,
       e.muscles ? h('p', {}, h('b', {}, 'Muscles: '), e.muscles) : null,
       e.equipment ? h('p', {}, h('b', {}, 'Equipment: '), e.equipment) : null,
-      e.cues ? h('p', {}, e.cues) : null);
+      e.movement ? h('p', {}, e.movement) : null,
+      e.cues ? h('p', {}, e.movement ? h('b', {}, 'Coach’s notes: ') : null, e.cues) : null);
   }));
 }
 
@@ -211,6 +213,69 @@ function detailView(id) {
       comments(w)));
 }
 
+// ---------- exercise library ----------
+function sourceLinks(list) {
+  if (!list?.length) return null;
+  return h('p', { class: 'muted note' }, 'Guidance: ', list.map((s, i) => [i ? ' · ' : '', h('a', { href: s.url, target: '_blank', rel: 'noopener noreferrer' }, s.title)]));
+}
+
+function libraryView() {
+  setTab('exercises');
+  setBanner('');
+  const lib = data.library;
+  const groups = (lib.equipment || []).map((q) => q.name);
+  for (const x of lib.exercises) if (x.equipment && !groups.includes(x.equipment)) groups.push(x.equipment);
+  let query = '';
+  let group = '';
+  const list = h('div');
+  const chips = h('div', { class: 'chips', role: 'group', 'aria-label': 'Equipment' });
+  const draw = () => {
+    const q = query.toLowerCase();
+    const shown = lib.exercises.filter((x) => (!group || x.equipment === group) && (!q || `${x.name} ${x.equipment} ${x.movement}`.toLowerCase().includes(q)));
+    const sections = groups.filter((g) => !group || g === group).map((g) => {
+      const items = shown.filter((x) => x.equipment === g);
+      if (!items.length) return null;
+      const note = lib.equipment?.find((x) => x.name === g)?.note;
+      return h('section', { class: 'lib-group' },
+        h('h2', {}, g, ' ', h('span', { class: 'muted' }, `(${items.length})`)),
+        note ? h('p', { class: 'muted note' }, note) : null,
+        h('div', { class: 'grid' }, items.map((x) => h('a', { class: 'card', href: `#/e/${x.id}` },
+          x.image ? h('img', { src: x.image, alt: '', loading: 'lazy' }) : h('div', { class: 'ph', 'aria-hidden': 'true' }, '🏋️'),
+          h('div', { class: 'card-body' }, h('h3', {}, x.name), h('span', { class: 'chip static' }, x.equipment))))));
+    });
+    fill(list, sections.some(Boolean) ? sections : h('p', { class: 'muted pad' }, lib.exercises.length ? 'No exercises match.' : 'The exercise library is empty.'));
+    fill(chips, ['', ...groups].map((g) => h('button', { class: `chip${g === group ? ' on' : ''}`, 'aria-pressed': g === group ? 'true' : 'false', onclick: () => { group = g; draw(); } }, g || 'All')));
+  };
+  show(
+    h('h1', {}, 'Exercise library'),
+    lib.guide?.intro ? h('p', { class: 'muted' }, lib.guide.intro) : null,
+    h('div', { class: 'toolbar' },
+      h('input', { type: 'search', placeholder: 'Search exercises', 'aria-label': 'Search exercises', oninput: (e) => { query = e.target.value; draw(); } }),
+      chips),
+    list);
+  draw();
+}
+
+function exerciseView(id) {
+  setTab('exercises');
+  setBanner('');
+  const x = data.index.get(id);
+  if (!x) { show(h('p', { class: 'pad' }, 'This exercise is not in the library.'), h('a', { class: 'pad', href: '#/exercises' }, '← Exercise library')); return; }
+  const note = data.library.equipment?.find((q) => q.name === x.equipment);
+  const usedIn = data.workouts.filter((w) => w.exercises.some((e) => e.library_id === id));
+  show(
+    h('a', { class: 'back', href: '#/exercises' }, '← Exercise library'),
+    h('article', { class: 'detail' },
+      h('h1', {}, x.name),
+      x.equipment ? h('span', { class: 'chip static' }, x.equipment) : null,
+      x.image ? h('img', { class: 'hero', src: x.image, alt: `How to do ${x.name}` }) : null,
+      h('h2', {}, 'How to do it'),
+      h('p', {}, x.movement),
+      note?.note ? h('p', { class: 'support-card' }, h('b', {}, `${x.equipment}: `), note.note) : null,
+      sourceLinks(x.sources),
+      usedIn.length ? h('div', {}, h('h2', {}, 'In these workouts'), h('ul', {}, usedIn.map((w) => h('li', {}, h('a', { href: `#/w/${w.id}` }, w.title))))) : null));
+}
+
 function supportView() {
   setTab('');
   setBanner('');
@@ -239,6 +304,8 @@ async function route() {
   if (!data) todayView(false);                         // offline and nothing cached: show what is saved
   else if ((m = path.match(/^\/w\/(\d+)$/))) detailView(Number(m[1]));
   else if (path === '/workouts') listView();
+  else if (path === '/exercises') libraryView();
+  else if ((m = path.match(/^\/e\/(\d+)$/))) exerciseView(Number(m[1]));
   else if (path === '/support') supportView();
   else todayView(true);
   document.getElementById('support-link').hidden = !data?.settings.donate?.url;
