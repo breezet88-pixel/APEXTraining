@@ -4,6 +4,7 @@ import { SITE } from './config.js';
 import { h, fill, todayIn, libraryIndex } from './common.js';
 import { cleanWorkouts, cleanSchedule, cleanSettings, cleanDonate, cleanLibrary, checkLinks, IMAGE_PATH, DataError } from './validate.js';
 import { createGitHub, bytesToBase64, GitHubError } from './github.js';
+import { draftWorkout } from './draft.js';
 
 const app = document.getElementById('app');
 const tabs = document.getElementById('admin-tabs');
@@ -214,14 +215,15 @@ function workoutsView(saved = '') {
   const status = h('p', { role: 'status', class: 'muted' }, saved);
   const today = todayIn(SITE.timezone);
   const todays = state.workouts.workouts.find((w) => w.id === state.schedule.days[today]);
-  const list = [...state.workouts.workouts].sort((a, b) => (b.updated_at || '').localeCompare(a.updated_at || '') || b.id - a.id);
+  const list = [...state.workouts.workouts].sort((a, b) => (b.date || '').localeCompare(a.date || '') || (b.time || '').localeCompare(a.time || '') || b.id - a.id);
   show(
-    h('div', { class: 'list-item' }, h('h1', {}, 'Workouts'), h('a', { class: 'btn', href: '#/workouts/new' }, '+ New workout')),
+    h('div', { class: 'list-item' }, h('h1', {}, 'Workout Library'), h('a', { class: 'btn', href: '#/workouts/new' }, '+ New workout')),
+    h('p', { class: 'muted' }, 'Add each class after you run it: tap “New workout” and talk it through.'),
     h('p', { class: 'muted' }, todays ? `Today’s workout of the day: ${todays.title}${todays.published ? '' : ' (hidden, so members cannot see it)'}` : 'No workout of the day set for today.'),
     status,
     h('div', { class: 'panel' }, list.length ? list.map((w) => h('div', { class: 'list-item' },
       h('div', {}, h('strong', {}, w.title), ' ', h('span', { class: `tag${w.published ? '' : ' draft'}` }, w.published ? 'Published' : 'Hidden'),
-        h('div', { class: 'muted' }, `${w.exercises.length} exercises${w.category ? ` · ${w.category}` : ''}`)),
+        h('div', { class: 'muted' }, [w.date, w.time, w.club, `${w.exercises.length} exercises`].filter(Boolean).join(' · '))),
       h('div', { class: 'toolrow' },
         h('button', { class: 'btn ghost small', onclick: async () => { if (await trySave(status, `workout of the day ${today}: ${w.title}`, (d) => { d.schedule.days[today] = w.id; })) workoutsView(lastSaved); } }, 'Make today’s workout'),
         h('a', { class: 'btn ghost small', href: `#/workouts/${w.id}` }, 'Edit'),
@@ -231,7 +233,7 @@ function workoutsView(saved = '') {
             for (const [day, id] of Object.entries(d.schedule.days)) if (id === w.id) delete d.schedule.days[day];
           })) workoutsView(lastSaved);
         }))))
-      : h('p', { class: 'muted' }, 'No workouts yet. Tap “New workout”.')));
+      : h('p', { class: 'muted' }, 'No workouts yet. Tap “New workout” to add your first class.')));
 }
 
 // A delete button that asks "Are you sure?" inside the page (no pop-ups).
@@ -248,13 +250,109 @@ function confirmButton(label, question, onYes) {
 function editView(id) {
   const existing = id ? state.workouts.workouts.find((w) => w.id === id) : null;
   if (id && !existing) { show(h('p', { class: 'pad' }, 'Workout not found.'), h('a', { href: '#/workouts' }, '← All workouts')); return; }
-  const wk = existing ? clone(existing) : { id: 0, title: '', description: '', category: '', level: '', duration_min: '', published: false, exercises: [] };
+  const today = todayIn(SITE.timezone);
+  const wk = existing ? clone(existing) : { id: 0, title: '', description: '', category: '', level: '', duration_min: '', date: today, time: '', club: '', playlist: [], published: true, exercises: [] };
+  wk.playlist = wk.playlist || [];
+  const clubs = [...new Set(state.workouts.workouts.map((w) => w.club).filter(Boolean))].sort();
   const status = h('p', { role: 'status', class: 'muted' });
+  const bodyBox = h('div');
+  const questionsBox = h('div');
   const exBox = h('div');
   const bind = (obj, key, el) => { el.addEventListener('input', () => { obj[key] = el.value; }); return el; };
   const text = (obj, key, attrs = {}) => bind(obj, key, h('input', { type: 'text', value: obj[key] ?? '', ...attrs }));
+  const clubList = () => h('datalist', { id: 'club-list' }, clubs.map((c) => h('option', { value: c })));
   const drawExercises = () => fill(exBox, wk.exercises.map((ex, i) => exerciseCard(ex, i)));
 
+  // ---- 1. talk it through: speech (where the browser supports it) or typing, then draft ----
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const talkStatus = h('p', { role: 'status', class: 'muted' });
+  const talk = h('textarea', { rows: 6, 'aria-label': 'Describe the class',
+    placeholder: 'e.g. “Today at Virgin Active Sandton, 6am class. 4 rounds, 40 seconds on 20 off: kettlebell swings, goblet squats, mountain climbers. Then 3 sets of 10 push-ups, rest 60 seconds.”' });
+  let rec = null;
+  let listening = false;
+  const micBtn = SR ? h('button', { class: 'btn mic', type: 'button' }, '🎤 Start talking') : null;
+  const stopUI = () => { listening = false; if (micBtn) { micBtn.textContent = '🎤 Start talking'; micBtn.classList.remove('live'); } };
+  micBtn?.addEventListener('click', () => {
+    if (listening) { listening = false; rec?.stop(); say(talkStatus, 'Stopped. Check the text, then tap “Draft my workout”.'); return; }
+    const base = talk.value.trim() ? `${talk.value.trim()} ` : '';
+    let finals = '';
+    rec = new SR();
+    rec.lang = 'en-ZA';
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.onresult = (e) => {
+      let interim = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const r = e.results[i];
+        if (r.isFinal) finals += `${r[0].transcript.trim()}. `; else interim += r[0].transcript;
+      }
+      talk.value = base + finals + interim;
+    };
+    rec.onerror = (e) => {
+      listening = false;
+      say(talkStatus, e.error === 'not-allowed' || e.error === 'service-not-allowed'
+        ? 'The microphone is blocked for this site. Allow it in your browser settings, or type (your keyboard’s microphone key works too).'
+        : `Listening stopped (${e.error}). Tap “Start talking” to carry on.`, true);
+    };
+    rec.onend = () => { if (listening) { try { rec.start(); } catch { stopUI(); } } else stopUI(); }; // keep going until you tap Stop
+    try { rec.start(); } catch { say(talkStatus, 'Could not start the microphone. Type instead.', true); return; }
+    listening = true;
+    micBtn.textContent = '⏹ Stop';
+    micBtn.classList.add('live');
+    say(talkStatus, 'Listening… talk through the class: where and when, then each exercise with its reps, time or rest. Tap Stop when you are done.');
+  });
+  const draftBtn = h('button', { class: 'btn', type: 'button', onclick: () => {
+    if (listening) { listening = false; rec?.stop(); }
+    const { draft, questions } = draftWorkout(talk.value, { library: state.library, clubs, today });
+    for (const k of ['title', 'date', 'time', 'club', 'category', 'level', 'duration_min', 'description']) if (draft[k] !== '' && draft[k] !== undefined) wk[k] = draft[k];
+    if (draft.exercises.length) wk.exercises = draft.exercises;
+    drawBody();
+    drawQuestions(questions);
+    say(talkStatus, draft.exercises.length
+      ? `Drafted ${draft.exercises.length} exercise${draft.exercises.length === 1 ? '' : 's'}. ${questions.length ? 'Answer the questions below, then check everything and save.' : 'Check everything below, then save.'}`
+      : 'No exercises found yet. See the tip below.');
+    questionsBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } }, '✍️ Draft my workout');
+  const talkPanel = h(existing ? 'details' : 'div', { class: 'panel talk' },
+    existing ? h('summary', {}, '🎤 Talk it through (redraft this workout)') : h('h2', {}, '🎤 Talk it through'),
+    h('p', { class: 'muted' }, SR
+      ? 'Tap “Start talking” and describe the class: where and when, then each exercise with its sets, reps, time or rest. Or type it. Then tap “Draft my workout”: the app fills in the workout below and asks about anything it missed.'
+      : 'Describe the class here (on a phone, your keyboard’s microphone key lets you talk instead of type): where and when, then each exercise with its sets, reps, time or rest. Then tap “Draft my workout”.'),
+    talk,
+    h('div', { class: 'toolrow' }, micBtn, draftBtn),
+    talkStatus);
+
+  // ---- 2. questions about anything the draft could not work out ----
+  function drawQuestions(questions) {
+    if (!questions.length) { fill(questionsBox); return; }
+    const lib = libraryIndex(state.library);
+    const row = (q, input) => h('div', { class: 'question' }, h('label', {}, q.text), input);
+    fill(questionsBox, h('div', { class: 'panel questions' }, h('h2', {}, 'A few questions'),
+      questions.map((q) => {
+        const ex = q.index !== undefined ? wk.exercises[q.index] : null;
+        const exName = ex ? (ex.library_id ? lib.get(ex.library_id)?.name : ex.name) : '';
+        if (q.key === 'date') return row(q, h('input', { type: 'date', value: wk.date, onchange: (e) => { wk.date = e.target.value; drawBody(); } }));
+        if (q.key === 'time') return row(q, h('input', { type: 'time', value: wk.time, onchange: (e) => { wk.time = e.target.value; drawBody(); } }));
+        if (q.key === 'club') return row(q, h('input', { type: 'text', value: wk.club, list: 'club-list', placeholder: 'e.g. Virgin Active Sandton', onchange: (e) => { wk.club = e.target.value; drawBody(); } }));
+        if (q.key === 'title') return row(q, h('input', { type: 'text', value: wk.title, onchange: (e) => { wk.title = e.target.value; drawBody(); } }));
+        if (q.key === 'reps' && ex) return row({ text: `Exercise ${q.index + 1} (${exName}): how many reps, or how long?` },
+          h('input', { type: 'text', value: ex.reps, placeholder: '10, 40 sec, 8 each side…', onchange: (e) => { ex.reps = e.target.value; drawBody(); } }));
+        if (q.key === 'match' && ex) {
+          const own = ex.name;
+          return row(q, h('select', { onchange: (e) => {
+            const v = e.target.value;
+            const keep = { sets: ex.sets, reps: ex.reps, rest_sec: ex.rest_sec, cues: ex.cues };
+            wk.exercises[q.index] = v === 'own' ? { name: own, muscles: '', equipment: '', image: '', ...keep } : { library_id: Number(v), ...keep };
+            drawBody();
+          } }, h('option', { value: 'own' }, `Keep “${own}” as my own exercise`),
+          q.options.map((o) => h('option', { value: o.id }, `Library: ${o.name}`)),
+          state.library.exercises.filter((x) => !q.options.some((o) => o.id === x.id)).map((x) => h('option', { value: x.id }, `Library: ${x.name}`))));
+        }
+        return h('p', { class: 'muted' }, q.text);
+      })));
+  }
+
+  // ---- 3. the workout itself (everything editable) ----
   function exerciseCard(ex, i) {
     const upStatus = h('p', { role: 'status', class: 'muted' });
     const move = (d) => () => {
@@ -270,16 +368,16 @@ function editView(id) {
         h('button', { class: 'btn ghost small', type: 'button', 'aria-label': 'Move down', onclick: move(1) }, '↓'),
         h('button', { class: 'btn danger small', type: 'button', onclick: () => { wk.exercises.splice(i, 1); drawExercises(); } }, 'Remove')));
     const setsRow = h('div', { class: 'row' },
-      field('Sets', text(ex, 'sets', { placeholder: '3', maxlength: 20 })),
+      field('Sets / rounds', text(ex, 'sets', { placeholder: '3', maxlength: 20 })),
       field('Reps or time', text(ex, 'reps', { placeholder: '10-12 or 40 sec', maxlength: 40 })),
       field('Rest (seconds)', text(ex, 'rest_sec', { inputmode: 'numeric', placeholder: '60' })));
     if (lib) {
       return h('div', { class: 'panel' }, head,
-        h('p', { class: 'muted' }, lib.equipment || 'Library exercise', ' · ', h('a', { href: `#/library/${lib.id}` }, 'edit in the library'),
-          lib.image ? '' : h('span', { class: 'err' }, ' · no picture yet')),
+        h('p', { class: 'muted' }, lib.equipment || 'Library exercise', ' · ', h('a', { href: `#/library/${lib.id}` }, 'see in the library'),
+          lib.image ? '' : h('span', { class: 'muted' }, ' · no picture yet')),
         lib.image ? h('img', { class: 'thumb', src: picSrc(lib.image), alt: `${lib.name} picture` }) : null,
         setsRow,
-        field('Coach’s notes for this workout (optional)', bind(ex, 'cues', h('textarea', { maxlength: 1500, value: ex.cues || '', placeholder: 'e.g. Go light this week' }))));
+        field('Notes for this workout (optional)', bind(ex, 'cues', h('textarea', { maxlength: 1500, value: ex.cues || '', placeholder: 'e.g. Warm-up, or go light this week' }))));
     }
     return h('div', { class: 'panel' }, head,
       h('div', { class: 'row' },
@@ -287,60 +385,87 @@ function editView(id) {
         field('Muscles worked', text(ex, 'muscles', { placeholder: 'Quads, glutes' })),
         field('Equipment', text(ex, 'equipment', { placeholder: 'Dumbbell, or none' }))),
       setsRow,
-      field('Form cues / instructions', bind(ex, 'cues', h('textarea', { maxlength: 1500, value: ex.cues || '' }))),
-      promptEditor(() => buildPrompt(ex, getStyle()), upStatus),
-      pictureEditor(ex, 'Exercise picture (from your image tool)', upStatus, drawExercises),
+      field('Notes / how to do it', bind(ex, 'cues', h('textarea', { maxlength: 1500, value: ex.cues || '' }))),
+      h('p', { class: 'muted note' }, 'Not in your library, so members see a “Look it up on Google” link.'),
+      pictureEditor(ex, 'Picture (optional)', upStatus, drawExercises),
       upStatus);
   }
 
-  // "Add from the library": one dropdown grouped by equipment
   const pickLib = h('select', { 'aria-label': 'Exercise from the library' },
     h('option', { value: '' }, 'Choose an exercise from the library…'),
     [...new Set(state.library.exercises.map((x) => x.equipment || 'Other'))].map((g) => h('optgroup', { label: g },
       state.library.exercises.filter((x) => (x.equipment || 'Other') === g).map((x) => h('option', { value: x.id }, x.name)))));
 
-  const published = h('input', { type: 'checkbox', id: 'pub', checked: !!wk.published, onchange: (e) => { wk.published = e.target.checked; } });
+  function playlistEditor() {
+    const box = h('div');
+    const draw = () => fill(box,
+      wk.playlist.map((p, i) => h('div', { class: 'row playlist-row' },
+        field(`YouTube link ${i + 1}`, bind(p, 'url', h('input', { type: 'url', value: p.url, placeholder: 'https://youtube.com/playlist?list=…' }))),
+        field('Name (optional)', bind(p, 'title', h('input', { type: 'text', value: p.title || '', maxlength: 80, placeholder: 'e.g. Friday HIIT mix' }))),
+        h('div', {}, h('button', { class: 'btn danger small', type: 'button', onclick: () => { wk.playlist.splice(i, 1); draw(); } }, 'Remove')))),
+      wk.playlist.length < 10 ? h('button', { class: 'btn ghost small', type: 'button', onclick: () => { wk.playlist.push({ url: '', title: '' }); draw(); } }, '+ Add a YouTube link') : null);
+    draw();
+    return h('div', { class: 'panel' }, h('h2', {}, '🎵 Class playlist'),
+      h('p', { class: 'muted' }, 'Paste the YouTube link (playlist or video) of the music you played, so members can train to it too.'), box);
+  }
+
+  function drawBody() {
+    const published = h('input', { type: 'checkbox', id: 'pub', checked: !!wk.published, onchange: (e) => { wk.published = e.target.checked; } });
+    drawExercises();
+    fill(bodyBox,
+      h('div', { class: 'panel' },
+        h('h2', {}, 'The class'),
+        h('div', { class: 'row' },
+          field('Workout name', text(wk, 'title', { required: true, maxlength: 120 })),
+          field('Date of the class', bind(wk, 'date', h('input', { type: 'date', value: wk.date || '' }))),
+          field('Start time', bind(wk, 'time', h('input', { type: 'time', value: wk.time || '' }))),
+          field('Club', text(wk, 'club', { list: 'club-list', maxlength: 80, placeholder: 'e.g. Virgin Active Sandton' }))),
+        clubList(),
+        h('div', { class: 'row' },
+          field('Category', text(wk, 'category', { placeholder: 'HIIT, Strength, Mobility…', maxlength: 40 })),
+          field('Level', text(wk, 'level', { placeholder: 'Beginner', maxlength: 40 })),
+          field('Minutes', text(wk, 'duration_min', { inputmode: 'numeric', placeholder: '45' }))),
+        field('Description', bind(wk, 'description', h('textarea', { maxlength: 2000, value: wk.description || '', placeholder: 'e.g. 4 rounds, 40 seconds on and 20 off.' }))),
+        h('p', {}, published, ' ', h('label', { for: 'pub' }, 'Published (shown in the Workout Library)'))),
+      h('h2', {}, 'Exercises'),
+      exBox,
+      h('div', { class: 'panel' },
+        h('div', { class: 'row' }, pickLib),
+        h('div', { class: 'toolrow' },
+          h('button', { class: 'btn', type: 'button', onclick: () => {
+            if (!pickLib.value) return;
+            wk.exercises.push({ library_id: Number(pickLib.value), sets: '', reps: '', rest_sec: '', cues: '' });
+            pickLib.value = '';
+            drawExercises();
+          } }, '+ Add from library'),
+          h('button', { class: 'btn ghost', type: 'button', onclick: () => { wk.exercises.push({ name: '', muscles: '', equipment: '', sets: '', reps: '', rest_sec: '', cues: '', image: '' }); drawExercises(); } }, '+ Exercise not in the library'))),
+      playlistEditor());
+  }
+
   const saveBtn = h('button', { class: 'btn', type: 'button', onclick: async () => {
     saveBtn.disabled = true;
     const isNew = !wk.id;
     const ok = await trySave(status, `${isNew ? 'add' : 'update'} workout ${wk.title || ''}`.trim(), (d) => {
-      const item = { ...wk, updated_at: new Date().toISOString(), exercises: wk.exercises.map((e) => ({ ...e, rest_sec: e.rest_sec === '' ? null : e.rest_sec })) };
+      const item = { ...wk, updated_at: new Date().toISOString(), playlist: wk.playlist.filter((p) => p.url.trim()),
+        exercises: wk.exercises.map((e) => ({ ...e, rest_sec: e.rest_sec === '' ? null : e.rest_sec })) };
       if (isNew) { item.id = Math.max(0, ...d.workouts.workouts.map((x) => x.id)) + 1; d.workouts.workouts.push(item); wk.id = item.id; }
       else d.workouts.workouts = d.workouts.workouts.map((x) => (x.id === wk.id ? item : x));
-    }, wk.published ? 'Saved. Members see it in about a minute, once GitHub Pages has updated.' : 'Saved as hidden: members do not see it in the app.');
+    }, wk.published ? 'Saved. It appears in the Workout Library in about a minute.' : 'Saved as hidden: members do not see it.');
     if (!ok && isNew) wk.id = 0;
     saveBtn.disabled = false;
     if (ok && isNew) history.replaceState(null, '', `#/workouts/${wk.id}`);
   } }, 'Save workout');
 
-  drawExercises();
+  drawBody();
   show(
     h('a', { class: 'back', href: '#/workouts' }, '← All workouts'),
-    h('div', { class: 'panel' },
-      h('div', { class: 'row' },
-        field('Workout title', text(wk, 'title', { required: true, maxlength: 120 })),
-        field('Category', text(wk, 'category', { placeholder: 'Strength, HIIT, Mobility…', maxlength: 40 })),
-        field('Level', text(wk, 'level', { placeholder: 'Beginner', maxlength: 40 })),
-        field('Minutes', text(wk, 'duration_min', { inputmode: 'numeric', placeholder: '30' }))),
-      field('Description', bind(wk, 'description', h('textarea', { maxlength: 2000, value: wk.description || '' }))),
-      h('p', {}, published, ' ', h('label', { for: 'pub' }, 'Published (shown in the app)')),
-      h('p', { class: 'muted note' }, 'Hidden workouts are not shown in the app, but the repository is public, so do not put anything private in them.')),
-    exBox,
-    h('div', { class: 'panel' },
-      h('div', { class: 'row' }, pickLib),
-      h('div', { class: 'toolrow' },
-        h('button', { class: 'btn', type: 'button', onclick: () => {
-          if (!pickLib.value) return;
-          wk.exercises.push({ library_id: Number(pickLib.value), sets: '', reps: '', rest_sec: '', cues: '' });
-          pickLib.value = '';
-          drawExercises();
-        } }, '+ Add from library'),
-        h('button', { class: 'btn ghost', type: 'button', onclick: () => { wk.exercises.push({ name: '', muscles: '', equipment: '', sets: '', reps: '', rest_sec: '', cues: '', image: '' }); drawExercises(); } }, '+ One-off exercise'))),
-    styleEditor(),
+    h('h1', {}, existing ? `Edit: ${existing.title}` : 'New workout'),
+    talkPanel,
+    questionsBox,
+    bodyBox,
     h('div', { class: 'toolrow' }, saveBtn),
     status);
 }
-
 
 // ---------- exercise library ----------
 function libraryView(saved = '') {

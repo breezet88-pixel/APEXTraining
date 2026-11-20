@@ -41,14 +41,33 @@ function setTab(name) {
   for (const t of ['today', 'workouts', 'exercises', 'comments']) document.getElementById(`tab-${t}`).classList.toggle('on', t === name);
 }
 
+// "Thu 20 Nov 2026 · 06:00 · Virgin Active Sandton"
+export function niceDate(iso) {
+  if (!iso) return '';
+  return new Intl.DateTimeFormat('en-ZA', { timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(`${iso}T00:00:00Z`));
+}
+const classLine = (w) => [niceDate(w.date), w.time, w.club].filter(Boolean).join(' · ');
+const googleUrl = (q) => `https://www.google.com/search?q=${encodeURIComponent(`${q} exercise how to`)}`;
+const googleLink = (q, label) => h('a', { href: googleUrl(q), target: '_blank', rel: 'noopener noreferrer' }, label || `Search Google for “${q}”`);
+const byDate = (a, b) => (b.date || '').localeCompare(a.date || '') || (b.time || '').localeCompare(a.time || '') || b.id - a.id;
+
 function card(w) {
   const cover = w.exercises.find((e) => e.image)?.image;
   return h('a', { class: 'card', href: `#/w/${w.id}` },
     cover ? h('img', { src: cover, alt: '', loading: 'lazy' }) : h('div', { class: 'ph', 'aria-hidden': 'true' }, '🏋️'),
     h('div', { class: 'card-body' },
       h('h3', {}, w.title),
+      classLine(w) ? h('p', { class: 'class-line' }, classLine(w)) : null,
       w.category ? h('span', { class: 'chip static' }, w.category) : null,
       h('p', { class: 'muted' }, metaLine(w))));
+}
+
+function playlist(w) {
+  if (!w.playlist?.length) return null;
+  return h('section', { class: 'playlist' },
+    h('h2', {}, '🎵 Class playlist'),
+    h('p', { class: 'muted note' }, 'The music played in this class, on YouTube.'),
+    h('ul', {}, w.playlist.map((p, i) => h('li', {}, h('a', { href: p.url, target: '_blank', rel: 'noopener noreferrer' }, p.title || (w.playlist.length > 1 ? `Playlist ${i + 1}` : 'Open the playlist'))))));
 }
 
 function exerciseList(w) {
@@ -61,7 +80,8 @@ function exerciseList(w) {
       e.muscles ? h('p', {}, h('b', {}, 'Muscles: '), e.muscles) : null,
       e.equipment ? h('p', {}, h('b', {}, 'Equipment: '), e.equipment) : null,
       e.movement ? h('p', {}, e.movement) : null,
-      e.cues ? h('p', {}, e.movement ? h('b', {}, 'Coach’s notes: ') : null, e.cues) : null);
+      e.cues ? h('p', {}, e.movement ? h('b', {}, 'Coach’s notes: ') : null, e.cues) : null,
+      !e.library_id && e.name ? h('p', { class: 'muted note' }, 'Not sure how? ', googleLink(e.name, 'Look it up on Google')) : null);
   }));
 }
 
@@ -176,13 +196,14 @@ function todayView(online) {
   if (!w) {
     show(h('h1', {}, 'Today’s workout'),
       h('p', { class: 'muted' }, online ? 'The coach has not posted today’s workout yet. Check back soon, or browse all workouts.' : 'Nothing saved on this device yet.'),
-      online ? h('a', { class: 'btn ghost', href: '#/workouts' }, 'Browse workouts') : null);
+      online ? h('a', { class: 'btn ghost', href: '#/' }, 'Browse the workout library') : null);
     return;
   }
   const cover = w.exercises.find((e) => e.image)?.image;
   show(
     h('p', { class: 'eyebrow' }, `Workout of the day · ${day}`),
     h('h1', {}, w.title),
+    classLine(w) ? h('p', { class: 'class-line' }, classLine(w)) : null,
     h('p', { class: 'muted' }, [w.category, metaLine(w)].filter(Boolean).join(' · ')),
     cover ? h('img', { class: 'hero', src: cover, alt: '' }) : null,
     w.description ? h('p', {}, w.description) : null,
@@ -191,26 +212,28 @@ function todayView(online) {
     online ? supportCard() : null);
 }
 
+// The Workout Library: every class the coach has run, newest first. Loved a class? Redo it any time.
 function listView() {
   setTab('workouts');
   setBanner('');
-  const workouts = data.workouts;
+  const workouts = [...data.workouts].sort(byDate);
   let query = '';
-  let cat = '';
+  let club = '';
   const grid = h('div', { class: 'grid' });
-  const cats = [...new Set(workouts.map((w) => w.category).filter(Boolean))].sort();
-  const chips = h('div', { class: 'chips', role: 'group', 'aria-label': 'Category' });
+  const clubs = [...new Set(workouts.map((w) => w.club).filter(Boolean))].sort();
+  const chips = h('div', { class: 'chips', role: 'group', 'aria-label': 'Club' });
   const draw = () => {
     const q = query.toLowerCase();
-    const shown = workouts.filter((w) => (!cat || w.category === cat) && (!q || `${w.title} ${w.category} ${w.level} ${w.description}`.toLowerCase().includes(q)));
-    fill(grid, shown.length ? shown.map(card) : h('p', { class: 'muted pad' }, workouts.length ? 'No workouts match.' : 'No workouts yet. Check back soon.'));
-    fill(chips, ['', ...cats].map((c) => h('button', { class: `chip${c === cat ? ' on' : ''}`, 'aria-pressed': c === cat ? 'true' : 'false', onclick: () => { cat = c; draw(); } }, c || 'All')));
+    const shown = workouts.filter((w) => (!club || w.club === club) && (!q || [w.title, w.category, w.level, w.description, w.club, niceDate(w.date), ...w.exercises.map((e) => e.name)].join(' ').toLowerCase().includes(q)));
+    fill(grid, shown.length ? shown.map(card) : h('p', { class: 'muted pad' }, workouts.length ? 'No workouts match.' : 'No workouts yet. The coach adds each class after it has been run.'));
+    fill(chips, ['', ...clubs].map((c) => h('button', { class: `chip${c === club ? ' on' : ''}`, 'aria-pressed': c === club ? 'true' : 'false', onclick: () => { club = c; draw(); } }, c || 'All clubs')));
   };
   show(
-    h('h1', { class: 'sr-only' }, 'All workouts'),
+    h('h1', {}, 'Workout Library'),
+    h('p', { class: 'muted' }, 'Every class the coach has run, newest first. Loved a class? Open it and redo it in your own time.'),
     h('div', { class: 'toolbar' },
-      h('input', { type: 'search', placeholder: 'Search workouts', 'aria-label': 'Search workouts', oninput: (e) => { query = e.target.value; draw(); } }),
-      cats.length ? chips : null),
+      h('input', { type: 'search', placeholder: 'Search by name, club, date or exercise', 'aria-label': 'Search workouts', oninput: (e) => { query = e.target.value; draw(); } }),
+      clubs.length > 1 ? chips : null),
     grid);
   draw();
 }
@@ -219,17 +242,19 @@ function detailView(id) {
   setTab('workouts');
   setBanner('');
   const w = byId(id);
-  if (!w) { show(h('p', { class: 'pad' }, 'This workout is not available.'), h('a', { class: 'pad', href: '#/workouts' }, '← All workouts')); return; }
+  if (!w) { show(h('p', { class: 'pad' }, 'This workout is not available.'), h('a', { class: 'pad', href: '#/' }, '← Workout Library')); return; }
   const { day, workout: wod } = todaysWorkout();
   const isWod = wod?.id === w.id;
   show(
-    h('a', { class: 'back', href: '#/workouts' }, '← All workouts'),
+    h('a', { class: 'back', href: '#/' }, '← Workout Library'),
     h('article', { class: 'detail' },
       h('h1', {}, w.title),
       isWod ? h('p', { class: 'eyebrow' }, 'Today’s workout of the day') : null,
+      classLine(w) ? h('p', { class: 'class-line' }, classLine(w)) : null,
       h('p', { class: 'muted' }, [w.category, metaLine(w)].filter(Boolean).join(' · ')),
       w.description ? h('p', {}, w.description) : null,
-      isWod ? wodActions(day, w) : h('p', { class: 'muted note' }, 'Downloads are available for the workout of the day.'),
+      isWod ? wodActions(day, w) : null,
+      playlist(w),
       exerciseList(w),
       comments(w)));
 }
@@ -249,6 +274,7 @@ function libraryView() {
   let query = '';
   let group = '';
   const list = h('div');
+  const online = h('div');
   const chips = h('div', { class: 'chips', role: 'group', 'aria-label': 'Equipment' });
   const draw = () => {
     const q = query.toLowerCase();
@@ -264,14 +290,17 @@ function libraryView() {
           x.image ? h('img', { src: x.image, alt: '', loading: 'lazy' }) : h('div', { class: 'ph', 'aria-hidden': 'true' }, '🏋️'),
           h('div', { class: 'card-body' }, h('h3', {}, x.name), h('span', { class: 'chip static' }, x.equipment))))));
     });
-    fill(list, sections.some(Boolean) ? sections : h('p', { class: 'muted pad' }, lib.exercises.length ? 'No exercises match.' : 'The exercise library is empty.'));
+    fill(list, sections.some(Boolean) ? sections : h('p', { class: 'muted pad' }, lib.exercises.length ? 'That exercise is not in the library.' : 'The exercise library is empty.'));
+    fill(online, query.trim() ? h('p', { class: 'google-search' }, 'Not what you need? ', googleLink(query.trim())) : null);
     fill(chips, ['', ...groups].map((g) => h('button', { class: `chip${g === group ? ' on' : ''}`, 'aria-pressed': g === group ? 'true' : 'false', onclick: () => { group = g; draw(); } }, g || 'All')));
   };
   show(
     h('h1', {}, 'Exercise library'),
+    h('p', { class: 'muted' }, 'Not sure how to do an exercise? Look it up here. Can’t find it? Search for it and use “Search Google”.'),
     lib.guide?.intro ? h('p', { class: 'muted' }, lib.guide.intro) : null,
     h('div', { class: 'toolbar' },
       h('input', { type: 'search', placeholder: 'Search exercises', 'aria-label': 'Search exercises', oninput: (e) => { query = e.target.value; draw(); } }),
+      online,
       chips),
     list);
   draw();
@@ -302,7 +331,7 @@ function supportView() {
   setBanner('');
   const d = data.settings.donate || {};
   if (!d.url) {
-    show(h('h1', {}, 'Apex Training is free'), h('p', {}, 'Everything here is free to use. Thank you for training with us.'), h('a', { class: 'btn ghost', href: '#/' }, 'Back to today’s workout'));
+    show(h('h1', {}, 'Apex Training is free'), h('p', {}, 'Everything here is free to use. Thank you for training with us.'), h('a', { class: 'btn ghost', href: '#/' }, 'Back to the workout library'));
     return;
   }
   const out = { target: '_blank', rel: 'noopener noreferrer' };
@@ -324,12 +353,13 @@ async function route() {
   let m;
   if (!data) todayView(false);                         // offline and nothing cached: show what is saved
   else if ((m = path.match(/^\/w\/(\d+)$/))) detailView(Number(m[1]));
-  else if (path === '/workouts') listView();
+  else if (path === '/' || path === '' || path === '/workouts') listView();
+  else if (path === '/today') todayView(true);
   else if (path === '/exercises') libraryView();
   else if ((m = path.match(/^\/e\/(\d+)$/))) exerciseView(Number(m[1]));
   else if (path === '/support') supportView();
   else if (path === '/comments') commentsView();
-  else todayView(true);
+  else listView();
   document.getElementById('support-link').hidden = !data?.settings.donate?.url;
   window.scrollTo(0, 0);
 }

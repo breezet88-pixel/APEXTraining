@@ -28,8 +28,27 @@ export function validDay(s) {
   return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s;
 }
 
+// YouTube playlist links for the music played in the class
+const YOUTUBE_HOSTS = ['youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com', 'youtu.be'];
+export function cleanPlaylist(list) {
+  if (list === undefined || list === null || list === '') return [];
+  if (!Array.isArray(list) || list.length > 10) fail('A workout can have up to 10 playlist links.');
+  return list.map((p, i) => {
+    const item = typeof p === 'string' ? { url: p } : p || {};
+    const url = text(item.url, 500, `Playlist link ${i + 1}`, true);
+    let u;
+    try { u = new URL(url); } catch { fail(`Playlist link ${i + 1} is not a valid web address.`); }
+    if (u.protocol !== 'https:' || !YOUTUBE_HOSTS.includes(u.hostname)) fail(`Playlist link ${i + 1} must be a YouTube link (https://youtube.com/… or https://youtu.be/…).`);
+    return { url, title: text(item.title, 80, `Playlist link ${i + 1} name`) };
+  });
+}
+
 export function cleanWorkout(w, label = 'Workout') {
   if (!w || typeof w !== 'object') fail(`${label} is not valid.`);
+  const date = text(w.date, 10, 'Date');
+  if (date && !validDay(date)) fail('The class date is not a real date.');
+  const time = text(w.time, 5, 'Start time');
+  if (time && !/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) fail('The start time must look like 06:00.');
   const exercises = w.exercises ?? [];
   if (!Array.isArray(exercises) || exercises.length > 100) fail(`${label}: a workout can have up to 100 exercises.`);
   return {
@@ -38,6 +57,10 @@ export function cleanWorkout(w, label = 'Workout') {
     description: text(w.description, 2000, 'Description'),
     category: text(w.category, 40, 'Category'),
     level: text(w.level, 40, 'Level'),
+    date,
+    time,
+    club: text(w.club, 80, 'Club'),
+    playlist: cleanPlaylist(w.playlist),
     duration_min: intOrNull(w.duration_min, 1, 600, 'Minutes'),
     published: !!w.published,
     updated_at: text(w.updated_at, 40, 'Updated date'),

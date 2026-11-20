@@ -88,3 +88,14 @@ code{font-size:.9em;background:var(--soft);padding:1px 5px;border-radius:5px}
 /* phones: the four tabs share one full-width row under the logo */
 @media (max-width:520px){.tabs{width:100%;margin-left:0;flex-wrap:nowrap;justify-content:space-between;gap:2px}.tabs a{padding:6px 9px;font-size:.93rem;white-space:nowrap}}
 @media (max-width:350px){.tabs a{padding:5px 6px;font-size:.85rem}}
+.class-line{margin:2px 0 6px;font-weight:700;color:var(--fg)}
+.playlist ul{padding-left:20px;margin:6px 0}
+.google-search{margin:0;font-weight:600}
+.talk textarea{min-height:140px}
+.btn.mic.live{background:var(--ink);color:var(--ink-fg);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 6px var(--soft)}}
+@media (prefers-reduced-motion:reduce){.btn.mic.live{animation:none}}
+.questions{border:2px solid var(--accent)}
+.question{display:grid;gap:4px;margin:10px 0}
+.question label{font-weight:600}
+.playlist-row{align-items:end}

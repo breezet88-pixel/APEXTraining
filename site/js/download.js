@@ -8,6 +8,8 @@ export const fileName = (title, day) => `${String(title).replace(/[^a-z0-9]+/gi,
 // pictureAsDataUrl(path) -> 'data:image/...' or null. Supplied by the caller (browser fetch, or a test).
 export async function buildWorkoutPage(w, day, siteName, pictureAsDataUrl) {
   const meta = [w.category, w.level, w.duration_min ? `${w.duration_min} min` : ''].filter(Boolean).join(' · ');
+  const when = [w.date, w.time, w.club].filter(Boolean).join(' · ');
+  const music = (w.playlist || []).filter((p) => /^https:\/\//.test(p.url)).map((p, i) => `<li><a href="${esc(p.url)}">${esc(p.title || `Playlist ${i + 1}`)}</a></li>`).join('');
   const rows = [];
   for (const [i, e] of w.exercises.entries()) {
     const facts = [e.sets && e.reps ? `${e.sets} × ${e.reps}` : e.sets || e.reps, rest(e.rest_sec)].filter(Boolean).join(' · ');
@@ -24,6 +26,7 @@ export async function buildWorkoutPage(w, day, siteName, pictureAsDataUrl) {
     '<style>body{font:16px/1.5 system-ui,sans-serif;max-width:720px;margin:0 auto;padding:20px;color:#111}h1{margin:0 0 4px}.meta{color:#555;margin:0 0 12px}' +
     'section{border-top:1px solid #ddd;padding:14px 0;break-inside:avoid}h2{margin:0 0 4px;font-size:1.15rem}.facts{font-weight:600;color:#c40500;margin:0 0 8px}' +
     'img{max-width:100%;height:auto;border-radius:8px;border:1px solid #eee}p{margin:6px 0}</style></head><body>' +
-    `<p class="meta">${esc(siteName)} · Workout of the day · ${esc(day)}</p><h1>${esc(w.title)}</h1><p class="meta">${esc(meta)}</p>` +
-    `${w.description ? `<p>${esc(w.description)}</p>` : ''}${rows.join('')}</body></html>`;
+    `<p class="meta">${esc(siteName)} · Workout of the day · ${esc(day)}</p><h1>${esc(w.title)}</h1>` +
+    `${when ? `<p class="meta"><b>Class:</b> ${esc(when)}</p>` : ''}<p class="meta">${esc(meta)}</p>` +
+    `${w.description ? `<p>${esc(w.description)}</p>` : ''}${music ? `<p><b>Class playlist:</b></p><ul>${music}</ul>` : ''}${rows.join('')}</body></html>`;
 }

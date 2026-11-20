@@ -1,13 +1,13 @@
 # Apex Training
 
-A **free** workout app. Members view workouts and the exercise library, comment on workouts and download the **workout of the day**. Only the coach can add, change or remove anything.
+A **free** workout app. The heart of it is the **Workout Library**: every class the coach has run, with its date, club, start time and the YouTube playlist that was played, so members who loved a class can redo it in their own time. Members can also look up exercises in the **exercise library** (or search Google for anything not in it), comment, and download the **workout of the day**. Every workout is created by the coach. Only the coach can add, change or remove anything.
 
 It runs entirely on **GitHub**, free, with no server to look after:
 
 | Part | Where it lives |
 |---|---|
 | Website (member app + coach page) | **GitHub Pages**, published from the `site/` folder |
-| Exercise library (50 exercises), workouts, workout-of-the-day schedule, donation settings | files in `site/data/` in this repository |
+| Workout Library (the coach's classes), exercise library (50 exercises), workout-of-the-day schedule, donation settings | files in `site/data/` in this repository |
 | Exercise pictures | files in `site/images/` in this repository |
 | Comments & reviews | this repository's **GitHub Discussions**, shown with [giscus](https://giscus.app): a members' **Comments** page for general feedback, plus comments under each workout |
 
@@ -29,7 +29,7 @@ Free to use for everyone; donations are voluntary and unlock nothing. GitHub's P
 ## Everyday use
 
 - **Exercise library**: coach page → *Exercise library*. It holds your 50 HIIT and functional exercises (kettlebell, dumbbell, light barbell, Skillmill, SkiErg, mat and bodyweight) with their movement descriptions, image cues, equipment safety notes and sources. Each one has a **✨ Create image prompt** button built from its image cue ([docs/image-prompts.md](docs/image-prompts.md)); upload the picture **once** there and every workout using that exercise shows it. The list shows how many pictures are still missing.
-- **Add or change a workout**: coach page → *Workouts* → pick exercises with *Add from library*, then set sets, reps, rest and optional notes. *One-off exercise* is there for anything not in the library. *Save* publishes to the repository.
+- **Add a class to the Workout Library**: coach page → *Workout Library* → *New workout* → **🎤 Talk it through**: tap *Start talking* (Chrome, Edge, Safari) or type, and describe the class, e.g. *"Today at Virgin Active Sandton, 6am class. 4 rounds, 40 seconds on 20 off: kettlebell swings, goblet squats, mountain climbers. Then 3 sets of 10 push-ups, rest 60 seconds."* Tap **Draft my workout**: the app fills in the date, start time, club, name and exercises (matched to your library, with sets, reps, time and rest) and asks about anything it couldn't work out. Check and edit everything, add the **YouTube playlist** link(s) you played, then *Save*. You can also build or change a workout by hand: *Add from library*, or *Exercise not in the library* (members get a Google link for those). The drafting runs on the phone or computer itself: no account and no cost.
 - **Workout of the day**: *Make today's workout* on a workout, or schedule days ahead on the *Workout of the day* tab. "Today" follows South African time (change `timezone` in `site/js/config.js`).
 - Changes reach members **about a minute** after saving, once GitHub Pages has republished.
 - **Moderating comments**: on GitHub → *Discussions*: delete, hide, lock or block.
