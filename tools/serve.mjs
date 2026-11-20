@@ -1,4 +1,4 @@
-// Local preview: serves site/ at http://localhost:8080/ (and at /apex-training/, like GitHub Pages).
+// Local preview: serves site/ at http://localhost:8080/ (and at /APEXTraining/, like GitHub Pages).
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -8,7 +8,7 @@ const SITE_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8',
   '.webmanifest': 'application/manifest+json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.gif': 'image/gif' };
 
-export function createServer({ dir = SITE_DIR, prefix = '/apex-training' } = {}) {
+export function createServer({ dir = SITE_DIR, prefix = '/APEXTraining' } = {}) {
   return http.createServer((req, res) => {
     let rel;
     try { rel = decodeURIComponent(new URL(req.url, 'http://x').pathname); } catch { res.writeHead(400); return res.end(); }

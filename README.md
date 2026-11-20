@@ -21,8 +21,8 @@ Free to use for everyone; donations are voluntary and unlock nothing. GitHub's P
 
 ## One-time setup
 
-1. **Publish the site**: repository *Settings* → *Pages* → *Build and deployment* → Source: **GitHub Actions**. Then *Actions* → *Check and publish* → *Run workflow* (or push any change). The site appears at **https://breezet88-pixel.github.io/apex-training/**.
-2. **Coach key**: open `…/apex-training/admin.html` and follow the steps on screen to create a *fine-grained personal access token* for this repository only (Contents: Read and write; Discussions: Read). Paste it to sign in.
+1. **Publish the site**: repository *Settings* → *Pages* → *Build and deployment* → Source: **GitHub Actions**. Then *Actions* → *Check and publish* → *Run workflow* (or push any change). The site appears at **https://breezet88-pixel.github.io/APEXTraining/**.
+2. **Coach key**: open `…/APEXTraining/admin.html` and follow the steps on screen to create a *fine-grained personal access token* for this repository only (Contents: Read and write; Discussions: Read). Paste it to sign in.
 3. **Comments** (optional): coach page → *Comments* tab: switch on Discussions, add a "Workout comments" category, install the giscus app, tap *Find my settings*, save.
 4. **Donations** (optional): coach page → *Donations* tab. See [docs/donations.md](docs/donations.md) for South African payment links.
 
