@@ -100,6 +100,13 @@ test('class timer: settings are checked, and the sequence members run is right',
   assert.equal(totalSeconds(buildSegments({ type: 'amrap', minutes: 20 }, ['A'])), 1200);
   assert.equal(buildSegments({ type: 'fortime' }, ['A'])[1].countUp, true);
   assert.deepEqual(buildSegments({ type: '' }, ['A']), []);
+  // pictures for the class: several allowed, real picture files only, up to 20
+  const pic = (c) => `images/${c.repeat(32)}.png`;
+  const withPhotos = cleanWorkouts({ workouts: [workout({ photos: [{ image: pic('e'), caption: ' Whiteboard ' }, { image: pic('f') }] })] });
+  assert.deepEqual(withPhotos.workouts[0].photos, [{ image: pic('e'), caption: 'Whiteboard' }, { image: pic('f'), caption: '' }]);
+  assert.ok(usedImages(withPhotos, { exercises: [] }).has(pic('f')), 'class pictures are never deleted by a save');
+  assert.throws(() => cleanWorkouts({ workouts: [workout({ photos: [{ image: 'https://evil.example/x.png' }] })] }), /not a valid picture/);
+  assert.throws(() => cleanWorkouts({ workouts: [workout({ photos: Array(21).fill({ image: pic('e') }) })] }), /up to 20/);
   // a timer picture counts as used, so saving never deletes it
   const ws = cleanWorkouts({ workouts: [workout({ timer: { type: '', image: `images/${'d'.repeat(32)}.png` } })] });
   assert.ok(usedImages(ws, { exercises: [] }).has(`images/${'d'.repeat(32)}.png`));
@@ -217,10 +224,11 @@ test('GitHub: finds the comment settings for giscus', async () => {
 
 // ---------------------------------------------------------------- download
 test('download: one self-contained page, text escaped, only real pictures embedded', async () => {
-  const w = { title: 'Legs <b>day</b>', category: 'Grid', about: 'Short, hard intervals.', date: '2026-11-20', time: '06:30', timer: { type: 'intervals', work_sec: 40, rest_sec: 20, rounds: 4, notes: 'Use the gym clock' }, exercises: [{ name: 'Squat', sets: '3', reps: '10', rest_sec: 60, image: 'images/a.png' }, { name: 'Hack', image: 'images/b.png' }] };
+  const w = { photos: [{ image: 'images/a.png', caption: 'Whiteboard' }, { image: 'images/b.png', caption: 'Bad' }], title: 'Legs <b>day</b>', category: 'Grid', about: 'Short, hard intervals.', date: '2026-11-20', time: '06:30', timer: { type: 'intervals', work_sec: 40, rest_sec: 20, rounds: 4, notes: 'Use the gym clock' }, exercises: [{ name: 'Squat', sets: '3', reps: '10', rest_sec: 60, image: 'images/a.png' }, { name: 'Hack', image: 'images/b.png' }] };
   const html = await buildWorkoutPage(w, 'Apex Training', async (p) => (p === 'images/a.png' ? `data:image/png;base64,${PNG.toString('base64')}` : 'javascript:alert(1)'));
   assert.match(html, /Legs &lt;b&gt;day&lt;\/b&gt;/);
-  assert.equal((html.match(/<img /g) || []).length, 1, 'non-image data is never embedded');
+  assert.equal((html.match(/<img /g) || []).length, 2, 'non-image data is never embedded (1 class picture + 1 exercise picture)');
+  assert.match(html, /<figcaption>Whiteboard<\/figcaption>/);
   assert.match(html, /3 × 10 · 1 min rest/);
   assert.match(html, /About Grid:<\/b> Short, hard intervals\./);
   assert.match(html, /Timer:<\/b> 4 rounds · 40 sec on \/ 20 sec off · Use the gym clock/);

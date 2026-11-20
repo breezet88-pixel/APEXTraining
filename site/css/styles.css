@@ -121,3 +121,7 @@ code{font-size:.9em;background:var(--soft);padding:1px 5px;border-radius:5px}
 .class-pick{margin:4px 0 8px}
 .sched-row{align-items:end;border-bottom:1px solid var(--line);padding-bottom:10px}
 [hidden]{display:none!important}
+.gallery figure{margin:10px 0}
+.gallery img{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);display:block}
+.photo-row{display:grid;grid-template-columns:minmax(0,140px) minmax(0,1fr);gap:12px;align-items:start;border-bottom:1px solid var(--line);padding:10px 0}
+.photo-row .thumb{max-width:100%;margin:0}

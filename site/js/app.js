@@ -53,7 +53,7 @@ const googleLink = (q, label) => h('a', { href: googleUrl(q), target: '_blank', 
 const byDate = (a, b) => (b.date || '').localeCompare(a.date || '') || (b.time || '').localeCompare(a.time || '') || b.id - a.id;
 
 function card(w) {
-  const cover = w.exercises.find((e) => e.image)?.image;
+  const cover = w.exercises.find((e) => e.image)?.image || w.photos?.[0]?.image;
   return h('a', { class: 'card', href: `#/w/${w.id}` },
     cover ? h('img', { src: cover, alt: '', loading: 'lazy' }) : h('div', { class: 'ph', 'aria-hidden': 'true' }, '🏋️'),
     h('div', { class: 'card-body' },
@@ -93,7 +93,7 @@ const isSaved = (id) => !!savedAll()[id];
 async function saveOffline(w) {
   if ('caches' in window) {
     const cache = await caches.open(PIC_CACHE);
-    await Promise.all([...w.exercises.map((e) => e.image), w.timer?.image].filter(Boolean).map((p) => cache.add(p).catch(() => {})));
+    await Promise.all([...w.exercises.map((e) => e.image), w.timer?.image, ...(w.photos || []).map((p) => p.image)].filter(Boolean).map((p) => cache.add(p).catch(() => {})));
   }
   try { localStorage.setItem(SAVED_KEY, JSON.stringify({ ...savedAll(), [w.id]: w })); }
   catch { throw new Error('Your browser would not let us save on this device.'); }
@@ -264,12 +264,23 @@ function detailView(id) {
       w.description ? h('p', {}, w.description) : null,
       workoutActions(w),
       timerPanel(w),
+      photoGallery(w),
       playlist(w),
       exerciseList(w),
       data ? comments(w) : null));
 }
 
 // ---------- class timer ----------
+// Pictures and screenshots the coach added for the class; tap one to see it full size.
+function photoGallery(w) {
+  if (!w.photos?.length) return null;
+  return h('section', { class: 'gallery' },
+    h('h2', {}, '📷 From the class'),
+    w.photos.map((p, i) => h('figure', {},
+      h('a', { href: p.image, target: '_blank', rel: 'noopener' }, h('img', { src: p.image, alt: p.caption || `Picture ${i + 1} from the class`, loading: 'lazy' })),
+      p.caption ? h('figcaption', { class: 'muted' }, p.caption) : null)));
+}
+
 function timerPanel(w) {
   const summary = timerSummary(w.timer);
   const segs = buildSegments(w.timer, w.exercises.map((e) => e.name));

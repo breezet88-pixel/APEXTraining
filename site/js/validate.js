@@ -72,6 +72,17 @@ export function cleanTimer(t) {
   return out;
 }
 
+// Pictures and screenshots for the whole class (whiteboard, timer, notes…), shown in order with a caption.
+export function cleanPhotos(list) {
+  if (list === undefined || list === null || list === '') return [];
+  if (!Array.isArray(list) || list.length > 20) fail('A workout can have up to 20 pictures.');
+  return list.map((p, i) => {
+    const image = text(p?.image, 80, `Picture ${i + 1}`, true);
+    if (!IMAGE_PATH.test(image)) fail(`Picture ${i + 1} is not a valid picture file.`);
+    return { image, caption: text(p?.caption, 200, `Picture ${i + 1} caption`) };
+  });
+}
+
 export function cleanWorkout(w, label = 'Workout') {
   if (!w || typeof w !== 'object') fail(`${label} is not valid.`);
   const date = text(w.date, 10, 'Date');
@@ -91,6 +102,7 @@ export function cleanWorkout(w, label = 'Workout') {
     club: text(w.club, 80, 'Club'),
     playlist: cleanPlaylist(w.playlist),
     timer: cleanTimer(w.timer),
+    photos: cleanPhotos(w.photos),
     duration_min: intOrNull(w.duration_min, 1, 600, 'Minutes'),
     published: !!w.published,
     updated_at: text(w.updated_at, 40, 'Updated date'),
@@ -250,6 +262,6 @@ export function cleanSettings(s) {
 // Every picture the data uses (exercise pictures, timer pictures, library pictures). Anything else in
 // site/images is unused and is removed when the coach saves.
 export const usedImages = (workouts, library) => new Set([
-  ...workouts.workouts.flatMap((w) => [...w.exercises.map((e) => e.image), w.timer?.image]),
+  ...workouts.workouts.flatMap((w) => [...w.exercises.map((e) => e.image), w.timer?.image, ...(w.photos || []).map((p) => p.image)]),
   ...library.exercises.map((x) => x.image),
 ].filter(Boolean));

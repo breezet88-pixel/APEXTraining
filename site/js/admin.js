@@ -81,18 +81,48 @@ function sniff(b) {
   return null;
 }
 
+// Big photos and screenshots are made smaller before upload (longest side 1600 px), so pages stay fast
+// on phone data and the repository stays small. Returns a new picture path, waiting to be saved.
+const MAX_SIDE = 1600;
+async function addPicture(file) {
+  let bytes = new Uint8Array(await file.arrayBuffer());
+  let kind = sniff(bytes);
+  if (!kind) throw new DataError(`“${file.name}” is not a PNG, JPG, WebP or GIF picture.`);
+  if (bytes.length > 20 * 1024 * 1024) throw new DataError(`“${file.name}” is over 20 MB.`);
+  let blob = file;
+  if (kind !== 'gif') {
+    try {
+      const bmp = await createImageBitmap(file);
+      const scale = Math.min(1, MAX_SIDE / Math.max(bmp.width, bmp.height));
+      if (scale < 1 || bytes.length > 1024 * 1024) {
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(bmp.width * scale);
+        canvas.height = Math.round(bmp.height * scale);
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(bmp, 0, 0, canvas.width, canvas.height);
+        const out = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.85));
+        if (out && out.size < bytes.length) { blob = out; bytes = new Uint8Array(await out.arrayBuffer()); kind = 'jpg'; }
+      }
+      bmp.close?.();
+    } catch { /* keep the original */ }
+  }
+  if (bytes.length > MAX_PICTURE) throw new DataError(`“${file.name}” is still over 5 MB. Use a smaller picture.`);
+  const name = `images/${[...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, '0')).join('')}.${kind}`;
+  state.pending.set(name, bytesToBase64(bytes));
+  state.previews.set(name, URL.createObjectURL(blob));
+  return name;
+}
+
 // Picture upload + preview + remove, for any object with an `image` field.
 function pictureEditor(obj, label, status, redraw) {
   const preview = h('img', { class: 'thumb', alt: 'Picture', hidden: !obj.image, src: obj.image ? picSrc(obj.image) : undefined });
   const input = h('input', { type: 'file', accept: 'image/png,image/jpeg,image/webp,image/gif', onchange: async (e) => {
     const f = e.target.files[0];
     if (!f) return;
-    const bytes = new Uint8Array(await f.arrayBuffer());
-    const kind = sniff(bytes);
-    if (!kind || bytes.length > MAX_PICTURE) { say(status, 'Use a PNG, JPG, WebP or GIF picture up to 5 MB.', true); return; }
-    const name = `images/${[...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, '0')).join('')}.${kind}`;
-    state.pending.set(name, bytesToBase64(bytes));
-    state.previews.set(name, URL.createObjectURL(f));
+    let name;
+    try { name = await addPicture(f); } catch (err) { say(status, err.message, true); return; }
     obj.image = name;
     preview.src = picSrc(name);
     preview.hidden = false;
@@ -277,6 +307,7 @@ function editView(id) {
     date: pre?.date || today, time: pre?.time || '', club: pre?.club || '', playlist: [], published: true, exercises: [], timer: { type: '' } };
   wk.playlist = wk.playlist || [];
   wk.timer = wk.timer || { type: '' };
+  wk.photos = wk.photos || [];
   const clubs = clubsOf(state.classes, state.workouts.workouts);
   const types = state.classes.types.map((t) => t.name);
   const status = h('p', { role: 'status', class: 'muted' });
@@ -523,6 +554,40 @@ function editView(id) {
     [...new Set(state.library.exercises.map((x) => x.equipment || 'Other'))].map((g) => h('optgroup', { label: g },
       state.library.exercises.filter((x) => (x.equipment || 'Other') === g).map((x) => h('option', { value: x.id }, x.name)))));
 
+  // ---- pictures and screenshots for the class: choose several at once ----
+  function photoEditor() {
+    const box = h('div');
+    const photoStatus = h('p', { role: 'status', class: 'muted' });
+    const input = h('input', { type: 'file', multiple: true, accept: 'image/png,image/jpeg,image/webp,image/gif', 'aria-label': 'Add pictures or screenshots', onchange: async (e) => {
+      const files = [...e.target.files];
+      e.target.value = '';
+      if (!files.length) return;
+      const room = 20 - wk.photos.length;
+      if (room <= 0) { say(photoStatus, 'A workout can have up to 20 pictures.', true); return; }
+      say(photoStatus, `Adding ${Math.min(files.length, room)} picture${files.length === 1 ? '' : 's'}…`);
+      const problems = [];
+      for (const f of files.slice(0, room)) {
+        try { wk.photos.push({ image: await addPicture(f), caption: '' }); } catch (err) { problems.push(err.message); }
+      }
+      draw();
+      if (files.length > room) problems.push(`Only the first ${room} were added: a workout can have up to 20 pictures.`);
+      say(photoStatus, problems.length ? problems.join(' ') : 'Added. Write a caption if it helps, then save the workout.', problems.length > 0);
+    } });
+    const move = (i, d) => () => { const j = i + d; if (j < 0 || j >= wk.photos.length) return; [wk.photos[i], wk.photos[j]] = [wk.photos[j], wk.photos[i]]; draw(); };
+    const draw = () => fill(box, wk.photos.map((p, i) => h('div', { class: 'photo-row' },
+      h('img', { class: 'thumb', src: picSrc(p.image), alt: `Picture ${i + 1}` }),
+      h('div', {},
+        field(`Caption for picture ${i + 1} (optional)`, bind(p, 'caption', h('input', { type: 'text', maxlength: 200, value: p.caption || '', placeholder: 'e.g. Whiteboard, or timer settings' }))),
+        h('div', { class: 'toolrow' },
+          h('button', { class: 'btn ghost small', type: 'button', 'aria-label': 'Move up', onclick: move(i, -1) }, '↑'),
+          h('button', { class: 'btn ghost small', type: 'button', 'aria-label': 'Move down', onclick: move(i, 1) }, '↓'),
+          h('button', { class: 'btn danger small', type: 'button', onclick: () => { wk.photos.splice(i, 1); draw(); } }, 'Remove'))))));
+    draw();
+    return h('div', { class: 'panel' }, h('h2', {}, '📷 Pictures & screenshots'),
+      h('p', { class: 'muted' }, 'Add as many as you need (up to 20): the whiteboard, your timer, your notes, the class. Choose several at once. Members see them on the workout and in downloads. Big photos are made smaller automatically.'),
+      field('Add pictures or screenshots', input), photoStatus, box);
+  }
+
   function playlistEditor() {
     const box = h('div');
     const draw = () => fill(box,
@@ -555,6 +620,7 @@ function editView(id) {
         typeInfo(state.classes, wk.category)?.description ? h('p', { class: 'muted note' }, `Members also see your description of ${wk.category}: “${typeInfo(state.classes, wk.category).description}”`) : null,
         field('Description', bind(wk, 'description', h('textarea', { maxlength: 2000, value: wk.description || '', placeholder: 'e.g. 4 rounds, 40 seconds on and 20 off.' }))),
         h('p', {}, published, ' ', h('label', { for: 'pub' }, 'Published (shown in the Workout Library)'))),
+      photoEditor(),
       h('h2', {}, 'Exercises'),
       exBox,
       h('div', { class: 'panel' },
