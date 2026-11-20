@@ -85,3 +85,6 @@ code{font-size:.9em;background:var(--soft);padding:1px 5px;border-radius:5px}
 .lib-group{margin:18px 0 8px}
 .lib-group h2{font-size:1.1rem;margin:0 0 4px}
 .detail h2{font-size:1.1rem;margin:18px 0 6px}
+/* phones: the four tabs share one full-width row under the logo */
+@media (max-width:520px){.tabs{width:100%;margin-left:0;flex-wrap:nowrap;justify-content:space-between;gap:2px}.tabs a{padding:6px 9px;font-size:.93rem;white-space:nowrap}}
+@media (max-width:350px){.tabs a{padding:5px 6px;font-size:.85rem}}

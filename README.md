@@ -9,7 +9,7 @@ It runs entirely on **GitHub**, free, with no server to look after:
 | Website (member app + coach page) | **GitHub Pages**, published from the `site/` folder |
 | Exercise library (50 exercises), workouts, workout-of-the-day schedule, donation settings | files in `site/data/` in this repository |
 | Exercise pictures | files in `site/images/` in this repository |
-| Comments & reviews | this repository's **GitHub Discussions**, shown under each workout with [giscus](https://giscus.app) |
+| Comments & reviews | this repository's **GitHub Discussions**, shown with [giscus](https://giscus.app): a members' **Comments** page for general feedback, plus comments under each workout |
 
 | Who | Can |
 |---|---|

@@ -38,7 +38,7 @@ function todaysWorkout() {
 // ---------- small bits ----------
 function setBanner(msg) { banner.textContent = msg || ''; banner.hidden = !msg; }
 function setTab(name) {
-  for (const t of ['today', 'workouts', 'exercises']) document.getElementById(`tab-${t}`).classList.toggle('on', t === name);
+  for (const t of ['today', 'workouts', 'exercises', 'comments']) document.getElementById(`tab-${t}`).classList.toggle('on', t === name);
 }
 
 function card(w) {
@@ -120,22 +120,43 @@ function wodActions(day, w) {
 }
 
 // ---------- comments: GitHub Discussions shown with giscus ----------
-function comments(w) {
-  const c = data.settings.comments || {};
-  if (!c.enabled) return null;
+const commentsOn = () => !!data?.settings.comments?.enabled;
+
+// One comment thread (a GitHub Discussion), named by `term`: "workout-<id>" or "member-comments".
+function commentThread(term) {
+  const c = data.settings.comments;
   const box = h('div', { class: 'giscus' });
   const s = document.createElement('script');
   Object.entries({
     src: 'https://giscus.app/client.js', 'data-repo': SITE.repo, 'data-repo-id': c.repo_id, 'data-category': c.category,
-    'data-category-id': c.category_id, 'data-mapping': 'specific', 'data-term': `workout-${w.id}`, 'data-strict': '1',
+    'data-category-id': c.category_id, 'data-mapping': 'specific', 'data-term': term, 'data-strict': '1',
     'data-reactions-enabled': '1', 'data-emit-metadata': '0', 'data-input-position': 'top', 'data-theme': 'preferred_color_scheme',
     'data-lang': 'en', 'data-loading': 'lazy', crossorigin: 'anonymous',
   }).forEach(([k, v]) => s.setAttribute(k, v));
   s.async = true;
-  return h('section', { class: 'reviews' },
-    h('h2', {}, 'Comments & reviews'),
-    h('p', { class: 'muted comments-note' }, 'Reading is open to everyone. To post, sign in with a free GitHub account.'),
-    box, s);
+  return [box, s];
+}
+
+const postNote = () => h('p', { class: 'muted comments-note' }, 'Reading is open to everyone. To post, sign in with a free GitHub account.');
+
+// Comments under one workout
+function comments(w) {
+  if (!commentsOn()) return null;
+  return h('section', { class: 'reviews' }, h('h2', {}, 'Comments & reviews'), postNote(), commentThread(`workout-${w.id}`));
+}
+
+// The members' comments page: one shared thread for general comments, questions and feedback
+function commentsView() {
+  setTab('comments');
+  setBanner('');
+  show(
+    h('h1', {}, 'Member comments'),
+    h('p', {}, 'Share feedback, questions and your results with the coach and other members.'),
+    commentsOn()
+      ? h('section', { class: 'reviews' }, postNote(),
+        h('p', { class: 'muted comments-note' }, 'Comments about one workout go under that workout (Workouts tab).'),
+        commentThread('member-comments'))
+      : h('p', { class: 'muted' }, 'Comments open soon. Check back shortly.'));
 }
 
 function supportCard() {
@@ -307,6 +328,7 @@ async function route() {
   else if (path === '/exercises') libraryView();
   else if ((m = path.match(/^\/e\/(\d+)$/))) exerciseView(Number(m[1]));
   else if (path === '/support') supportView();
+  else if (path === '/comments') commentsView();
   else todayView(true);
   document.getElementById('support-link').hidden = !data?.settings.donate?.url;
   window.scrollTo(0, 0);

@@ -487,7 +487,7 @@ function commentsView() {
     status,
     h('div', { class: 'panel' },
       h('h2', {}, 'Moderating'),
-      h('p', {}, 'Delete, hide or lock comments, and block people, directly on GitHub: ', h('a', { href: `${repoUrl}/discussions`, target: '_blank', rel: 'noopener noreferrer' }, 'open Discussions'), '. Each workout has its own thread named “workout-<number>”.')));
+      h('p', {}, 'Delete, hide or lock comments, and block people, directly on GitHub: ', h('a', { href: `${repoUrl}/discussions`, target: '_blank', rel: 'noopener noreferrer' }, 'open Discussions'), '. The members’ Comments page is the thread named “member-comments”, and each workout has its own thread named “workout-<number>”.')));
 }
 
 // ---------- donations ----------
