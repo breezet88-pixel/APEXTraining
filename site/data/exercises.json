@@ -285,6 +285,15 @@
       "sources": []
     },
     {
+      "id": 58,
+      "name": "Dumbbell Russian twist",
+      "equipment": "Dumbbell",
+      "movement": "Sit on the mat with the knees bent and hold one dumbbell by its ends in front of the chest. Lean back slightly with a long spine and brace the stomach; keep the heels down, or lift them to make it harder. Rotate the chest and dumbbell to one side, return to the middle and rotate to the other side. Move with control and turn from the ribs rather than just swinging the arms.",
+      "image_cue": "Front three-quarter view showing the seated lean-back position with the dumbbell held at the chest, rotated to one side.",
+      "image": "images/e7f0de1f3d3846b0b4eef448e5cc2829.jpg",
+      "sources": []
+    },
+    {
       "id": 25,
       "name": "Light-barbell deadlift",
       "equipment": "Light barbell",
@@ -352,6 +361,42 @@
           "url": "https://www.acefitness.org/resources/everyone/exercise-library/315/front-squat-to-overhead-press/"
         }
       ]
+    },
+    {
+      "id": 59,
+      "name": "Light-barbell back squat",
+      "equipment": "Light barbell",
+      "movement": "Take the bar from a rack set at about chest height and rest it across the upper back, not the neck, with the hands just outside the shoulders. Step back, place the feet about shoulder-width apart and brace. Push the hips back and bend the knees to lower, keeping the chest lifted and the knees tracking over the toes. Drive through the whole foot to stand, then return the bar to the rack.",
+      "image_cue": "Front three-quarter view showing the bar across the upper back, a tall start and the bottom of the squat with the knees over the toes.",
+      "image": "images/3979d6c8260bab078ab9fe3c626d6ceb.jpg",
+      "sources": []
+    },
+    {
+      "id": 60,
+      "name": "Light-barbell overhead press",
+      "equipment": "Light barbell",
+      "movement": "Start standing with the bar resting across the fronts of the shoulders and the hands just outside shoulder width. Brace the stomach and squeeze the glutes. Press the bar straight up, moving the head back slightly to let it pass, then bring the head through once the bar is above the forehead. Finish with the arms straight and the bar over the middle of the feet, then lower it back to the shoulders with control. Keep the legs straight throughout.",
+      "image_cue": "Front view showing the bar at the shoulders, then pressed overhead with straight arms and the body upright.",
+      "image": "images/011bc3a14dbf31b1938651ca01c275b7.jpg",
+      "sources": []
+    },
+    {
+      "id": 61,
+      "name": "Light-barbell reverse lunge",
+      "equipment": "Light barbell",
+      "movement": "Rest the bar across the upper back, taken from a rack set at about chest height. Stand tall with the feet hip-width apart and brace. Step one foot back and lower until the back knee is just above the floor, keeping the front knee over the ankle and the chest upright. Push through the front heel to return to standing and alternate legs.",
+      "image_cue": "Side view showing the bar across the upper back and the bottom of the reverse lunge, with the torso upright and the back knee just above the floor.",
+      "image": "images/05993d61474281bbbdc485bfa5e65cf2.jpg",
+      "sources": []
+    },
+    {
+      "id": 62,
+      "name": "Light-barbell hang clean",
+      "equipment": "Light barbell",
+      "movement": "Stand holding the bar at mid-thigh with the hands just outside the thighs and the arms straight. Hinge slightly at the hips, then drive the hips and legs to stand tall quickly, letting the bar travel close to the body. Pull yourself under the bar, turning the elbows quickly forwards to catch it on the fronts of the shoulders in a partial squat, then stand tall. Lower the bar to the thighs with control. Learn this with a very light bar and an experienced coach before adding speed.",
+      "image_cue": "Side view showing the bar at mid-thigh, then caught on the fronts of the shoulders with the elbows high and the knees slightly bent.",
+      "image": "images/56508aca95d27d4fcf825f7a7dcc4856.jpg",
+      "sources": []
     },
     {
       "id": 31,
@@ -581,6 +626,69 @@
           "url": "https://www.acefitness.org/resources/everyone/blog/6977/3-core-moves-to-improve-your-running-form/"
         }
       ]
+    },
+    {
+      "id": 51,
+      "name": "Air squat",
+      "equipment": "Mat and bodyweight",
+      "movement": "Stand with the feet about shoulder-width apart and the toes turned out slightly. Push the hips backwards and bend the knees to lower, keeping the chest lifted and the heels on the floor; the arms can reach forwards for balance. Lower as far as you can keep the back steady and the knees tracking over the toes. Drive through the whole foot to stand tall again.",
+      "image_cue": "Front three-quarter view showing a tall standing start and the bottom of the squat, with the hips back, the heels down and the arms reaching forwards.",
+      "image": "images/f5241456083f6ba8ce83c0e7048e9885.jpg",
+      "sources": []
+    },
+    {
+      "id": 52,
+      "name": "Bodyweight lunge",
+      "equipment": "Mat and bodyweight",
+      "movement": "Stand tall with the feet hip-width apart. Take a long step forwards and lower until both knees are bent, with the back knee just above the floor and the front knee over the ankle. Keep the chest lifted and the weight through the front heel. Push back to the start and alternate legs.",
+      "image_cue": "Side view showing a standing start and the bottom of the lunge, with the front shin upright and the back knee just above the floor.",
+      "image": "images/a95f637941a522ac6b182c79af726533.jpg",
+      "sources": []
+    },
+    {
+      "id": 53,
+      "name": "High plank hold",
+      "equipment": "Mat and bodyweight",
+      "movement": "Place the hands beneath the shoulders and step the feet back so the body forms a straight line from head to heels. Press the floor away, brace the stomach and squeeze the glutes so the hips neither sag nor lift. Breathe steadily and hold for the set time. Lower the knees to the mat to rest.",
+      "image_cue": "Side view showing the arms straight beneath the shoulders and a straight line from the head through the hips to the heels.",
+      "image": "images/cbb6d5cdf604aa91cf9fff93ca2e602f.jpg",
+      "sources": []
+    },
+    {
+      "id": 54,
+      "name": "Jumping jack",
+      "equipment": "Mat and bodyweight",
+      "movement": "Stand with the feet together and the arms by the sides. Jump the feet out wider than the hips while sweeping the arms out and overhead. Jump the feet back together as the arms return to the sides. Land softly on the balls of the feet and keep a steady rhythm.",
+      "image_cue": "Front view showing the feet together with the arms down, and the feet wide with the arms overhead.",
+      "image": "images/9863641c96f002955cb7691f793dd680.jpg",
+      "sources": []
+    },
+    {
+      "id": 55,
+      "name": "High knees",
+      "equipment": "Mat and bodyweight",
+      "movement": "Stand tall and run on the spot, driving one knee up towards hip height at a time. Land lightly on the balls of the feet and swing the arms in time with the legs. Keep the chest lifted and avoid leaning back. Slow the pace or march if you need to reduce the impact.",
+      "image_cue": "Front three-quarter view showing one knee driven up to hip height with the opposite arm forwards.",
+      "image": "images/b38e715d8484e3e5f3632b5e9ad9fee9.jpg",
+      "sources": []
+    },
+    {
+      "id": 56,
+      "name": "Standing calf raise",
+      "equipment": "Mat and bodyweight",
+      "movement": "Stand tall with the feet hip-width apart, holding a wall or rail lightly for balance if needed. Rise onto the balls of the feet as high as you can, pause briefly, then lower the heels slowly to the floor. Keep the knees straight but not locked and the weight over the big toes.",
+      "image_cue": "Side view showing the heels on the floor, then raised high with the weight on the balls of the feet.",
+      "image": "images/8210f6254c1096627b97a0ebbe3f95de.jpg",
+      "sources": []
+    },
+    {
+      "id": 57,
+      "name": "Bench tricep dip",
+      "equipment": "Mat and bodyweight",
+      "movement": "Sit on the edge of a stable bench or box with the hands beside the hips, fingers facing forwards. Slide the hips off the edge with the knees bent and the feet flat. Bend the elbows straight backwards to lower the hips, keeping the back close to the bench, then press through the hands to straighten the arms. Stop before the shoulders feel strained; straighter legs make it harder.",
+      "image_cue": "Side view showing the hands on the bench edge and the hips lowered in front of it with the elbows bent backwards, then the arms straight.",
+      "image": "images/13593d847a3c4652463888a44ef60167.jpg",
+      "sources": []
     }
   ]
 }

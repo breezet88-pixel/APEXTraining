@@ -123,13 +123,18 @@ test('donations and comments settings', () => {
   assert.equal(cleanSettings({}).comments.enabled, false);
 });
 
-test('exercise library: the coach\'s 50 exercises load, with equipment groups and sources', () => {
+test('exercise library: the coach\'s 62 exercises load, with equipment groups and sources', () => {
   const lib = cleanLibrary(JSON.parse(fs.readFileSync(path.join(ROOT, 'site/data/exercises.json'), 'utf8')));
-  assert.equal(lib.exercises.length, 50);
+  assert.equal(lib.exercises.length, 62);
+  assert.equal(new Set(lib.exercises.map((e) => e.id)).size, 62);
+  for (const id of [51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62]) {
+    const x = lib.exercises.find((e) => e.id === id);
+    assert.ok(x.image && x.movement && x.image_cue, `exercise ${id} has a picture, movement and image cue`);
+  }
   const count = (q) => lib.exercises.filter((x) => x.equipment === q).length;
-  assert.deepEqual(['Kettlebell', 'Dumbbell', 'Light barbell', 'Skillmill', 'SkiErg', 'Mat and bodyweight'].map(count), [12, 12, 6, 5, 3, 12]);
+  assert.deepEqual(['Kettlebell', 'Dumbbell', 'Light barbell', 'Skillmill', 'SkiErg', 'Mat and bodyweight'].map(count), [12, 13, 10, 5, 3, 19]);
   assert.equal(lib.exercises[0].name, 'Two-handed kettlebell swing');
-  assert.equal(lib.exercises[49].name, 'Side-plank hip lift');
+  assert.equal(lib.exercises.at(-1).name, 'Bench tricep dip');
   assert.ok(lib.exercises.every((x) => x.movement && x.image_cue), 'every exercise has a movement and an image cue');
   assert.match(lib.guide.image_rules, /same adult athlete/);
   assert.ok(lib.equipment.find((q) => q.name === 'Skillmill').note.includes('Stop the belt'));

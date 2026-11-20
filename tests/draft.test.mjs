@@ -48,7 +48,8 @@ test('it asks when it is unsure, and offers the likely library exercises', () =>
   const match = (name) => questions.find((q) => q.key === 'match' && d.exercises[q.index].name === name);
   assert.ok(match('Lunges').options.some((o) => /lunge/i.test(o.name)), 'lunges: offers the library lunges');
   assert.ok(match('Sled Push').options.some((o) => o.name === 'Skillmill high sled push') && match('Sled Push').options.some((o) => o.name === 'Skillmill low sled push'), 'sled push: high or low?');
-  assert.deepEqual(match('Jumping Jacks').options, [], 'jumping jacks: not in the library');
+  assert.equal(nameOf(d.exercises[2]), 'Jumping jack', 'jumping jacks: in the library');
+  assert.ok(match('Plank').options.some((o) => o.name === 'High plank hold'), 'plank: offers the high plank hold');
   assert.equal(d.exercises.find((e) => e.name === 'Plank').reps, '45 sec');
   assert.ok(questions.some((q) => q.key === 'reps'), 'asks for missing reps');
 });

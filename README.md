@@ -7,7 +7,7 @@ It runs entirely on **GitHub**, free, with no server to look after:
 | Part | Where it lives |
 |---|---|
 | Website (member app + coach page) | **GitHub Pages**, published from the `site/` folder |
-| Workout Library (the coach's classes), class schedule (weekly timetable, ad hoc classes, class type descriptions), exercise library (50 exercises), donation settings | files in `site/data/` in this repository |
+| Workout Library (the coach's classes), class schedule (weekly timetable, ad hoc classes, class type descriptions), exercise library (62 exercises), donation settings | files in `site/data/` in this repository |
 | Exercise pictures | files in `site/images/` in this repository |
 | Comments & reviews | this repository's **GitHub Discussions**, shown with [giscus](https://giscus.app): a members' **Comments** page for general feedback, plus comments under each workout |
 
@@ -28,7 +28,7 @@ Free to use for everyone; donations are voluntary and unlock nothing. GitHub's P
 
 ## Everyday use
 
-- **Exercise library**: coach page → *Exercise library*. It holds your 50 HIIT and functional exercises (kettlebell, dumbbell, light barbell, Skillmill, SkiErg, mat and bodyweight) with their movement descriptions, image cues, equipment safety notes and sources. Each one has a **✨ Create image prompt** button built from its image cue ([docs/image-prompts.md](docs/image-prompts.md)); upload the picture **once** there and every workout using that exercise shows it. The list shows how many pictures are still missing.
+- **Exercise library**: coach page → *Exercise library*. It holds your 62 HIIT and functional exercises (kettlebell, dumbbell, light barbell, Skillmill, SkiErg, mat and bodyweight) with their movement descriptions, image cues, equipment safety notes and sources. Each one has a **✨ Create image prompt** button built from its image cue ([docs/image-prompts.md](docs/image-prompts.md)); upload the picture **once** there and every workout using that exercise shows it. The list shows how many pictures are still missing.
 - **Class schedule**: coach page → *Class schedule*. Your weekly timetable (day, time, class type, club), **ad hoc classes** (date, time, class type, club) and a **short description of each class type** (Grid, Lift Club, Hyrox…), which members see on every workout of that type. It started from the timetable in your income and spending app; change it here any time.
 - **Add a class to the Workout Library**: coach page → *Workout Library*. *Your classes* lists today's and yesterday's classes from the schedule: tap **+ Add workout** on one, or *New workout* (which picks the latest class that has no workout yet). The date, time, club, class type and name are **filled in from your schedule**; pick another class with the buttons under *Which class?*.
   1. **⏱ Class timer** (set it first): Intervals (work / rest / rounds, optional longer rest between rounds, circuit or station by station), Tabata, EMOM, AMRAP or For time, plus optional notes and a screenshot of your timer app. Members get a timer that runs it, calling out each exercise, with beeps.
