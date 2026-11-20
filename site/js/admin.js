@@ -1,8 +1,10 @@
 // Apex Training coach page. The only place anything is added, changed or removed.
 // Each save is a commit to the GitHub repository (see github.js); GitHub Pages republishes the site.
 import { SITE } from './config.js';
-import { h, fill, todayIn, libraryIndex } from './common.js';
-import { cleanWorkouts, cleanSchedule, cleanSettings, cleanDonate, cleanLibrary, checkLinks, IMAGE_PATH, DataError } from './validate.js';
+import { h, fill, todayIn, nowIn, libraryIndex } from './common.js';
+import { cleanWorkouts, cleanClasses, cleanSettings, cleanDonate, cleanLibrary, checkLinks, usedImages, IMAGE_PATH, DataError } from './validate.js';
+import { DAY_NAMES, WEEK_ORDER, classesOn, sameClass, suggestClass, typeInfo, clubsOf, addDays } from './classes.js';
+import { TIMER_TYPES, timerSummary, buildSegments, totalSeconds, secLabel, effective } from './timer.js';
 import { createGitHub, bytesToBase64, GitHubError } from './github.js';
 import { draftWorkout } from './draft.js';
 
@@ -17,7 +19,7 @@ const DATA = (f) => `${SITE.root}/data/${f}`;
 const state = {
   gh: null,
   head: null,               // commit the data below was loaded from
-  workouts: null, schedule: null, settings: null, library: null,
+  workouts: null, classes: null, settings: null, library: null,
   pending: new Map(),       // new pictures not saved yet: path -> base64
   previews: new Map(),      // path -> blob: URL, so new pictures show before GitHub Pages republishes
 };
@@ -127,28 +129,28 @@ async function loadAll() {
     head,
     workouts,
     library,
-    schedule: cleanSchedule(await read('schedule.json', { days: {} }), workouts),
+    classes: cleanClasses(await read('classes.json', {})),
     settings: cleanSettings(await read('settings.json', {})),
   });
 }
 
 // Apply a change to copies of the data, check it, and save it all as one commit.
 async function save(message, change) {
-  const next = { workouts: clone(state.workouts), schedule: clone(state.schedule), settings: clone(state.settings), library: clone(state.library) };
+  const next = { workouts: clone(state.workouts), classes: clone(state.classes), settings: clone(state.settings), library: clone(state.library) };
   change(next);
   const workouts = cleanWorkouts(next.workouts);
   const library = cleanLibrary(next.library);
   checkLinks(workouts, library);
-  const schedule = cleanSchedule(next.schedule, workouts);
+  const classes = cleanClasses(next.classes);
   const settings = cleanSettings(next.settings);
 
-  const used = new Set([...workouts.workouts.flatMap((w) => w.exercises.map((e) => e.image)), ...library.exercises.map((x) => x.image)].filter(Boolean));
+  const used = usedImages(workouts, library);
   const stored = (await state.gh.listFiles(`${SITE.root}/images`, state.head)).map((p) => p.slice(SITE.root.length + 1));
   for (const p of used) if (!stored.includes(p) && !state.pending.has(p)) throw new DataError(`A picture is missing (${p}). Upload it again.`);
   const json = (x) => `${JSON.stringify(x, null, 2)}\n`;
   const files = [
     { path: DATA('workouts.json'), text: json(workouts) },
-    { path: DATA('schedule.json'), text: json(schedule) },
+    { path: DATA('classes.json'), text: json(classes) },
     { path: DATA('settings.json'), text: json(settings) },
     { path: DATA('exercises.json'), text: json(library) },
     ...[...state.pending].filter(([p]) => used.has(p)).map(([p, b64]) => ({ path: `${SITE.root}/${p}`, base64: b64 })),
@@ -156,7 +158,7 @@ async function save(message, change) {
   const deletes = stored.filter((p) => IMAGE_PATH.test(p) && !used.has(p)).map((p) => `${SITE.root}/${p}`);
 
   const sha = await state.gh.commit({ message: `Coach: ${message}`, files, deletes, expectedHead: state.head });
-  Object.assign(state, { head: sha, workouts, schedule, settings, library });
+  Object.assign(state, { head: sha, workouts, classes, settings, library });
   for (const [p] of [...state.pending]) if (used.has(p)) state.pending.delete(p);
 }
 
@@ -211,29 +213,44 @@ function connectView(message) {
 }
 
 // ---------- workouts ----------
+const niceDay = (iso) => new Intl.DateTimeFormat('en-ZA', { timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short' }).format(new Date(`${iso}T00:00:00Z`));
+// "Friday 05:30 Grid": different for each class, even with three Grid classes on one day
+const autoTitle = (c) => [c.date && DAY_NAMES[new Date(`${c.date}T00:00:00Z`).getUTCDay()], c.time, c.type || c.category].filter(Boolean).join(' ');
+let presetClass = null; // the class chosen with "+ Add workout", used by the next new workout
+
 function workoutsView(saved = '') {
   const status = h('p', { role: 'status', class: 'muted' }, saved);
-  const today = todayIn(SITE.timezone);
-  const todays = state.workouts.workouts.find((w) => w.id === state.schedule.days[today]);
-  const list = [...state.workouts.workouts].sort((a, b) => (b.date || '').localeCompare(a.date || '') || (b.time || '').localeCompare(a.time || '') || b.id - a.id);
+  const now = nowIn(SITE.timezone);
+  const all = state.workouts.workouts;
+  const list = [...all].sort((a, b) => (b.date || '').localeCompare(a.date || '') || (a.time || '').localeCompare(b.time || '') || b.id - a.id);
+  // today's and yesterday's classes from the schedule, each with its workout or an "Add workout" button
+  const recent = [now.date, addDays(now.date, -1)].flatMap((d) => classesOn(state.classes, d).map((c) => ({ ...c, d })));
+  const days = new Map();
+  for (const w of list) { const k = w.date || ''; if (!days.has(k)) days.set(k, []); days.get(k).push(w); }
   show(
     h('div', { class: 'list-item' }, h('h1', {}, 'Workout Library'), h('a', { class: 'btn', href: '#/workouts/new' }, '+ New workout')),
-    h('p', { class: 'muted' }, 'Add each class after you run it: tap “New workout” and talk it through.'),
-    h('p', { class: 'muted' }, todays ? `Today’s workout of the day: ${todays.title}${todays.published ? '' : ' (hidden, so members cannot see it)'}` : 'No workout of the day set for today.'),
+    h('p', { class: 'muted' }, 'Add each class after you run it: tap “+ Add workout” on the class, or “New workout”, then talk it through or paste your notes.'),
+    recent.length ? h('div', { class: 'panel' }, h('h2', {}, 'Your classes'),
+      recent.map((c) => {
+        const w = all.find((x) => sameClass(x, c));
+        return h('div', { class: 'list-item' },
+          h('div', {}, h('strong', {}, `${c.d === now.date ? 'Today' : 'Yesterday'} ${c.time} · ${c.type}`), h('div', { class: 'muted' }, c.club, c.adhoc ? ' · ad hoc' : '')),
+          w ? h('a', { class: 'btn ghost small', href: `#/workouts/${w.id}` }, `✓ ${w.title}`)
+            : h('button', { class: 'btn small', onclick: () => { presetClass = c; location.hash = '#/workouts/new'; } }, '+ Add workout'));
+      }),
+      h('p', { class: 'muted note' }, 'From your ', h('a', { href: '#/classes' }, 'class schedule'), '.')) : null,
     status,
-    h('div', { class: 'panel' }, list.length ? list.map((w) => h('div', { class: 'list-item' },
-      h('div', {}, h('strong', {}, w.title), ' ', h('span', { class: `tag${w.published ? '' : ' draft'}` }, w.published ? 'Published' : 'Hidden'),
-        h('div', { class: 'muted' }, [w.date, w.time, w.club, `${w.exercises.length} exercises`].filter(Boolean).join(' · '))),
-      h('div', { class: 'toolrow' },
-        h('button', { class: 'btn ghost small', onclick: async () => { if (await trySave(status, `workout of the day ${today}: ${w.title}`, (d) => { d.schedule.days[today] = w.id; })) workoutsView(lastSaved); } }, 'Make today’s workout'),
-        h('a', { class: 'btn ghost small', href: `#/workouts/${w.id}` }, 'Edit'),
-        confirmButton('Delete', `Delete “${w.title}”? Its schedule entries are removed too.`, async () => {
-          if (await trySave(status, `delete workout ${w.title}`, (d) => {
-            d.workouts.workouts = d.workouts.workouts.filter((x) => x.id !== w.id);
-            for (const [day, id] of Object.entries(d.schedule.days)) if (id === w.id) delete d.schedule.days[day];
-          })) workoutsView(lastSaved);
-        }))))
-      : h('p', { class: 'muted' }, 'No workouts yet. Tap “New workout” to add your first class.')));
+    list.length ? [...days].map(([day, ws]) => h('div', { class: 'panel' },
+      h('h2', {}, day ? niceDay(day) : 'No date', ws.length > 1 ? h('span', { class: 'muted' }, ` · ${ws.length} classes`) : null),
+      ws.map((w) => h('div', { class: 'list-item' },
+        h('div', {}, h('strong', {}, w.title), ' ', h('span', { class: `tag${w.published ? '' : ' draft'}` }, w.published ? 'Published' : 'Hidden'),
+          h('div', { class: 'muted' }, [w.time, w.category, w.club, `${w.exercises.length} exercises`, w.timer?.type ? '⏱ timer' : ''].filter(Boolean).join(' · '))),
+        h('div', { class: 'toolrow' },
+          h('a', { class: 'btn ghost small', href: `#/workouts/${w.id}` }, 'Edit'),
+          confirmButton('Delete', `Delete “${w.title}”?`, async () => {
+            if (await trySave(status, `delete workout ${w.title}`, (d) => { d.workouts.workouts = d.workouts.workouts.filter((x) => x.id !== w.id); })) workoutsView(lastSaved);
+          }))))))
+      : h('p', { class: 'panel muted' }, 'No workouts yet. Tap “New workout” to add your first class.'));
 }
 
 // A delete button that asks "Are you sure?" inside the page (no pop-ups).
@@ -250,17 +267,89 @@ function confirmButton(label, question, onYes) {
 function editView(id) {
   const existing = id ? state.workouts.workouts.find((w) => w.id === id) : null;
   if (id && !existing) { show(h('p', { class: 'pad' }, 'Workout not found.'), h('a', { href: '#/workouts' }, '← All workouts')); return; }
-  const today = todayIn(SITE.timezone);
-  const wk = existing ? clone(existing) : { id: 0, title: '', description: '', category: '', level: '', duration_min: '', date: today, time: '', club: '', playlist: [], published: true, exercises: [] };
+  const now = nowIn(SITE.timezone);
+  const today = now.date;
+  // a new workout starts from your class schedule: the class you picked, or the latest class without a workout yet
+  const pre = existing ? null : presetClass || suggestClass(state.classes, state.workouts.workouts, now);
+  presetClass = null;
+  const wk = existing ? clone(existing) : {
+    id: 0, title: pre ? autoTitle(pre) : '', description: '', category: pre?.type || '', level: '', duration_min: '',
+    date: pre?.date || today, time: pre?.time || '', club: pre?.club || '', playlist: [], published: true, exercises: [], timer: { type: '' } };
   wk.playlist = wk.playlist || [];
-  const clubs = [...new Set(state.workouts.workouts.map((w) => w.club).filter(Boolean))].sort();
+  wk.timer = wk.timer || { type: '' };
+  const clubs = clubsOf(state.classes, state.workouts.workouts);
+  const types = state.classes.types.map((t) => t.name);
   const status = h('p', { role: 'status', class: 'muted' });
   const bodyBox = h('div');
   const questionsBox = h('div');
   const exBox = h('div');
   const bind = (obj, key, el) => { el.addEventListener('input', () => { obj[key] = el.value; }); return el; };
   const text = (obj, key, attrs = {}) => bind(obj, key, h('input', { type: 'text', value: obj[key] ?? '', ...attrs }));
-  const clubList = () => h('datalist', { id: 'club-list' }, clubs.map((c) => h('option', { value: c })));
+  const clubList = () => [h('datalist', { id: 'club-list' }, clubs.map((c) => h('option', { value: c }))),
+    h('datalist', { id: 'type-list' }, types.map((c) => h('option', { value: c })))];
+  const exNames = () => { const lib = libraryIndex(state.library); return wk.exercises.map((e) => (e.library_id ? lib.get(e.library_id)?.name : e.name) || 'Exercise'); };
+
+  // ---- 0. which class: pre-filled from the class schedule ----
+  const classBox = h('div');
+  function pickClass(c) {
+    const wasAuto = !wk.title || wk.title === autoTitle(wk);
+    Object.assign(wk, { date: c.date, time: c.time, club: c.club, category: c.type });
+    if (wasAuto) wk.title = autoTitle(c);
+    drawClasses();
+    drawBody();
+  }
+  function drawClasses() {
+    const list = classesOn(state.classes, wk.date);
+    fill(classBox, h('div', { class: 'panel' },
+      h('h2', {}, '📅 Which class?'),
+      pre && !existing ? h('p', { class: 'muted' }, `Pre-filled from your class schedule: ${niceDay(pre.date)}, ${pre.time} ${pre.type} at ${pre.club}. Wrong class? Pick another.`) : null,
+      h('div', { class: 'row' }, field('Class date', h('input', { type: 'date', value: wk.date || '', onchange: (e) => { wk.date = e.target.value; drawClasses(); drawBody(); } }))),
+      list.length ? h('div', { class: 'chips class-pick', role: 'group', 'aria-label': 'Classes on this day' }, list.map((c) => {
+        const on = sameClass(wk, c);
+        const logged = state.workouts.workouts.some((w) => w.id !== wk.id && sameClass(w, c));
+        return h('button', { type: 'button', class: `chip${on ? ' on' : ''}`, 'aria-pressed': on ? 'true' : 'false', onclick: () => pickClass(c) },
+          `${c.time} ${c.type} · ${c.club}${c.adhoc ? ' (ad hoc)' : ''}${logged ? ' ✓' : ''}`);
+      })) : h('p', { class: 'muted' }, 'No classes on your schedule for this day.'),
+      h('p', { class: 'muted note' }, '✓ = already in the Workout Library. An extra class? Type its time, club and class type under “The class” below, or add it to ',
+        h('a', { href: '#/classes' }, 'Class schedule → Ad hoc classes'), '.')));
+  }
+
+  // ---- 1. the class timer: set it first, then explain the workout ----
+  const timerBox = h('div');
+  function drawTimer() {
+    const t = wk.timer;
+    const sum = h('p', { class: 'facts' });
+    const refresh = () => {
+      const segs = buildSegments(t, exNames());
+      const total = totalSeconds(segs);
+      sum.textContent = t.type ? `${timerSummary(t) || 'Fill in the timer settings.'}${total ? ` · about ${secLabel(total)} with ${wk.exercises.length || 'no'} exercise${wk.exercises.length === 1 ? '' : 's'}` : ''}` : '';
+    };
+    const num = (key, label, placeholder) => field(label, h('input', { type: 'number', min: 0, inputmode: 'numeric', value: t[key] ?? '', placeholder,
+      oninput: (e) => { t[key] = e.target.value; refresh(); } }));
+    const type = h('select', { 'aria-label': 'Timer type', onchange: (e) => { t.type = e.target.value; drawTimer(); } },
+      Object.entries(TIMER_TYPES).map(([k, v]) => h('option', { value: k }, v)));
+    type.value = t.type || '';
+    const tab = t.type === 'tabata';
+    const order = h('select', { onchange: (e) => { t.order = e.target.value; refresh(); } },
+      h('option', { value: 'circuit' }, 'Circuit: every exercise, then the next round'), h('option', { value: 'station' }, 'Station: all rounds of one exercise, then the next'));
+    order.value = t.order || 'circuit';
+    const upStatus = h('p', { role: 'status', class: 'muted' });
+    fill(timerBox, h('details', { class: 'panel', open: !!t.type || !existing },
+      h('summary', {}, '⏱ Class timer', t.type ? ` · ${TIMER_TYPES[t.type]}` : ''),
+      h('p', { class: 'muted' }, 'Set the timer you used, then explain the workout. Members get a timer that runs it, calling out each exercise.'),
+      field('Timer', type),
+      t.type === 'intervals' || tab ? [
+        h('div', { class: 'row' }, num('work_sec', 'Work (seconds)', tab ? '20' : '40'), num('rest_sec', 'Rest (seconds)', tab ? '10' : '20'), num('rounds', 'Rounds', tab ? '8' : '4')),
+        h('div', { class: 'row' }, num('round_rest_sec', 'Longer rest between rounds (seconds, optional)', '60'), field('Order', order))] : null,
+      t.type === 'emom' ? h('div', { class: 'row' }, num('minutes', 'Minutes', '12'), num('work_sec', 'Interval (seconds)', '60')) : null,
+      t.type === 'amrap' ? h('div', { class: 'row' }, num('minutes', 'Minutes', '20')) : null,
+      t.type === 'fortime' ? h('div', { class: 'row' }, num('minutes', 'Time cap (minutes, optional)', '25')) : null,
+      sum,
+      field('Timer notes (optional)', bind(t, 'notes', h('input', { type: 'text', maxlength: 300, value: t.notes || '', placeholder: 'e.g. Interval Timer app, preset “Friday Grid”' }))),
+      pictureEditor(t, 'Screenshot of your timer (optional)', upStatus, drawTimer),
+      upStatus));
+    refresh();
+  }
   const drawExercises = () => fill(exBox, wk.exercises.map((ex, i) => exerciseCard(ex, i)));
 
   // ---- 1. talk it through: speech (where the browser supports it) or typing, then draft ----
@@ -303,9 +392,35 @@ function editView(id) {
   });
   const draftBtn = h('button', { class: 'btn', type: 'button', onclick: () => {
     if (listening) { listening = false; rec?.stop(); }
-    const { draft, questions } = draftWorkout(talk.value, { library: state.library, clubs, today });
-    for (const k of ['title', 'date', 'time', 'club', 'category', 'level', 'duration_min', 'description']) if (draft[k] !== '' && draft[k] !== undefined) wk[k] = draft[k];
+    const { draft, questions: asked } = draftWorkout(talk.value, { library: state.library, clubs, types, today });
+    const spokenTitle = !asked.some((q) => q.key === 'title');
+    const auto = autoTitle(wk);
+    const dateChanged = draft.date && draft.date !== wk.date;
+    // a general word like "AMRAP" (HIIT) never replaces the class type from your schedule (Grid)
+    if (draft.category && !types.includes(draft.category) && types.includes(wk.category)) draft.category = '';
+    for (const k of ['date', 'time', 'club', 'category', 'level', 'duration_min', 'description']) if (draft[k] !== '' && draft[k] !== undefined) wk[k] = draft[k];
+    if (spokenTitle) wk.title = draft.title;
     if (draft.exercises.length) wk.exercises = draft.exercises;
+    if (draft.timer) wk.timer = { ...wk.timer, ...draft.timer };
+    // with an interval timer the timer sets the work time, so exercises need no rep count
+    const tm = effective(wk.timer);
+    const timed = tm && ['intervals', 'tabata', 'emom'].includes(tm.type) && tm.work;
+    if (timed && tm.type !== 'emom') for (const e of wk.exercises) if (!e.reps && !e.sets) { e.reps = `${tm.work} sec`; e.sets = String(tm.rounds); }
+    // fill the gaps from the class schedule, e.g. "Grid this morning" -> 06:30 at Virgin Active Rosebank
+    const said = { time: draft.time, club: draft.club, type: types.includes(draft.category) ? draft.category : '' };
+    const fits = classesOn(state.classes, wk.date).filter((c) => (!said.time || c.time === said.time) && (!said.club || c.club === said.club) && (!said.type || c.type === said.type));
+    if (fits.length === 1) Object.assign(wk, { time: fits[0].time, club: fits[0].club, category: fits[0].type });
+    else if (dateChanged || (!fits.length && (said.time || said.club || said.type))) {
+      // what was pre-filled no longer fits what you said: ask instead of guessing
+      if (!said.time) wk.time = '';
+      if (!said.club) wk.club = '';
+      if (!said.type && types.includes(wk.category)) wk.category = '';
+    }
+    if (!spokenTitle) wk.title = (!wk.title || wk.title === auto) && wk.category && wk.time ? autoTitle(wk) : wk.title || draft.title;
+    const questions = asked.filter((q) => !(['date', 'time', 'club'].includes(q.key) && wk[q.key]) && !(q.key === 'title' && wk.title !== draft.title)
+      && !(q.key === 'reps' && timed));
+    drawClasses();
+    drawTimer();
     drawBody();
     drawQuestions(questions);
     say(talkStatus, draft.exercises.length
@@ -313,13 +428,25 @@ function editView(id) {
       : 'No exercises found yet. See the tip below.');
     questionsBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
   } }, '✍️ Draft my workout');
+  const notesFile = h('input', { type: 'file', accept: '.txt,.md,.text,.csv,text/plain,text/markdown', onchange: async (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    if (f.size > 200000) { say(talkStatus, 'That file is too big for notes (up to 200 KB of text).', true); return; }
+    const txt = (await f.text()).replace(/\r\n?/g, '\n').trim();
+    talk.value = talk.value.trim() ? `${talk.value.trim()}\n${txt}` : txt;
+    e.target.value = '';
+    say(talkStatus, `Added your notes from “${f.name}”. Check them, then tap “Draft my workout”.`);
+  } });
   const talkPanel = h(existing ? 'details' : 'div', { class: 'panel talk' },
-    existing ? h('summary', {}, '🎤 Talk it through (redraft this workout)') : h('h2', {}, '🎤 Talk it through'),
+    existing ? h('summary', {}, '🎤 Talk it through or paste notes (redraft this workout)') : h('h2', {}, '🎤 Talk it through, or paste your notes'),
     h('p', { class: 'muted' }, SR
       ? 'Tap “Start talking” and describe the class: where and when, then each exercise with its sets, reps, time or rest. Or type it. Then tap “Draft my workout”: the app fills in the workout below and asks about anything it missed.'
       : 'Describe the class here (on a phone, your keyboard’s microphone key lets you talk instead of type): where and when, then each exercise with its sets, reps, time or rest. Then tap “Draft my workout”.'),
     talk,
     h('div', { class: 'toolrow' }, micBtn, draftBtn),
+    field('📄 Or upload notes (a text file from your notes app)', notesFile),
+    h('p', { class: 'muted note' }, 'Notes work best one exercise per line, e.g. “Timer: 40/20 x 4”, then “10 kettlebell swings”, “12 goblet squats”. ',
+      'From a phone notes app you can also Share → Copy and paste here. Handwritten notes or a screenshot: use your phone’s “copy text from photo” (Google Lens, or Live Text on iPhone) and paste.'),
     talkStatus);
 
   // ---- 2. questions about anything the draft could not work out ----
@@ -417,14 +544,15 @@ function editView(id) {
         h('h2', {}, 'The class'),
         h('div', { class: 'row' },
           field('Workout name', text(wk, 'title', { required: true, maxlength: 120 })),
-          field('Date of the class', bind(wk, 'date', h('input', { type: 'date', value: wk.date || '' }))),
+          field('Date of the class', bind(wk, 'date', h('input', { type: 'date', value: wk.date || '', onchange: () => drawClasses() }))),
           field('Start time', bind(wk, 'time', h('input', { type: 'time', value: wk.time || '' }))),
           field('Club', text(wk, 'club', { list: 'club-list', maxlength: 80, placeholder: 'e.g. Virgin Active Sandton' }))),
         clubList(),
         h('div', { class: 'row' },
-          field('Category', text(wk, 'category', { placeholder: 'HIIT, Strength, Mobility…', maxlength: 40 })),
+          field('Class type', text(wk, 'category', { list: 'type-list', placeholder: types.slice(0, 3).join(', ') || 'Grid, Hyrox, HIIT…', maxlength: 40 })),
           field('Level', text(wk, 'level', { placeholder: 'Beginner', maxlength: 40 })),
           field('Minutes', text(wk, 'duration_min', { inputmode: 'numeric', placeholder: '45' }))),
+        typeInfo(state.classes, wk.category)?.description ? h('p', { class: 'muted note' }, `Members also see your description of ${wk.category}: “${typeInfo(state.classes, wk.category).description}”`) : null,
         field('Description', bind(wk, 'description', h('textarea', { maxlength: 2000, value: wk.description || '', placeholder: 'e.g. 4 rounds, 40 seconds on and 20 off.' }))),
         h('p', {}, published, ' ', h('label', { for: 'pub' }, 'Published (shown in the Workout Library)'))),
       h('h2', {}, 'Exercises'),
@@ -456,10 +584,14 @@ function editView(id) {
     if (ok && isNew) history.replaceState(null, '', `#/workouts/${wk.id}`);
   } }, 'Save workout');
 
+  drawClasses();
+  drawTimer();
   drawBody();
   show(
     h('a', { class: 'back', href: '#/workouts' }, '← All workouts'),
     h('h1', {}, existing ? `Edit: ${existing.title}` : 'New workout'),
+    classBox,
+    timerBox,
     talkPanel,
     questionsBox,
     bodyBox,
@@ -541,31 +673,68 @@ function libraryEditView(id) {
     status);
 }
 
-// ---------- workout of the day ----------
-function wodView(saved = '') {
+// ---------- class schedule ----------
+function classesView(saved = '') {
+  const c = clone(state.classes);
   const status = h('p', { role: 'status', class: 'muted' }, saved);
   const today = todayIn(SITE.timezone);
-  const from = new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10);
-  const day = h('input', { type: 'date', value: today, required: true });
-  const pick = h('select', {}, state.workouts.workouts.map((w) => h('option', { value: w.id }, `${w.title}${w.published ? '' : ' (hidden)'}`)));
-  const entries = Object.entries(state.schedule.days).filter(([d]) => d >= from).sort(([a], [b]) => a.localeCompare(b));
-  const titleOf = (id) => state.workouts.workouts.find((w) => w.id === id);
+  const from = addDays(today, -30);
+  const typesBox = h('div');
+  const weeklyBox = h('div');
+  const extraBox = h('div');
+  const clubs = clubsOf(c, state.workouts.workouts);
+  const inp = (obj, key, attrs) => { const el = h('input', { value: obj[key] ?? '', ...attrs }); el.addEventListener('input', () => { obj[key] = el.value; }); return el; };
+  const remove = (list, i, redraw) => h('div', {}, h('button', { class: 'btn danger small', type: 'button', onclick: () => { list.splice(i, 1); redraw(); } }, 'Remove'));
+  const slot = (x) => [
+    field('Time', inp(x, 'time', { type: 'time', required: true })),
+    field('Class type', inp(x, 'type', { type: 'text', list: 'sched-types', maxlength: 40, placeholder: 'Grid' })),
+    field('Club', inp(x, 'club', { type: 'text', list: 'sched-clubs', maxlength: 80, placeholder: 'Virgin Active Rosebank' }))];
+  const lists = () => [h('datalist', { id: 'sched-types' }, c.types.map((t) => h('option', { value: t.name }))), h('datalist', { id: 'sched-clubs' }, clubs.map((x) => h('option', { value: x })))];
+
+  const drawWeekly = () => fill(weeklyBox, c.weekly.map((x, i) => {
+    const day = h('select', { onchange: (e) => { x.day = Number(e.target.value); } }, WEEK_ORDER.map((d) => h('option', { value: d }, DAY_NAMES[d])));
+    day.value = String(x.day);
+    return h('div', { class: 'row sched-row' }, field('Day', day), slot(x), remove(c.weekly, i, drawWeekly));
+  }), h('button', { class: 'btn ghost small', type: 'button', onclick: () => { c.weekly.push({ day: 1, time: '', type: '', club: '' }); drawWeekly(); } }, '+ Add a weekly class'));
+
+  const drawExtra = () => {
+    const shown = c.extra.map((x, i) => [x, i]).filter(([x]) => !x.date || x.date >= from);
+    const hidden = c.extra.length - shown.length;
+    fill(extraBox,
+      shown.length ? shown.map(([x, i]) => h('div', { class: 'row sched-row' }, field('Date', inp(x, 'date', { type: 'date', required: true })), slot(x), remove(c.extra, i, drawExtra)))
+        : h('p', { class: 'muted' }, 'No ad hoc classes.'),
+      hidden ? h('p', { class: 'muted note' }, `${hidden} older ad hoc class${hidden === 1 ? ' is' : 'es are'} kept but not shown.`) : null,
+      h('button', { class: 'btn ghost small', type: 'button', onclick: () => { c.extra.push({ date: today, time: '', type: '', club: '' }); drawExtra(); } }, '+ Add an ad hoc class'));
+  };
+
+  const drawTypes = () => fill(typesBox, c.types.map((t, i) => h('div', { class: 'panel' },
+    h('div', { class: 'row' }, field('Class type', inp(t, 'name', { type: 'text', maxlength: 40, required: true, placeholder: 'Grid' })), remove(c.types, i, drawTypes)),
+    field('Short description (members see it on every workout of this type)', (() => {
+      const el = h('textarea', { maxlength: 500, rows: 3, value: t.description || '', placeholder: 'What the class is and who it suits, in a sentence or two.' });
+      el.addEventListener('input', () => { t.description = el.value; });
+      return el;
+    })()))),
+  h('button', { class: 'btn ghost small', type: 'button', onclick: () => { c.types.push({ name: '', description: '' }); drawTypes(); } }, '+ Add a class type'));
+
+  const saveBtn = h('button', { class: 'btn', type: 'button', onclick: async () => {
+    saveBtn.disabled = true;
+    if (await trySave(status, 'class schedule', (d) => { d.classes = c; }, 'Saved. New workouts are pre-filled from this schedule.')) classesView(lastSaved);
+    else saveBtn.disabled = false;
+  } }, 'Save class schedule');
+
+  drawWeekly(); drawExtra(); drawTypes();
   show(
-    h('h1', {}, 'Workout of the day'),
-    h('p', { class: 'muted' }, 'Members can download only the workout set for today’s date. Setting a day that already has one replaces it.'),
-    h('form', { class: 'panel', onsubmit: async (e) => {
-      e.preventDefault();
-      if (!pick.value) { say(status, 'Create a workout first.', true); return; }
-      if (await trySave(status, `workout of the day ${day.value}`, (d) => { d.schedule.days[day.value] = Number(pick.value); })) wodView(lastSaved);
-    } }, h('div', { class: 'row' }, field('Date', day), field('Workout', pick)),
-    h('div', { class: 'toolrow' }, h('button', { class: 'btn', type: 'submit' }, 'Set workout of the day'))),
+    h('h1', {}, 'Class schedule'),
+    h('p', { class: 'muted' }, 'Your classes: when you add a workout, the date, time, club and class type are filled in from here, so you only explain the workout. Several classes on one day is fine.'),
+    lists(),
+    h('div', { class: 'panel' }, h('h2', {}, 'Weekly timetable'), h('p', { class: 'muted' }, 'The classes you teach every week.'), weeklyBox),
+    h('div', { class: 'panel' }, h('h2', {}, 'Ad hoc classes'), h('p', { class: 'muted' }, 'One-off classes: a cover, an extra session or a special event. Same details, with the date instead of the day.'), extraBox),
+    h('h2', {}, 'Class types'),
+    h('p', { class: 'muted' }, 'A short description of each type of class. Members see it on the workouts, so they know what the class is about.'),
+    typesBox,
+    h('div', { class: 'toolrow' }, saveBtn),
     status,
-    h('div', { class: 'panel' }, entries.length ? entries.map(([d, id]) => {
-      const w = titleOf(id);
-      return h('div', { class: 'list-item' },
-        h('div', {}, h('strong', {}, d), d === today ? ' (today)' : '', ' · ', w?.title || '?', w && !w.published ? h('span', { class: 'err' }, ' · hidden: members cannot see it') : null),
-        h('button', { class: 'btn danger small', onclick: async () => { if (await trySave(status, `remove workout of the day ${d}`, (x) => { delete x.schedule.days[d]; })) wodView(lastSaved); } }, 'Remove'));
-    }) : h('p', { class: 'muted' }, 'Nothing scheduled.')));
+    h('p', { class: 'muted note' }, 'The schedule is saved in your public repository, like the workouts.'));
 }
 
 // ---------- comments ----------
@@ -649,7 +818,7 @@ function route() {
   if (!state.gh) return;
   tabs.hidden = false;
   const path = (location.hash || '#/workouts').slice(1);
-  const tab = ['library', 'wod', 'comments', 'donations'].find((t) => path.startsWith(`/${t}`)) || 'workouts';
+  const tab = ['library', 'classes', 'comments', 'donations'].find((t) => path.startsWith(`/${t}`)) || 'workouts';
   tabs.querySelectorAll('[data-tab]').forEach((a) => a.classList.toggle('on', a.dataset.tab === tab));
   let m;
   if (path === '/workouts/new') editView(0);
@@ -657,7 +826,7 @@ function route() {
   else if (path === '/library/new') libraryEditView(0);
   else if ((m = path.match(/^\/library\/(\d+)$/))) libraryEditView(Number(m[1]));
   else if (tab === 'library') libraryView();
-  else if (tab === 'wod') wodView();
+  else if (tab === 'classes') classesView();
   else if (tab === 'comments') commentsView();
   else if (tab === 'donations') donationsView();
   else workoutsView();

@@ -1,17 +1,19 @@
-// Apex Training member app. Free, no account needed: view workouts, read and post comments
-// (GitHub Discussions), and download or save today's workout of the day.
+// Apex Training member app. Free, no account needed: browse the Workout Library (the coach's classes),
+// download or save any workout for offline use, look up exercises, and read and post comments.
 // Display only: the content comes from the data files the coach publishes.
 import { SITE } from './config.js';
-import { h, fill, metaLine, factsLine, todayIn, libraryIndex, resolveWorkout } from './common.js';
+import { h, fill, metaLine, factsLine, libraryIndex, resolveWorkout } from './common.js';
 import { buildWorkoutPage, fileName } from './download.js';
+import { typeInfo } from './classes.js';
+import { buildSegments, timerSummary, totalSeconds, secLabel } from './timer.js';
 
 const app = document.getElementById('app');
 const banner = document.getElementById('banner');
 const show = (...nodes) => fill(app, ...nodes);
-const SAVED_KEY = 'apex.wod';
+const SAVED_KEY = 'apex.saved'; // workouts saved on this device: { id: workout }
 const PIC_CACHE = 'apex-saved-v1';
 
-let data = null; // { workouts: [...published, library exercises filled in], schedule: {days}, settings, library, index }
+let data = null; // { workouts: [...published, library exercises and class type filled in], settings, library, index }
 
 // ---------- data ----------
 async function getJson(name) {
@@ -22,23 +24,22 @@ async function getJson(name) {
 
 async function loadData() {
   try {
-    const [w, s, st, lib] = await Promise.all([getJson('workouts.json'), getJson('schedule.json'), getJson('settings.json'), getJson('exercises.json').catch(() => ({ exercises: [] }))]);
+    const [w, st, lib, cls] = await Promise.all([getJson('workouts.json'), getJson('settings.json'),
+      getJson('exercises.json').catch(() => ({ exercises: [] })), getJson('classes.json').catch(() => ({ types: [] }))]);
     const index = libraryIndex(lib);
-    data = { workouts: (w.workouts || []).filter((x) => x.published).map((x) => resolveWorkout(x, index)), schedule: s.days || {}, settings: st, library: lib, index };
+    // "about": the coach's short description of the class type (Grid, Hyrox…), kept with the workout so it also works offline
+    const withAbout = (x) => ({ ...x, about: typeInfo(cls, x.category)?.description || '' });
+    data = { workouts: (w.workouts || []).filter((x) => x.published).map((x) => withAbout(resolveWorkout(x, index))), settings: st, library: lib, index };
     return true;
   } catch { return false; }
 }
 
-const byId = (id) => data?.workouts.find((w) => w.id === id) || null;
-function todaysWorkout() {
-  const day = todayIn(SITE.timezone);
-  return { day, workout: data ? byId(Number(data.schedule[day])) : null };
-}
+const byId = (id) => data?.workouts.find((w) => w.id === id) || savedAll()[id] || null;
 
 // ---------- small bits ----------
 function setBanner(msg) { banner.textContent = msg || ''; banner.hidden = !msg; }
 function setTab(name) {
-  for (const t of ['today', 'workouts', 'exercises', 'comments']) document.getElementById(`tab-${t}`).classList.toggle('on', t === name);
+  for (const t of ['workouts', 'exercises', 'comments']) document.getElementById(`tab-${t}`).classList.toggle('on', t === name);
 }
 
 // "Thu 20 Nov 2026 · 06:00 · Virgin Active Sandton"
@@ -57,7 +58,7 @@ function card(w) {
     cover ? h('img', { src: cover, alt: '', loading: 'lazy' }) : h('div', { class: 'ph', 'aria-hidden': 'true' }, '🏋️'),
     h('div', { class: 'card-body' },
       h('h3', {}, w.title),
-      classLine(w) ? h('p', { class: 'class-line' }, classLine(w)) : null,
+      [w.time, w.club].some(Boolean) ? h('p', { class: 'class-line' }, [w.time, w.club].filter(Boolean).join(' · ')) : null, // the date is the group heading
       w.category ? h('span', { class: 'chip static' }, w.category) : null,
       h('p', { class: 'muted' }, metaLine(w))));
 }
@@ -85,53 +86,59 @@ function exerciseList(w) {
   }));
 }
 
-// ---------- today's workout: download / save offline (free, no account) ----------
-function getSaved() { try { return JSON.parse(localStorage.getItem(SAVED_KEY) || 'null'); } catch { return null; } }
+// ---------- any workout: download, or save for offline use (free, no account) ----------
+function savedAll() { try { return JSON.parse(localStorage.getItem(SAVED_KEY) || '{}') || {}; } catch { return {}; } }
+const isSaved = (id) => !!savedAll()[id];
 
-async function saveOffline(day, w) {
+async function saveOffline(w) {
   if ('caches' in window) {
     const cache = await caches.open(PIC_CACHE);
-    await Promise.all(w.exercises.filter((e) => e.image).map((e) => cache.add(e.image).catch(() => {})));
+    await Promise.all([...w.exercises.map((e) => e.image), w.timer?.image].filter(Boolean).map((p) => cache.add(p).catch(() => {})));
   }
-  try { localStorage.setItem(SAVED_KEY, JSON.stringify({ day, workout: w })); }
+  try { localStorage.setItem(SAVED_KEY, JSON.stringify({ ...savedAll(), [w.id]: w })); }
   catch { throw new Error('Your browser would not let us save on this device.'); }
+}
+
+function removeSaved(w) {
+  const all = savedAll();
+  delete all[w.id];
+  try { localStorage.setItem(SAVED_KEY, JSON.stringify(all)); } catch { /* ignore */ }
 }
 
 function toDataUrl(blob) {
   return new Promise((resolve, reject) => { const r = new FileReader(); r.onload = () => resolve(r.result); r.onerror = reject; r.readAsDataURL(blob); });
 }
 
-async function download(day, w) {
-  const page = await buildWorkoutPage(w, day, SITE.name, async (path) => {
+async function download(w) {
+  const page = await buildWorkoutPage(w, SITE.name, async (path) => {
     const res = await fetch(path);
     return res.ok ? toDataUrl(await res.blob()) : null;
   });
   const url = URL.createObjectURL(new Blob([page], { type: 'text/html' }));
-  const a = h('a', { href: url, download: fileName(w.title, day) });
+  const a = h('a', { href: url, download: fileName(w) });
   document.body.append(a);
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 10000);
 }
 
-function wodActions(day, w) {
+function workoutActions(w) {
   const status = h('p', { class: 'muted', role: 'status' });
   const dl = h('button', { class: 'btn', onclick: async (e) => {
     e.target.disabled = true;
     status.textContent = 'Preparing your download…';
-    try { await download(day, w); status.textContent = 'Downloaded. Open the file on any device, or print it to PDF.'; }
+    try { await download(w); status.textContent = 'Downloaded. Open the file on any device, or print it to PDF.'; }
     catch { status.textContent = 'Could not download. Check your connection and try again.'; }
     e.target.disabled = false;
-  } }, 'Download today’s workout');
-  const isSaved = () => getSaved()?.day === day && getSaved()?.workout.id === w.id;
+  } }, 'Download workout');
   const save = h('button', { class: 'btn ghost' });
-  const paint = () => { save.textContent = isSaved() ? '✓ Saved for offline (tap to remove)' : 'Save for offline use'; };
+  const paint = () => { save.textContent = isSaved(w.id) ? '✓ Saved for offline (tap to remove)' : 'Save for offline use'; };
   paint();
   save.addEventListener('click', async () => {
     save.disabled = true;
     try {
-      if (isSaved()) { localStorage.removeItem(SAVED_KEY); status.textContent = 'Removed from this device.'; }
-      else { await saveOffline(day, w); status.textContent = 'Saved. Today’s workout now opens without internet.'; }
+      if (isSaved(w.id)) { removeSaved(w); status.textContent = 'Removed from this device.'; }
+      else { await saveOffline(w); status.textContent = 'Saved. This workout now opens without internet.'; }
     } catch (err) { status.textContent = err.message; }
     save.disabled = false;
     paint();
@@ -140,7 +147,7 @@ function wodActions(day, w) {
 }
 
 // ---------- comments: GitHub Discussions shown with giscus ----------
-const commentsOn = () => !!data?.settings.comments?.enabled;
+const commentsOn = () => !!data?.settings?.comments?.enabled;
 
 // One comment thread (a GitHub Discussion), named by `term`: "workout-<id>" or "member-comments".
 function commentThread(term) {
@@ -187,76 +194,198 @@ function supportCard() {
 }
 
 // ---------- views ----------
-function todayView(online) {
-  setTab('today');
-  let day; let w;
-  if (online) ({ day, workout: w } = todaysWorkout());
-  else { const s = getSaved(); day = s?.day; w = s?.workout; }
-  setBanner(online ? '' : 'You are offline. Showing the workout you saved on this device.');
-  if (!w) {
-    show(h('h1', {}, 'Today’s workout'),
-      h('p', { class: 'muted' }, online ? 'The coach has not posted today’s workout yet. Check back soon, or browse all workouts.' : 'Nothing saved on this device yet.'),
-      online ? h('a', { class: 'btn ghost', href: '#/' }, 'Browse the workout library') : null);
-    return;
+// Workouts grouped by class date (newest day first); classes on the same day in time order.
+function groupedByDay(workouts) {
+  const days = new Map();
+  for (const w of [...workouts].sort((a, b) => (b.date || '').localeCompare(a.date || '') || (a.time || '').localeCompare(b.time || '') || a.id - b.id)) {
+    const key = w.date || '';
+    if (!days.has(key)) days.set(key, []);
+    days.get(key).push(w);
   }
-  const cover = w.exercises.find((e) => e.image)?.image;
-  show(
-    h('p', { class: 'eyebrow' }, `Workout of the day · ${day}`),
-    h('h1', {}, w.title),
-    classLine(w) ? h('p', { class: 'class-line' }, classLine(w)) : null,
-    h('p', { class: 'muted' }, [w.category, metaLine(w)].filter(Boolean).join(' · ')),
-    cover ? h('img', { class: 'hero', src: cover, alt: '' }) : null,
-    w.description ? h('p', {}, w.description) : null,
-    online ? h('a', { class: 'btn ghost', href: `#/w/${w.id}` }, 'See all exercises & comments') : exerciseList(w),
-    wodActions(day, w),
-    online ? supportCard() : null);
+  return [...days].map(([day, list]) => h('section', { class: 'day-group' },
+    h('h2', { class: 'day-head' }, day ? niceDate(day) : 'No date', list.length > 1 ? h('span', { class: 'muted' }, ` · ${list.length} classes`) : null),
+    h('div', { class: 'grid' }, list.map(card))));
 }
 
 // The Workout Library: every class the coach has run, newest first. Loved a class? Redo it any time.
 function listView() {
   setTab('workouts');
   setBanner('');
-  const workouts = [...data.workouts].sort(byDate);
+  const workouts = data.workouts;
   let query = '';
   let club = '';
-  const grid = h('div', { class: 'grid' });
+  let type = '';
+  const box = h('div');
   const clubs = [...new Set(workouts.map((w) => w.club).filter(Boolean))].sort();
+  const types = [...new Set(workouts.map((w) => w.category).filter(Boolean))].sort();
   const chips = h('div', { class: 'chips', role: 'group', 'aria-label': 'Club' });
+  const typeChips = h('div', { class: 'chips', role: 'group', 'aria-label': 'Class type' });
+  const chip = (value, on, label, pick) => h('button', { class: `chip${on ? ' on' : ''}`, 'aria-pressed': on ? 'true' : 'false', onclick: () => { pick(value); draw(); } }, label);
   const draw = () => {
     const q = query.toLowerCase();
-    const shown = workouts.filter((w) => (!club || w.club === club) && (!q || [w.title, w.category, w.level, w.description, w.club, niceDate(w.date), ...w.exercises.map((e) => e.name)].join(' ').toLowerCase().includes(q)));
-    fill(grid, shown.length ? shown.map(card) : h('p', { class: 'muted pad' }, workouts.length ? 'No workouts match.' : 'No workouts yet. The coach adds each class after it has been run.'));
-    fill(chips, ['', ...clubs].map((c) => h('button', { class: `chip${c === club ? ' on' : ''}`, 'aria-pressed': c === club ? 'true' : 'false', onclick: () => { club = c; draw(); } }, c || 'All clubs')));
+    const shown = workouts.filter((w) => (!club || w.club === club) && (!type || w.category === type) && (!q || [w.title, w.category, w.level, w.description, w.club, niceDate(w.date), ...w.exercises.map((e) => e.name)].join(' ').toLowerCase().includes(q)));
+    fill(box, shown.length ? groupedByDay(shown) : h('p', { class: 'muted pad' }, workouts.length ? 'No workouts match.' : 'No workouts yet. The coach adds each class after it has been run.'));
+    fill(chips, ['', ...clubs].map((c) => chip(c, c === club, c || 'All clubs', (v) => { club = v; })));
+    fill(typeChips, ['', ...types].map((c) => chip(c, c === type, c || 'All classes', (v) => { type = v; })));
   };
   show(
     h('h1', {}, 'Workout Library'),
-    h('p', { class: 'muted' }, 'Every class the coach has run, newest first. Loved a class? Open it and redo it in your own time.'),
+    h('p', { class: 'muted' }, 'Every class the coach has run, newest first. Loved a class? Open it to redo it, download it, or save it for offline use.'),
     h('div', { class: 'toolbar' },
       h('input', { type: 'search', placeholder: 'Search by name, club, date or exercise', 'aria-label': 'Search workouts', oninput: (e) => { query = e.target.value; draw(); } }),
-      clubs.length > 1 ? chips : null),
-    grid);
+      clubs.length > 1 ? chips : null,
+      types.length > 1 ? typeChips : null),
+    box,
+    supportCard());
   draw();
+}
+
+// Offline: the workouts saved on this device
+function offlineView() {
+  setTab('workouts');
+  const saved = Object.values(savedAll());
+  setBanner('You are offline. Showing the workouts saved on this device.');
+  show(h('h1', {}, 'Saved workouts'),
+    saved.length ? groupedByDay(saved) : h('p', { class: 'muted' }, 'Nothing is saved on this device yet. When you are online, open a workout and tap “Save for offline use”.'));
 }
 
 function detailView(id) {
   setTab('workouts');
-  setBanner('');
   const w = byId(id);
+  setBanner(!data && w ? 'You are offline. Showing your saved copy.' : '');
   if (!w) { show(h('p', { class: 'pad' }, 'This workout is not available.'), h('a', { class: 'pad', href: '#/' }, '← Workout Library')); return; }
-  const { day, workout: wod } = todaysWorkout();
-  const isWod = wod?.id === w.id;
   show(
     h('a', { class: 'back', href: '#/' }, '← Workout Library'),
     h('article', { class: 'detail' },
       h('h1', {}, w.title),
-      isWod ? h('p', { class: 'eyebrow' }, 'Today’s workout of the day') : null,
       classLine(w) ? h('p', { class: 'class-line' }, classLine(w)) : null,
       h('p', { class: 'muted' }, [w.category, metaLine(w)].filter(Boolean).join(' · ')),
+      w.about ? h('p', { class: 'about' }, h('b', {}, `About ${w.category}: `), w.about) : null,
       w.description ? h('p', {}, w.description) : null,
-      isWod ? wodActions(day, w) : null,
+      workoutActions(w),
+      timerPanel(w),
       playlist(w),
       exerciseList(w),
-      comments(w)));
+      data ? comments(w) : null));
+}
+
+// ---------- class timer ----------
+function timerPanel(w) {
+  const summary = timerSummary(w.timer);
+  const segs = buildSegments(w.timer, w.exercises.map((e) => e.name));
+  if (!summary && !w.timer?.notes && !w.timer?.image) return null;
+  const total = totalSeconds(segs);
+  return h('section', { class: 'timer-panel' },
+    h('h2', {}, '⏱ Class timer'),
+    summary ? h('p', { class: 'facts' }, summary, total ? h('span', { class: 'muted' }, ` · about ${secLabel(total)}`) : null) : null,
+    w.timer?.notes ? h('p', {}, w.timer.notes) : null,
+    w.timer?.image ? h('img', { src: w.timer.image, alt: 'The coach’s timer settings', loading: 'lazy' }) : null,
+    segs.length ? h('a', { class: 'btn', href: `#/t/${w.id}` }, '▶ Start the timer') : null);
+}
+
+let stopTimer = null; // cleans up a running timer when you leave the page
+function timerView(id) {
+  setTab('workouts');
+  const w = byId(id);
+  const segs = w ? buildSegments(w.timer, w.exercises.map((e) => e.name)) : [];
+  if (!w || !segs.length) { show(h('p', { class: 'pad' }, 'This workout has no timer.'), h('a', { class: 'pad', href: '#/' }, '← Workout Library')); return; }
+  setBanner('');
+  let i = 0;
+  let left = segs[0].sec;       // seconds left in this step (or seconds so far, for a stopwatch)
+  let running = false;
+  let last = 0;
+  let tick = null;
+  let lock = null;
+  let audio = null;
+  let sound = true;
+  const clock = h('div', { class: 'timer-clock', role: 'timer', 'aria-live': 'off' });
+  const phase = h('div', { class: 'timer-phase' });
+  const label = h('div', { class: 'timer-label' });
+  const nextEl = h('p', { class: 'muted' });
+  const step = h('p', { class: 'muted' });
+  const box = h('div', { class: 'timer-box' }, phase, clock, label, nextEl, step);
+  const fmt = (s) => { s = Math.max(0, Math.ceil(s)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+  const beep = (freq, ms) => {
+    if (!sound || !audio) return;
+    const o = audio.createOscillator(); const g = audio.createGain();
+    o.frequency.value = freq; g.gain.value = 0.2;
+    o.connect(g).connect(audio.destination);
+    o.start(); o.stop(audio.currentTime + ms / 1000);
+  };
+  const paint = () => {
+    const s = segs[i];
+    box.dataset.phase = s.phase;
+    phase.textContent = s.phase === 'work' ? (s.countUp ? 'GO' : 'WORK') : s.phase === 'rest' ? 'REST' : 'GET READY';
+    clock.textContent = fmt(left);
+    label.textContent = s.label;
+    nextEl.textContent = s.next ? `${s.phase === 'work' ? 'Then' : 'Next'}: ${s.next}` : '';
+    step.textContent = s.round && s.rounds > 1 ? `Round ${s.round} of ${s.rounds}` : '';
+  };
+  const go = (k) => {
+    i = Math.max(0, Math.min(segs.length - 1, k));
+    left = segs[i].countUp ? 0 : segs[i].sec;
+    paint();
+  };
+  const finish = () => {
+    running = false;
+    clearInterval(tick);
+    box.dataset.phase = 'done';
+    phase.textContent = 'DONE';
+    clock.textContent = segs[i].countUp ? fmt(left) : '0:00';
+    label.textContent = 'Great work!';
+    nextEl.textContent = '';
+    step.textContent = '';
+    beep(660, 700);
+    startBtn.textContent = '↺ Start again';
+    lock?.release?.().catch(() => {}); lock = null;
+  };
+  const loop = () => {
+    const now = performance.now();
+    const dt = (now - last) / 1000;
+    last = now;
+    const s = segs[i];
+    if (s.countUp) {
+      left += dt;
+      if (s.sec && left >= s.sec) { finish(); return; }
+    } else {
+      const before = Math.ceil(left);
+      left -= dt;
+      const after = Math.ceil(left);
+      if (after !== before && after > 0 && after <= 3) beep(880, 120);
+      if (left <= 0) {
+        if (i === segs.length - 1) { finish(); return; }
+        go(i + 1);
+        beep(segs[i].phase === 'work' ? 1320 : 520, 400);
+      }
+    }
+    paint();
+  };
+  const wake = async () => { try { lock = await navigator.wakeLock?.request('screen'); } catch { lock = null; } };
+  const onVisible = () => { if (running && document.visibilityState === 'visible') wake(); };
+  const startBtn = h('button', { class: 'btn', type: 'button', onclick: () => {
+    if (!audio) { try { audio = new (window.AudioContext || window.webkitAudioContext)(); } catch { audio = null; } }
+    if (box.dataset.phase === 'done') go(0);
+    running = !running;
+    if (running) { last = performance.now(); tick = setInterval(loop, 100); wake(); }
+    else { clearInterval(tick); lock?.release?.().catch(() => {}); lock = null; }
+    startBtn.textContent = running ? '⏸ Pause' : '▶ Resume';
+  } }, '▶ Start');
+  const soundBtn = h('button', { class: 'btn ghost', type: 'button', 'aria-pressed': 'true', onclick: () => {
+    sound = !sound; soundBtn.textContent = sound ? '🔊 Sound on' : '🔇 Sound off'; soundBtn.setAttribute('aria-pressed', String(sound));
+  } }, '🔊 Sound on');
+  document.addEventListener('visibilitychange', onVisible);
+  stopTimer = () => { clearInterval(tick); lock?.release?.().catch(() => {}); document.removeEventListener('visibilitychange', onVisible); audio?.close?.().catch(() => {}); };
+  go(0);
+  show(
+    h('a', { class: 'back', href: `#/w/${w.id}` }, `← ${w.title}`),
+    h('p', { class: 'muted' }, timerSummary(w.timer)),
+    box,
+    h('div', { class: 'actions timer-controls' },
+      h('button', { class: 'btn ghost', type: 'button', 'aria-label': 'Previous step', onclick: () => go(i - 1) }, '⏮'),
+      startBtn,
+      h('button', { class: 'btn ghost', type: 'button', 'aria-label': 'Next step', onclick: () => go(i + 1) }, '⏭'),
+      soundBtn),
+    h('p', { class: 'muted note' }, 'Keep this page open while you train. The screen stays on where your phone allows it.'));
 }
 
 // ---------- exercise library ----------
@@ -349,12 +478,13 @@ function supportView() {
 
 async function route() {
   const path = (location.hash || '#/').slice(1);
+  stopTimer?.(); stopTimer = null;
   if (!data) await loadData();
   let m;
-  if (!data) todayView(false);                         // offline and nothing cached: show what is saved
-  else if ((m = path.match(/^\/w\/(\d+)$/))) detailView(Number(m[1]));
+  if ((m = path.match(/^\/w\/(\d+)$/))) detailView(Number(m[1]));
+  else if ((m = path.match(/^\/t\/(\d+)$/))) timerView(Number(m[1]));
+  else if (!data) offlineView();                       // offline and nothing cached: show what is saved
   else if (path === '/' || path === '' || path === '/workouts') listView();
-  else if (path === '/today') todayView(true);
   else if (path === '/exercises') libraryView();
   else if ((m = path.match(/^\/e\/(\d+)$/))) exerciseView(Number(m[1]));
   else if (path === '/support') supportView();

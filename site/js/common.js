@@ -46,3 +46,10 @@ export const resolveWorkout = (w, index) => ({ ...w, exercises: w.exercises.map(
 export function factsLine(e) {
   return [e.sets && e.reps ? `${e.sets} × ${e.reps}` : e.sets || e.reps, restLabel(e.rest_sec)].filter(Boolean).join(' · ');
 }
+
+// The date and time now in a time zone: { date: 'YYYY-MM-DD', time: 'HH:MM' }
+export function nowIn(timezone, date = new Date()) {
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: timezone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
+    .formatToParts(date).map((x) => [x.type, x.value]));
+  return { date: `${p.year}-${p.month}-${p.day}`, time: `${p.hour}:${p.minute}` };
+}

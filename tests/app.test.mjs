@@ -3,10 +3,12 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { cleanWorkouts, cleanSchedule, cleanSettings, cleanDonate, cleanComments, cleanLibrary, checkLinks, validDay, DataError } from '../site/js/validate.js';
+import { cleanWorkouts, cleanClasses, cleanTimer, usedImages, cleanSettings, cleanDonate, cleanComments, cleanLibrary, checkLinks, validDay, DataError } from '../site/js/validate.js';
 import { libraryIndex, resolveWorkout } from '../site/js/common.js';
 import { createGitHub, bytesToBase64 } from '../site/js/github.js';
 import { buildWorkoutPage, fileName } from '../site/js/download.js';
+import { classesOn, suggestClass, typeInfo, clubsOf, weekdayOf } from '../site/js/classes.js';
+import { buildSegments, timerSummary, totalSeconds } from '../site/js/timer.js';
 import { checkData } from '../tools/check-data.mjs';
 import { fakeGitHub } from './fake-github.mjs';
 
@@ -36,13 +38,71 @@ test('workouts: bad data is refused with a clear message', () => {
   for (const [data, msg] of bad) assert.throws(() => cleanWorkouts(data), (e) => e instanceof DataError && msg.test(e.message), JSON.stringify(data));
 });
 
-test('schedule: real dates pointing at real workouts only', () => {
-  const ws = cleanWorkouts({ workouts: [workout()] });
-  assert.deepEqual(cleanSchedule({ days: { '2026-11-20': 1 } }, ws).days, { '2026-11-20': 1 });
-  assert.throws(() => cleanSchedule({ days: { '2026-02-30': 1 } }, ws), /not a valid date/);
-  assert.throws(() => cleanSchedule({ days: { '2026-11-20': 9 } }, ws), /does not exist/);
+test('class schedule: the coach\'s timetable loads, bad entries are refused', () => {
+  const cls = cleanClasses(JSON.parse(fs.readFileSync(path.join(ROOT, 'site/data/classes.json'), 'utf8')));
+  assert.ok(cls.weekly.length >= 9, 'weekly timetable pre-filled');
+  assert.ok(cls.types.every((t) => t.description), 'every class type has a short description');
+  assert.ok(cls.weekly.every((c) => typeInfo(cls, c.type)), 'every timetable class has a known class type');
+  assert.equal(cls.weekly[0].day, 1, 'Monday first');
+  assert.deepEqual(clubsOf(cls), ['Virgin Active Melrose Arch', 'Virgin Active Rosebank']);
+  const bad = [
+    [{ weekly: [{ day: 7, time: '06:00', type: 'Grid', club: 'X' }] }, /day of the week/],
+    [{ weekly: [{ day: 1, time: '6am', type: 'Grid', club: 'X' }] }, /06:00/],
+    [{ extra: [{ date: '2026-02-30', time: '06:00', type: 'Grid', club: 'X' }] }, /real date/],
+    [{ extra: [{ date: '2026-11-21', time: '06:00', type: '', club: 'X' }] }, /class type is required/],
+    [{ types: [{ name: 'Grid' }, { name: 'grid' }] }, /twice/],
+  ];
+  for (const [data, msg] of bad) assert.throws(() => cleanClasses(data), msg, JSON.stringify(data));
+  assert.deepEqual(cleanClasses(undefined), { version: 1, types: [], weekly: [], extra: [] });
   assert.equal(validDay('2026-11-20'), true);
   assert.equal(validDay('2026-13-01'), false);
+});
+
+test('class schedule: several classes a day, ad hoc classes, and pre-filling the next workout', () => {
+  const cls = cleanClasses({
+    types: [{ name: 'Grid', description: 'HIIT' }],
+    weekly: [{ day: 5, time: '05:30', type: 'Grid', club: 'Rosebank' }, { day: 5, time: '17:30', type: 'Grid', club: 'Rosebank' }, { day: 5, time: '06:30', type: 'Grid', club: 'Rosebank' }],
+    extra: [{ date: '2026-11-20', time: '12:00', type: 'Hyrox', club: 'Melrose' }, { date: '2026-11-21', time: '08:00', type: 'Rumble', club: 'Melrose' }],
+  });
+  assert.equal(weekdayOf('2026-11-20'), 5, '20 Nov 2026 is a Friday');
+  assert.deepEqual(classesOn(cls, '2026-11-20').map((c) => `${c.time} ${c.type}${c.adhoc ? ' (ad hoc)' : ''}`), ['05:30 Grid', '06:30 Grid', '12:00 Hyrox (ad hoc)', '17:30 Grid']);
+  assert.deepEqual(classesOn(cls, '2026-11-21').map((c) => c.type), ['Rumble']);
+  // 13:00 on Friday: the 12:00 class is the latest one that has started
+  const now = { date: '2026-11-20', time: '13:00' };
+  assert.equal(suggestClass(cls, [], now).time, '12:00');
+  // once it is in the library, the one before it is suggested, and so on
+  const done = [{ id: 1, date: '2026-11-20', time: '12:00', club: 'Melrose' }];
+  assert.equal(suggestClass(cls, done, now).time, '06:30');
+  assert.equal(suggestClass(cls, done, now, 1).time, '12:00', 'editing workout 1 itself does not count');
+  // early morning before any class: falls back to the previous days, then to today's first class
+  assert.equal(suggestClass(cls, [], { date: '2026-11-20', time: '05:00' }).time, '05:30', 'nothing started yet: today\'s first class');
+  assert.equal(suggestClass(cls, [], { date: '2026-11-25', time: '09:00' }), null, 'no classes nearby: nothing pre-filled');
+  assert.equal(suggestClass(cls, [], { date: '2026-11-21', time: '05:00' }).time, '17:30');
+});
+
+test('class timer: settings are checked, and the sequence members run is right', () => {
+  assert.deepEqual(cleanTimer(undefined), { type: '' });
+  assert.throws(() => cleanTimer({ type: 'intervals' }), /seconds of work/);
+  assert.throws(() => cleanTimer({ type: 'amrap' }), /minutes/);
+  assert.throws(() => cleanTimer({ type: 'boom' }), /timer type/);
+  assert.throws(() => cleanTimer({ type: 'tabata', image: '../x.png' }), /picture/);
+  const t = cleanTimer({ type: 'intervals', work_sec: '40', rest_sec: '20', rounds: '2', round_rest_sec: '60' });
+  const segs = buildSegments(t, ['Swing', 'Squat']);
+  assert.deepEqual(segs.map((x) => `${x.phase}:${x.sec}:${x.label}`), [
+    'prep:10:Get ready', 'work:40:Swing', 'rest:20:Rest', 'work:40:Squat', 'rest:60:Rest between rounds', 'work:40:Swing', 'rest:20:Rest', 'work:40:Squat']);
+  assert.equal(segs[0].next, 'Swing');
+  assert.equal(totalSeconds(segs), 260);
+  assert.match(timerSummary(t), /2 rounds · 40 sec on \/ 20 sec off · 1 min rest between rounds/);
+  const station = buildSegments({ ...t, order: 'station', round_rest_sec: null }, ['A', 'B']).filter((x) => x.phase === 'work').map((x) => x.label);
+  assert.deepEqual(station, ['A', 'A', 'B', 'B'], 'station by station');
+  assert.equal(buildSegments({ type: 'tabata' }, ['Burpee']).filter((x) => x.phase === 'work').length, 8, 'Tabata is 8 rounds by default');
+  assert.deepEqual(buildSegments({ type: 'emom', minutes: 3 }, ['A', 'B']).filter((x) => x.phase === 'work').map((x) => `${x.sec}${x.label}`), ['60A', '60B', '60A']);
+  assert.equal(totalSeconds(buildSegments({ type: 'amrap', minutes: 20 }, ['A'])), 1200);
+  assert.equal(buildSegments({ type: 'fortime' }, ['A'])[1].countUp, true);
+  assert.deepEqual(buildSegments({ type: '' }, ['A']), []);
+  // a timer picture counts as used, so saving never deletes it
+  const ws = cleanWorkouts({ workouts: [workout({ timer: { type: '', image: `images/${'d'.repeat(32)}.png` } })] });
+  assert.ok(usedImages(ws, { exercises: [] }).has(`images/${'d'.repeat(32)}.png`));
 });
 
 test('donations and comments settings', () => {
@@ -95,7 +155,6 @@ test('workouts link to library exercises; broken links are refused', () => {
 // ---------------------------------------------------------------- saving to GitHub
 const seed = () => ({
   'site/data/workouts.json': JSON.stringify({ version: 1, workouts: [workout()] }),
-  'site/data/schedule.json': '{"version":1,"days":{}}',
   'site/images/.gitkeep': '',
   [`site/images/${'a'.repeat(32)}.png`]: 'x',
 });
@@ -158,12 +217,16 @@ test('GitHub: finds the comment settings for giscus', async () => {
 
 // ---------------------------------------------------------------- download
 test('download: one self-contained page, text escaped, only real pictures embedded', async () => {
-  const w = { title: 'Legs <b>day</b>', category: 'Strength', exercises: [{ name: 'Squat', sets: '3', reps: '10', rest_sec: 60, image: 'images/a.png' }, { name: 'Hack', image: 'images/b.png' }] };
-  const html = await buildWorkoutPage(w, '2026-11-20', 'Apex Training', async (p) => (p === 'images/a.png' ? `data:image/png;base64,${PNG.toString('base64')}` : 'javascript:alert(1)'));
+  const w = { title: 'Legs <b>day</b>', category: 'Grid', about: 'Short, hard intervals.', date: '2026-11-20', time: '06:30', timer: { type: 'intervals', work_sec: 40, rest_sec: 20, rounds: 4, notes: 'Use the gym clock' }, exercises: [{ name: 'Squat', sets: '3', reps: '10', rest_sec: 60, image: 'images/a.png' }, { name: 'Hack', image: 'images/b.png' }] };
+  const html = await buildWorkoutPage(w, 'Apex Training', async (p) => (p === 'images/a.png' ? `data:image/png;base64,${PNG.toString('base64')}` : 'javascript:alert(1)'));
   assert.match(html, /Legs &lt;b&gt;day&lt;\/b&gt;/);
   assert.equal((html.match(/<img /g) || []).length, 1, 'non-image data is never embedded');
   assert.match(html, /3 × 10 · 1 min rest/);
-  assert.equal(fileName('Legs <b>day</b>', '2026-11-20'), 'legs-b-day-b-2026-11-20.html');
+  assert.match(html, /About Grid:<\/b> Short, hard intervals\./);
+  assert.match(html, /Timer:<\/b> 4 rounds · 40 sec on \/ 20 sec off · Use the gym clock/);
+  assert.doesNotMatch(html, /Workout of the day/);
+  assert.equal(fileName(w), 'legs-b-day-b-2026-11-20-0630.html');
+  assert.equal(fileName({ title: '' }), 'workout.html');
 });
 
 // ---------------------------------------------------------------- the site itself

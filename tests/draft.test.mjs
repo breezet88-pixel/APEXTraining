@@ -81,3 +81,43 @@ test('class details and playlist rules', () => {
   assert.throws(() => cleanPlaylist(['javascript:alert(1)']), /valid|YouTube/);
   assert.deepEqual(cleanWorkout(base).playlist, []);
 });
+
+test('class types, short club names and the class timer', () => {
+  const clubs = ['Virgin Active Rosebank', 'Virgin Active Melrose Arch'];
+  const types = ['Grid', 'Lift Club', 'Hyrox'];
+  const opts = { library, clubs, types, today: '2026-11-20' };
+  let r = draftWorkout('Lift club at Melrose this morning, 6am. 5 sets of 5 barbell back squats.', opts);
+  assert.equal(r.draft.category, 'Lift Club');
+  assert.equal(r.draft.club, 'Virgin Active Melrose Arch', '"Melrose" is enough');
+  assert.equal(r.draft.time, '06:00');
+  assert.ok(!r.draft.exercises.some((e) => /club/i.test(e.name || '')), 'the class type is not read as an exercise');
+  r = draftWorkout('Grid at Rosebank 5:30am. 4 rounds, 40 on 20 off, rest 1 minute between rounds: kettlebell swings, burpees.', opts);
+  assert.equal(r.draft.category, 'Grid');
+  assert.equal(r.draft.club, 'Virgin Active Rosebank');
+  assert.deepEqual(r.draft.timer, { type: 'intervals', work_sec: 40, rest_sec: 20, rounds: 4, round_rest_sec: 60 });
+  assert.deepEqual(draftWorkout('20 minute AMRAP: 10 burpees, 15 air squats', opts).draft.timer, { type: 'amrap', minutes: 20 });
+  assert.deepEqual(draftWorkout('EMOM for 12 minutes: 10 kettlebell swings, 8 push-ups', opts).draft.timer, { type: 'emom', minutes: 12 });
+  assert.equal(draftWorkout('Tabata burpees', opts).draft.timer.type, 'tabata');
+  assert.equal(draftWorkout('10 burpees', opts).draft.timer, null);
+});
+
+test('notes: one exercise per line, bullets and numbering, "40/20 x 4" timer', () => {
+  const notes = [
+    'Hyrox Wednesday 18:30 Melrose',
+    'Timer: 40/20 x 4',
+    '',
+    '1. Kettlebell swings',
+    '2. Goblet squats',
+    '- 12 push-ups',
+    '• Mountain climbers',
+  ].join('\n');
+  const { draft } = draftWorkout(notes, { library, clubs: ['Virgin Active Rosebank', 'Virgin Active Melrose Arch'], types: ['Hyrox', 'Grid'], today: '2026-11-20' });
+  assert.equal(draft.category, 'Hyrox');
+  assert.equal(draft.club, 'Virgin Active Melrose Arch');
+  assert.equal(draft.time, '18:30');
+  assert.equal(draft.date, '2026-11-18', 'last Wednesday');
+  assert.deepEqual(draft.timer, { type: 'intervals', work_sec: 40, rest_sec: 20, rounds: 4, round_rest_sec: '' });
+  assert.equal(draft.exercises.length, 4, JSON.stringify(draft.exercises));
+  assert.equal(draft.exercises[2].reps, '12');
+  assert.equal(draft.exercises[0].sets, '4');
+});

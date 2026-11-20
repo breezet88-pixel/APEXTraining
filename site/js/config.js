@@ -4,5 +4,5 @@ export const SITE = {
   repo: 'breezet88-pixel/APEXTraining', // where the coach page saves changes
   branch: 'main',
   root: 'site',                          // folder in the repository that GitHub Pages publishes
-  timezone: 'Africa/Johannesburg',       // decides when "today" starts for the workout of the day
+  timezone: 'Africa/Johannesburg',       // South African time: decides "today" for class dates and the class schedule
 };

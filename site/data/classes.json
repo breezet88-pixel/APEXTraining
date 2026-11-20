@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "types": [
+    {
+      "name": "Grid",
+      "description": "High-intensity interval training on a grid of stations: short, hard work intervals with short rests, using your bodyweight and kit like kettlebells, dumbbells and slam balls. Full body, and every fitness level can join."
+    },
+    {
+      "name": "Lift Club",
+      "description": "A strength class built around the big lifts: squats, deadlifts, presses and rows with barbells, dumbbells and kettlebells. The focus is good technique and lifting a little heavier over time."
+    },
+    {
+      "name": "Hyrox",
+      "description": "Training for Hyrox fitness racing: running mixed with the race stations, such as the SkiErg, sled push and pull, burpee broad jumps, rowing, farmer's carry, sandbag lunges and wall balls."
+    },
+    {
+      "name": "Rumble",
+      "description": "A boxing-style cardio class: punch combinations and footwork to music, mixed with conditioning and core work."
+    },
+    {
+      "name": "Shape",
+      "description": "A toning and conditioning class: lighter weights, higher reps and plenty of core work to build muscular endurance."
+    },
+    {
+      "name": "Pump",
+      "description": "A barbell class to music: light to moderate weights and high reps that work every major muscle group."
+    }
+  ],
+  "weekly": [
+    {
+      "day": 1,
+      "time": "06:30",
+      "type": "Grid",
+      "club": "Virgin Active Rosebank"
+    },
+    {
+      "day": 2,
+      "time": "06:00",
+      "type": "Lift Club",
+      "club": "Virgin Active Melrose Arch"
+    },
+    {
+      "day": 3,
+      "time": "17:30",
+      "type": "Lift Club",
+      "club": "Virgin Active Melrose Arch"
+    },
+    {
+      "day": 3,
+      "time": "18:30",
+      "type": "Hyrox",
+      "club": "Virgin Active Melrose Arch"
+    },
+    {
+      "day": 5,
+      "time": "05:30",
+      "type": "Grid",
+      "club": "Virgin Active Rosebank"
+    },
+    {
+      "day": 5,
+      "time": "06:30",
+      "type": "Grid",
+      "club": "Virgin Active Rosebank"
+    },
+    {
+      "day": 5,
+      "time": "17:30",
+      "type": "Grid",
+      "club": "Virgin Active Rosebank"
+    },
+    {
+      "day": 0,
+      "time": "09:00",
+      "type": "Grid",
+      "club": "Virgin Active Rosebank"
+    },
+    {
+      "day": 0,
+      "time": "10:00",
+      "type": "Hyrox",
+      "club": "Virgin Active Rosebank"
+    }
+  ],
+  "extra": []
+}

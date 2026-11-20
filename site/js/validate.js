@@ -43,24 +43,54 @@ export function cleanPlaylist(list) {
   });
 }
 
+const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
+const TIMER_TYPES = ['', 'intervals', 'tabata', 'emom', 'amrap', 'fortime'];
+// The class timer (see timer.js). Empty type = no timer.
+export function cleanTimer(t) {
+  if (t === undefined || t === null || t === '') return { type: '' };
+  if (typeof t !== 'object' || Array.isArray(t)) fail('The timer is not valid.');
+  const type = String(t.type || '');
+  if (!TIMER_TYPES.includes(type)) fail('Choose a timer type from the list.');
+  const image = text(t.image, 80, 'Timer picture');
+  if (image && !IMAGE_PATH.test(image)) fail('The timer picture is not a valid picture file.');
+  const notes = text(t.notes, 300, 'Timer notes');
+  if (!type) return { type: '', ...(notes ? { notes } : {}), ...(image ? { image } : {}) };
+  const out = {
+    type,
+    work_sec: intOrNull(t.work_sec, 0, 3600, 'Timer work time (seconds)'),
+    rest_sec: intOrNull(t.rest_sec, 0, 3600, 'Timer rest time (seconds)'),
+    rounds: intOrNull(t.rounds, 0, 100, 'Timer rounds'),
+    round_rest_sec: intOrNull(t.round_rest_sec, 0, 3600, 'Timer rest between rounds (seconds)'),
+    minutes: intOrNull(t.minutes, 0, 300, 'Timer minutes'),
+    order: t.order === 'station' ? 'station' : 'circuit',
+    notes,
+    image,
+  };
+  if ((type === 'intervals') && !out.work_sec) fail('Timer: how many seconds of work per interval?');
+  if (type === 'amrap' && !out.minutes) fail('Timer: how many minutes is the AMRAP?');
+  if (type === 'emom' && !out.minutes && !out.rounds) fail('Timer: how many minutes is the EMOM?');
+  return out;
+}
+
 export function cleanWorkout(w, label = 'Workout') {
   if (!w || typeof w !== 'object') fail(`${label} is not valid.`);
   const date = text(w.date, 10, 'Date');
   if (date && !validDay(date)) fail('The class date is not a real date.');
   const time = text(w.time, 5, 'Start time');
-  if (time && !/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) fail('The start time must look like 06:00.');
+  if (time && !TIME.test(time)) fail('The start time must look like 06:00.');
   const exercises = w.exercises ?? [];
   if (!Array.isArray(exercises) || exercises.length > 100) fail(`${label}: a workout can have up to 100 exercises.`);
   return {
     id: intOrNull(w.id, 1, 1e9, `${label} id`) ?? fail(`${label} has no id.`),
     title: text(w.title, 120, 'Title', true),
     description: text(w.description, 2000, 'Description'),
-    category: text(w.category, 40, 'Category'),
+    category: text(w.category, 40, 'Class type'),
     level: text(w.level, 40, 'Level'),
     date,
     time,
     club: text(w.club, 80, 'Club'),
     playlist: cleanPlaylist(w.playlist),
+    timer: cleanTimer(w.timer),
     duration_min: intOrNull(w.duration_min, 1, 600, 'Minutes'),
     published: !!w.published,
     updated_at: text(w.updated_at, 40, 'Updated date'),
@@ -146,17 +176,37 @@ export function checkLinks(workouts, library) {
   }
 }
 
-export function cleanSchedule(data, workouts) {
-  if (!data || typeof data.days !== 'object' || Array.isArray(data.days)) fail('schedule.json must contain a "days" object.');
-  const ids = new Set(workouts.workouts.map((w) => w.id));
-  const days = {};
-  for (const day of Object.keys(data.days).sort()) {
-    if (!validDay(day)) fail(`Schedule: "${day}" is not a valid date.`);
-    const id = Number(data.days[day]);
-    if (!ids.has(id)) fail(`Schedule: ${day} points to a workout that does not exist.`);
-    days[day] = id;
-  }
-  return { version: 1, days };
+// The class schedule (site/data/classes.json, see classes.js)
+export function cleanClasses(data) {
+  if (data === undefined || data === null) data = {};
+  if (typeof data !== 'object' || Array.isArray(data)) fail('classes.json is not valid.');
+  const list = (v, max, label) => {
+    if (v === undefined || v === null) return [];
+    if (!Array.isArray(v) || v.length > max) fail(`${label}: up to ${max}.`);
+    return v;
+  };
+  const types = list(data.types, 50, 'Class types').map((t, i) => ({
+    name: text(t?.name, 40, `Class type ${i + 1} name`, true),
+    description: text(t?.description, 500, `Class type ${i + 1} description`),
+  }));
+  const names = new Set();
+  for (const t of types) { const k = t.name.toLowerCase(); if (names.has(k)) fail(`The class type "${t.name}" is listed twice.`); names.add(k); }
+  const slot = (c, label) => {
+    const time = text(c?.time, 5, `${label} time`, true);
+    if (!TIME.test(time)) fail(`${label}: the time must look like 06:00.`);
+    return { time, type: text(c?.type, 40, `${label} class type`, true), club: text(c?.club, 80, `${label} club`, true) };
+  };
+  const weekly = list(data.weekly, 100, 'Weekly timetable').map((c, i) => {
+    const day = Number(c?.day);
+    if (!Number.isInteger(day) || day < 0 || day > 6) fail(`Weekly class ${i + 1}: choose a day of the week.`);
+    return { day, ...slot(c, `Weekly class ${i + 1}`) };
+  }).sort((a, b) => ((a.day + 6) % 7) - ((b.day + 6) % 7) || a.time.localeCompare(b.time));
+  const extra = list(data.extra, 1000, 'Ad hoc classes').map((c, i) => {
+    const date = text(c?.date, 10, `Ad hoc class ${i + 1} date`, true);
+    if (!validDay(date)) fail(`Ad hoc class ${i + 1}: the date is not a real date.`);
+    return { date, ...slot(c, `Ad hoc class ${i + 1}`) };
+  }).sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+  return { version: 1, types, weekly, extra };
 }
 
 function httpsUrl(v, label, placeholder) {
@@ -196,3 +246,10 @@ export function cleanSettings(s) {
   if (!s || typeof s !== 'object') fail('settings.json is not valid.');
   return { version: 1, donate: cleanDonate(s.donate || {}), comments: cleanComments(s.comments || {}) };
 }
+
+// Every picture the data uses (exercise pictures, timer pictures, library pictures). Anything else in
+// site/images is unused and is removed when the coach saves.
+export const usedImages = (workouts, library) => new Set([
+  ...workouts.workouts.flatMap((w) => [...w.exercises.map((e) => e.image), w.timer?.image]),
+  ...library.exercises.map((x) => x.image),
+].filter(Boolean));

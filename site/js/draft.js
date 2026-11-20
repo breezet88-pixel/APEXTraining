@@ -1,13 +1,16 @@
 // Turns a spoken (or typed) description of a class into a draft workout, plus questions about
 // anything it could not work out. Runs entirely in the browser: no account, no cost.
 //
-//   draftWorkout(text, { library, clubs, today }) ->
-//     { draft: { title, date, club, time, category, level, duration_min, description, exercises },
+//   draftWorkout(text, { library, clubs, types, today }) ->
+//     { draft: { title, date, club, time, category, level, duration_min, description, exercises, timer },
 //       questions: [{ key, text, index?, options? }] }
 //
 // It understands plain coaching language, e.g.
 //   "Today at Virgin Active Sandton, 6am class. 4 rounds, 40 seconds on 20 off: kettlebell swings,
 //    goblet squats, mountain climbers. Then 3 sets of 10 push-ups, rest 60 seconds."
+// and the coach's own notes, one exercise per line ("- 10 burpees", "2. 12 goblet squats", "Timer: 40/20 x 4").
+// `types` are the coach's class types (Grid, Hyrox…): saying one sets the class type.
+// `timer` is null, or the class timer it heard ("40 on 20 off", "Tabata", "20 minute AMRAP", "EMOM for 12 minutes").
 
 const NUMBER_WORDS = {
   zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
@@ -105,7 +108,7 @@ function findDate(t, today) {
   if ((m = t.match(new RegExp(`\\b(${mon})\\s+(\\d{1,2})(?:st|nd|rd|th)?(?:,?\\s+(\\d{4}))?\\b(?!\\s*(?:x|by|sets?|reps?|times|each|seconds?|secs?|minutes?|mins?|rounds?|metres?|meters?)\\b)`)))) return { value: withYear(m[2], m[1], m[3]), text: m[0] };
   if ((m = t.match(/\b(today|this morning|this afternoon|this evening|tonight)\b/))) return { value: today, text: m[0] };
   if ((m = t.match(/\byesterday\b/))) return { value: shift(-1), text: m[0] };
-  if ((m = t.match(new RegExp(`\\b(?:on|last)\\s+(${DAYS.join('|')})\\b`)))) {
+  if ((m = t.match(new RegExp(`\\b(?:(?:on|last)\\s+)?(${DAYS.join('|')})\\b`)))) { // "on Wednesday", or just "Wednesday" in notes
     const back = (base.getUTCDay() - DAYS.indexOf(m[1]) + 7) % 7;
     return { value: shift(-back), text: m[0] };
   }
@@ -126,10 +129,26 @@ function findTime(t) {
   return null;
 }
 
+// "Rosebank" is enough for "Virgin Active Rosebank" when every club starts with "Virgin Active".
+function clubAliases(clubs) {
+  const words = clubs.map((c) => c.toLowerCase().split(/\s+/));
+  const shared = clubs.length > 1 ? words[0].filter((w) => words.every((ws) => ws.includes(w))) : [];
+  const out = [];
+  clubs.forEach((c, i) => {
+    out.push([c.toLowerCase(), c]);
+    const own = words[i].filter((w) => !shared.includes(w));
+    if (own.length && own.length < words[i].length) {
+      out.push([own.join(' '), c]);
+      if (own.length > 1 && !words.some((ws, j) => j !== i && ws.includes(own[0]))) out.push([own[0], c]);
+    }
+  });
+  return out.filter(([a]) => a.length >= 3).sort((a, b) => b[0].length - a[0].length);
+}
+
 function findClub(raw, t, clubs) {
-  for (const c of clubs || []) {
-    const i = t.indexOf(c.toLowerCase());
-    if (c && i >= 0) return { value: c, text: t.slice(i, i + c.length) };
+  for (const [alias, c] of clubAliases((clubs || []).filter(Boolean))) {
+    const m = t.match(new RegExp(`(?:\\b(?:at|in)\\s+(?:the\\s+)?)?\\b${alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`));
+    if (m) return { value: c, text: m[0] };
   }
   const m = t.match(/\b(?:at|in)\s+(?:the\s+)?([a-z][a-z'&\s-]{2,40}?)\s*(?=,|\.|;|\bat\s+\d|\bon\s|\btoday\b|\byesterday\b|\bthis\s|\btonight\b|\bfor\s|\bwith\s|\bclass\b|\bwe\s|\b\d|$)/);
   if (!m) return null;
@@ -166,10 +185,27 @@ function amounts(clause) {
 }
 
 // ---------------------------------------------------------------- the main entry point
-export function draftWorkout(text, { library, clubs = [], today }) {
-  const raw = String(text || '').trim();
+// ---------------------------------------------------------------- the class timer
+function findTimer(t, interval, rounds, between) {
+  let m;
+  if ((m = t.match(/\b(\d+)\s*(?:minutes?|mins?)\s+amrap\b|\bamrap\s+(?:for\s+|of\s+)?(\d+)\s*(?:minutes?|mins?)\b/))) return { type: 'amrap', minutes: Number(m[1] || m[2]) };
+  if ((m = t.match(/\b(\d+)\s*(?:minutes?|mins?)\s+(?:emom|every minute on the minute)\b|\b(?:emom|every minute on the minute)\s+(?:for\s+)?(\d+)\s*(?:minutes?|mins?)\b/))) return { type: 'emom', minutes: Number(m[1] || m[2]) };
+  if (/\b(?:emom|every minute on the minute)\b/.test(t)) return { type: 'emom', minutes: rounds ? Number(rounds) : '' };
+  if (/\bamrap\b/.test(t)) return { type: 'amrap', minutes: '' };
+  if (/\btabata\b/.test(t)) return { type: 'tabata', rounds: rounds ? Number(rounds) : '' };
+  if ((m = t.match(/\bfor time\b/))) {
+    const cap = t.match(/\b(\d+)\s*(?:minutes?|mins?)\s+(?:time\s+)?cap\b|\b(?:time\s+)?cap\s+(?:of\s+)?(\d+)\s*(?:minutes?|mins?)\b/);
+    return { type: 'fortime', minutes: cap ? Number(cap[1] || cap[2]) : '' };
+  }
+  if (interval) return { type: 'intervals', work_sec: interval.work, rest_sec: interval.rest, rounds: rounds ? Number(rounds) : '', round_rest_sec: between || '' };
+  return null;
+}
+
+export function draftWorkout(text, { library, clubs = [], types = [], today }) {
+  // notes: drop bullets and numbering at the start of lines ("- ", "• ", "2. ", "3) ")
+  const raw = String(text || '').replace(/^[ \t]*(?:[-*•–·▪◦]|\d{1,2}[.)])[ \t]+/gm, '').trim();
   const questions = [];
-  const draft = { title: '', date: '', club: '', time: '', category: '', level: '', duration_min: '', description: '', exercises: [] };
+  const draft = { title: '', date: '', club: '', time: '', category: '', level: '', duration_min: '', description: '', exercises: [], timer: null };
   if (!raw) return { draft, questions: [{ key: 'empty', text: 'Say or type how the class went, then tap “Draft my workout”.' }] };
   let t = normalise(raw);
   const cut = (found) => { if (found?.text) t = t.replace(found.text, ' , '); };
@@ -178,21 +214,35 @@ export function draftWorkout(text, { library, clubs = [], today }) {
   if (title) { const i = raw.toLowerCase().indexOf(title[1].trim()); draft.title = i >= 0 ? raw.slice(i, i + title[1].trim().length) : titleCase(title[1].trim()); cut({ text: title[0] }); }
   const date = findDate(t, today); if (date) { draft.date = date.value; cut(date); }
   const time = findTime(t); if (time) { draft.time = time.value; cut(time); }
+  // the coach's own class types first ("Lift Club" must not be read as a club)
+  for (const ty of [...types].filter(Boolean).sort((a, b) => b.length - a.length)) {
+    const m = t.match(new RegExp(`\\b${ty.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b(?:\\s+class)?`));
+    if (m) { draft.category = ty; cut({ text: m[0] }); break; }
+  }
   const club = findClub(raw, t, clubs); if (club) { draft.club = club.value; cut(club); }
-  for (const [k, v] of Object.entries(CATEGORIES)) if (new RegExp(`\\b${k}\\b`).test(t)) { draft.category = v; break; }
+  if (!draft.category) for (const [k, v] of Object.entries(CATEGORIES)) if (new RegExp(`\\b${k}\\b`).test(t)) { draft.category = v; break; }
   for (const l of LEVELS) if (new RegExp(`\\b${l}\\b`).test(t)) { draft.level = titleCase(l); t = t.replace(new RegExp(`\\b${l}\\b`), ' '); break; }
   const dur = t.match(/\b(\d+)\s*(?:minute|min)s?\s*(?:long\s*)?(?:class|session|workout)\b/) || t.match(/\b(?:class|session|workout)\s+(?:was\s+|of\s+)?(\d+)\s*(?:minute|min)s?\b/);
   if (dur) { draft.duration_min = Number(dur[1]); cut({ text: dur[0] }); }
 
   // whole-class patterns: rounds and intervals apply to every exercise that does not say otherwise
   const defaults = {};
-  const interval = t.match(/\b(\d+)\s*(?:seconds?|secs?)?\s*on\s*,?\s*(?:and\s+)?(\d+)\s*(?:seconds?|secs?)?\s*(?:off|rest)\b/);
+  // "40 on 20 off", or in notes "40/20" (optionally "x 4" rounds)
+  let interval = t.match(/\b(\d+)\s*(?:seconds?|secs?)?\s*on\s*,?\s*(?:and\s+)?(\d+)\s*(?:seconds?|secs?)?\s*(?:off|rest)\b/);
+  let slashRounds = '';
+  if (!interval) {
+    const sl = t.match(/\b(\d{1,3})\s*\/\s*(\d{1,3})\b(?:\s*(?:seconds?|secs?|s)\b)?(?:\s*(?:x|×)\s*(\d{1,2})\b(?:\s*rounds?)?)?/);
+    if (sl && Number(sl[1]) >= 5 && Number(sl[1]) <= 300 && Number(sl[2]) <= 300) { interval = sl; slashRounds = sl[3] || ''; }
+  }
   if (interval) { defaults.reps = `${interval[1]} sec`; defaults.rest_sec = Number(interval[2]); cut({ text: interval[0] }); }
-  const rounds = t.match(/\b(\d+)\s*rounds?\b(?!\s+of\s+\d)/);
+  const rounds = slashRounds ? [`${slashRounds} rounds`, slashRounds] : t.match(/\b(\d+)\s*rounds?\b(?!\s+of\s+\d)/);
   if (rounds) { defaults.sets = rounds[1]; draft.description = `${rounds[1]} rounds${interval ? `, ${interval[1]} seconds on and ${interval[2]} off` : ''}.`; cut({ text: rounds[0] }); }
   else if (interval) draft.description = `${interval[1]} seconds on, ${interval[2]} seconds off.`;
   const between = t.match(/\brest\s+(\d+)\s*(seconds?|secs?|minutes?|mins?)\s+between\s+rounds\b/);
   if (between) { draft.description += ` Rest ${between[1]} ${between[2]} between rounds.`; cut({ text: between[0] }); }
+  draft.timer = findTimer(t, interval && { work: Number(interval[1]), rest: Number(interval[2]) }, rounds?.[1],
+    between ? Number(between[1]) * (/^m/.test(between[2]) ? 60 : 1) : 0);
+  t = t.replace(/\btimer\b\s*:?/g, ' ');
 
   const match = buildMatcher(library);
   const sentences = t.split(/[.;\n]/);
