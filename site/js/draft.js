@@ -80,7 +80,8 @@ function buildMatcher(library) {
       const entryCov = hit.length / e.toks.length;
       const known = c.filter((t) => df.has(t));
       const clauseCov = known.length ? sumHit / known.reduce((a, t) => a + w(t), 0) : 0;
-      const distinctive = hit.some((t) => (df.get(t) || 0) <= 3);
+      // distinctive: a rare word was said, or the words said together fit only one exercise ("front squat")
+      const distinctive = hit.some((t) => (df.get(t) || 0) <= 3) || entries.filter((o) => hit.every((t) => o.toks.includes(t))).length === 1;
       return { e, score: 0.5 * entryCov + 0.5 * clauseCov, distinctive };
     }).filter((s) => s.score > 0).sort((a, b) => b.score - a.score);
     const [first, second] = scored;

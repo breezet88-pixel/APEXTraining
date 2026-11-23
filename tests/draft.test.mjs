@@ -122,3 +122,10 @@ test('notes: one exercise per line, bullets and numbering, "40/20 x 4" timer', (
   assert.equal(draft.exercises[2].reps, '12');
   assert.equal(draft.exercises[0].sets, '4');
 });
+
+test('words that only fit one exercise together are matched; ambiguous ones ask', () => {
+  const { draft: d, questions } = draft('front squat, lateral raises, kettlebell cleans, dumbbell rows');
+  assert.deepEqual(d.exercises.slice(0, 3).map(nameOf), ['Light-barbell front squat', 'Dumbbell lateral raise', 'Kettlebell clean']);
+  const rows = questions.find((q) => q.key === 'match' && d.exercises[q.index].name === 'Dumbbell Rows');
+  assert.ok(rows && rows.options.some((o) => o.name === 'Dumbbell bent-over row'), 'dumbbell rows: asks which row');
+});

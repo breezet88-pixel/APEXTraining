@@ -167,6 +167,15 @@
       ]
     },
     {
+      "id": 68,
+      "name": "Kettlebell clean",
+      "equipment": "Kettlebell",
+      "movement": "Stand with the kettlebell between the feet. Hinge at the hips with a flat back and grip the handle with one hand. Drive the hips forwards to stand, keeping the kettlebell close to the body, and guide it up so the elbow stays near the ribs and the bell rolls softly around the wrist into the rack position at the front of the shoulder. Lower it back between the legs with a hinge and repeat, then change hands.",
+      "image_cue": "Side three-quarter view showing the hinge with the kettlebell between the legs, then standing tall with it racked at the front of the shoulder.",
+      "image": "images/c892acfaa77ee17eb21200a8a6e1bd98.jpg",
+      "sources": []
+    },
+    {
       "id": 13,
       "name": "Dumbbell thruster",
       "equipment": "Dumbbell",
@@ -254,7 +263,7 @@
       "equipment": "Dumbbell",
       "movement": "Stand with feet hip-width apart and a dumbbell beside each shoulder, palms facing inwards. Press the right dumbbell overhead while the left remains at shoulder height. Lower the right weight, then press the left. Keep the abdomen braced, knees softly unlocked and torso centred throughout.",
       "image_cue": "Front view showing one arm extended overhead while the opposite arm remains bent with its dumbbell beside the shoulder.",
-      "image": "",
+      "image": "images/f8228bfb4ab7087e8b67e3d070e35140.jpg",
       "sources": []
     },
     {
@@ -263,7 +272,7 @@
       "equipment": "Dumbbell",
       "movement": "Stand with knees slightly bent and hinge forwards at the hips. Let two light dumbbells hang beneath the chest, palms facing each other. Keep a small bend in the elbows and open the arms out to the sides until the upper arms are approximately level with the torso. Lower slowly while maintaining the same back position.",
       "image_cue": "Rear three-quarter view showing the hinged torso and arms opening outwards into a broad \"T\" shape.",
-      "image": "",
+      "image": "images/cb33e97c15508611b3387ef2300195e4.jpg",
       "sources": []
     },
     {
@@ -288,9 +297,90 @@
       "id": 58,
       "name": "Dumbbell Russian twist",
       "equipment": "Dumbbell",
-      "movement": "Sit on the mat with the knees bent and hold one dumbbell by its ends in front of the chest. Lean back slightly with a long spine and brace the stomach; keep the heels down, or lift them to make it harder. Rotate the chest and dumbbell to one side, return to the middle and rotate to the other side. Move with control and turn from the ribs rather than just swinging the arms.",
+      "movement": "Sit on the mat with the knees bent and hold a light dumbbell (or one in each hand) close to the chest. Lean back slightly with a long spine and brace the stomach; keep the heels down, or lift them to make it harder. Rotate the chest and dumbbell to one side, return to the middle and rotate to the other side. Move with control and turn from the ribs rather than just swinging the arms.",
       "image_cue": "Front three-quarter view showing the seated lean-back position with the dumbbell held at the chest, rotated to one side.",
-      "image": "images/e7f0de1f3d3846b0b4eef448e5cc2829.jpg",
+      "image": "images/7d2313a809954c693d10dd0521682a65.jpg",
+      "sources": []
+    },
+    {
+      "id": 63,
+      "name": "Dumbbell calf raise",
+      "equipment": "Dumbbell",
+      "movement": "Stand tall with the feet hip-width apart and a dumbbell in each hand by the sides. Rise onto the balls of the feet as high as you can, pause briefly, then lower the heels slowly to the floor. Keep the body tall, the knees straight but not locked and the weight over the big toes.",
+      "image_cue": "Side three-quarter view showing the heels down with dumbbells by the sides, then raised high onto the balls of the feet.",
+      "image": "images/ad733609e97d158b03c7f62047eaeda5.jpg",
+      "sources": []
+    },
+    {
+      "id": 64,
+      "name": "Seated dumbbell concentration curl",
+      "equipment": "Dumbbell",
+      "movement": "Sit on the end of a bench with the feet wide. Hold a dumbbell in one hand and rest the back of that upper arm against the inside of the thigh, with the other hand on the opposite knee. Curl the dumbbell towards the shoulder without moving the upper arm, squeeze, then lower slowly until the arm is straight. Complete the set, then change arms.",
+      "image_cue": "Front three-quarter view showing the seated position with the working arm straight against the inner thigh, then the dumbbell curled to the shoulder.",
+      "image": "images/8dd61629a89cb126f9b867cae7fbab51.jpg",
+      "sources": []
+    },
+    {
+      "id": 65,
+      "name": "Dumbbell lateral lunge",
+      "equipment": "Dumbbell",
+      "movement": "Stand tall with a dumbbell in each hand by the sides. Take a wide step to one side, push the hips back and bend that knee while keeping the other leg straight, letting the dumbbells come down either side of the bent knee. Keep the chest lifted and both feet flat. Push through the bent leg to return to the start and alternate sides.",
+      "image_cue": "Front three-quarter view showing a standing start with dumbbells by the sides, then a wide side step with one knee bent and the other leg straight.",
+      "image": "images/d2f431aa1b245651dce00a5dd85107bf.jpg",
+      "sources": []
+    },
+    {
+      "id": 66,
+      "name": "Dumbbell sumo squat",
+      "equipment": "Dumbbell",
+      "movement": "Stand with the feet wider than the shoulders and the toes turned out. Hold one dumbbell vertically by one end with both hands, letting it hang between the legs. Push the hips back and bend the knees to lower, keeping the chest lifted and the knees pushing out over the toes. Drive through the heels to stand tall.",
+      "image_cue": "Front three-quarter view showing a wide stance with one dumbbell hanging between the legs, then the bottom of the squat with the knees out over the toes.",
+      "image": "images/52157e9f1d46d8696644669ff0e51720.jpg",
+      "sources": []
+    },
+    {
+      "id": 69,
+      "name": "Dumbbell floor press",
+      "equipment": "Dumbbell",
+      "movement": "Lie on the mat with the knees bent and the feet flat, holding a dumbbell in each hand. Rest the upper arms on the floor at about 45 degrees from the body, with the dumbbells above the chest. Press both dumbbells up until the arms are straight above the shoulders, then lower slowly until the upper arms touch the floor.",
+      "image_cue": "Side view showing the upper arms resting on the floor with the dumbbells at the chest, then pressed up with straight arms.",
+      "image": "images/024ee51a2bf83db523291bfe31eb26db.jpg",
+      "sources": []
+    },
+    {
+      "id": 70,
+      "name": "Dumbbell biceps curl",
+      "equipment": "Dumbbell",
+      "movement": "Stand tall with a dumbbell in each hand, arms by the sides and palms facing forwards. Keeping the elbows close to the body, curl the dumbbells up towards the shoulders. Squeeze at the top, then lower slowly until the arms are straight. Avoid swinging the body to lift the weight.",
+      "image_cue": "Side three-quarter view showing the arms straight with dumbbells by the thighs, then curled up to the shoulders with the elbows by the sides.",
+      "image": "images/76137fc7ff9efa3dce620e48c69750e5.jpg",
+      "sources": []
+    },
+    {
+      "id": 71,
+      "name": "Dumbbell front raise",
+      "equipment": "Dumbbell",
+      "movement": "Stand tall with a dumbbell in each hand in front of the thighs, palms facing the body. Brace the stomach and, with a small bend in the elbows, raise both dumbbells forwards to shoulder height. Pause, then lower slowly. Keep the body still and use light dumbbells.",
+      "image_cue": "Side view showing the dumbbells in front of the thighs, then raised forwards to shoulder height with nearly straight arms.",
+      "image": "images/6d024c866f715467156d16bc3adccfe6.jpg",
+      "sources": []
+    },
+    {
+      "id": 72,
+      "name": "Dumbbell bent-over row",
+      "equipment": "Dumbbell",
+      "movement": "Stand holding a dumbbell in each hand, soften the knees and hinge forwards at the hips until the chest is well forwards, with a flat back and the dumbbells hanging below the shoulders. Pull the dumbbells towards the lower ribs, keeping the elbows close to the body and squeezing the shoulder blades together. Lower with control and keep the hinge throughout.",
+      "image_cue": "Side three-quarter view showing the hip hinge with dumbbells hanging, then pulled up towards the ribs with the elbows behind the body.",
+      "image": "images/ff97ea6c7619becd8c09e490a74b8ee5.jpg",
+      "sources": []
+    },
+    {
+      "id": 73,
+      "name": "Dumbbell lateral raise",
+      "equipment": "Dumbbell",
+      "movement": "Stand tall with a dumbbell in each hand by the sides, palms facing in. With a small bend in the elbows, raise the arms out to the sides until they reach shoulder height. Pause, then lower slowly. Keep the shoulders down away from the ears and use light dumbbells.",
+      "image_cue": "Front view showing the dumbbells by the sides, then raised out to shoulder height with nearly straight arms.",
+      "image": "images/d761157acb0a631437cf2a866797f576.jpg",
       "sources": []
     },
     {
@@ -688,6 +778,15 @@
       "movement": "Sit on the edge of a stable bench or box with the hands beside the hips, fingers facing forwards. Slide the hips off the edge with the knees bent and the feet flat. Bend the elbows straight backwards to lower the hips, keeping the back close to the bench, then press through the hands to straighten the arms. Stop before the shoulders feel strained; straighter legs make it harder.",
       "image_cue": "Side view showing the hands on the bench edge and the hips lowered in front of it with the elbows bent backwards, then the arms straight.",
       "image": "images/13593d847a3c4652463888a44ef60167.jpg",
+      "sources": []
+    },
+    {
+      "id": 67,
+      "name": "Plank shoulder tap",
+      "equipment": "Mat and bodyweight",
+      "movement": "Start in a high plank with the hands beneath the shoulders and the feet hip-width apart or wider. Brace the stomach and squeeze the glutes. Lift one hand to tap the opposite shoulder, place it back down and repeat on the other side. Keep the hips as still and level as you can; widen the feet to make it easier.",
+      "image_cue": "Side three-quarter view showing a high plank, then one hand lifted to touch the opposite shoulder with the hips level.",
+      "image": "images/6961043a7a8408b6a5a1ef98301eb273.jpg",
       "sources": []
     }
   ]
