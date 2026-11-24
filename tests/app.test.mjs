@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { cleanWorkouts, cleanClasses, cleanTimer, usedImages, cleanSettings, cleanDonate, cleanComments, cleanLibrary, checkLinks, validDay, DataError } from '../site/js/validate.js';
+import { cleanWorkouts, cleanClasses, cleanTimer, cleanMusic, usedImages, cleanSettings, cleanDonate, cleanComments, cleanLibrary, checkLinks, validDay, DataError } from '../site/js/validate.js';
 import { libraryIndex, resolveWorkout } from '../site/js/common.js';
 import { createGitHub, bytesToBase64 } from '../site/js/github.js';
 import { buildWorkoutPage, fileName } from '../site/js/download.js';
@@ -110,6 +110,24 @@ test('class timer: settings are checked, and the sequence members run is right',
   // a timer picture counts as used, so saving never deletes it
   const ws = cleanWorkouts({ workouts: [workout({ timer: { type: '', image: `images/${'d'.repeat(32)}.png` } })] });
   assert.ok(usedImages(ws, { exercises: [] }).has(`images/${'d'.repeat(32)}.png`));
+});
+
+test('music for the day: YouTube links only, empty switches it off', () => {
+  assert.deepEqual(cleanMusic({ url: 'https://www.youtube.com/playlist?list=PLx', title: ' Friday mix ' }), { url: 'https://www.youtube.com/playlist?list=PLx', title: 'Friday mix' });
+  assert.deepEqual(cleanMusic({}), { url: '', title: '' });
+  assert.throws(() => cleanMusic({ url: 'https://evil.example/x' }), /YouTube link/);
+  assert.throws(() => cleanMusic({ url: 'javascript:alert(1)' }), /valid web address|YouTube/);
+  assert.deepEqual(cleanSettings({}).music, { url: '', title: '' });
+});
+
+test('both apps can be installed: Apex Training and Apex Training Admin', () => {
+  const member = JSON.parse(fs.readFileSync(path.join(ROOT, 'site/manifest.webmanifest'), 'utf8'));
+  const admin = JSON.parse(fs.readFileSync(path.join(ROOT, 'site/admin.webmanifest'), 'utf8'));
+  assert.equal(admin.name, 'Apex Training Admin');
+  assert.equal(admin.start_url, 'admin.html');
+  assert.notEqual(admin.id, member.id ?? member.start_url, 'installed as a separate app');
+  for (const m of [member, admin]) for (const i of m.icons) assert.ok(fs.existsSync(path.join(ROOT, 'site', i.src)), i.src);
+  assert.match(fs.readFileSync(path.join(ROOT, 'site/admin.html'), 'utf8'), /<link rel="manifest" href="admin.webmanifest">/);
 });
 
 test('donations and comments settings', () => {

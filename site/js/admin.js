@@ -2,7 +2,7 @@
 // Each save is a commit to the GitHub repository (see github.js); GitHub Pages republishes the site.
 import { SITE } from './config.js';
 import { h, fill, todayIn, nowIn, libraryIndex } from './common.js';
-import { cleanWorkouts, cleanClasses, cleanSettings, cleanDonate, cleanLibrary, checkLinks, usedImages, IMAGE_PATH, DataError } from './validate.js';
+import { cleanWorkouts, cleanClasses, cleanSettings, cleanDonate, cleanMusic, cleanLibrary, checkLinks, usedImages, IMAGE_PATH, DataError } from './validate.js';
 import { DAY_NAMES, WEEK_ORDER, classesOn, sameClass, suggestClass, typeInfo, clubsOf, addDays } from './classes.js';
 import { TIMER_TYPES, timerSummary, buildSegments, totalSeconds, secLabel, effective } from './timer.js';
 import { createGitHub, bytesToBase64, GitHubError } from './github.js';
@@ -215,7 +215,8 @@ function connectView(message) {
   tabs.hidden = true;
   const msg = h('p', { class: 'err', role: 'alert' }, message || '');
   const key = h('input', { type: 'password', autocomplete: 'off', spellcheck: 'false', required: true, placeholder: 'github_pat_…' });
-  const remember = h('input', { type: 'checkbox', id: 'remember' });
+  // in the installed Apex Training Admin app on your own phone, stay signed in by default
+  const remember = h('input', { type: 'checkbox', id: 'remember', checked: matchMedia('(display-mode: standalone)').matches || !!navigator.standalone });
   const tokenUrl = 'https://github.com/settings/personal-access-tokens/new';
   show(h('form', { class: 'panel', onsubmit: async (e) => {
     e.preventDefault();
@@ -520,7 +521,16 @@ function editView(id) {
       drawExercises();
     };
     const lib = ex.library_id ? libraryIndex(state.library).get(ex.library_id) : null;
-    const head = h('div', { class: 'list-item' }, h('strong', {}, `Exercise ${i + 1}${lib ? `: ${lib.name}` : ''}`),
+    // dropdown: pick or change the exercise from the library, or make it your own
+    const choose = libSelect(lib ? String(lib.id) : 'own', `Exercise ${i + 1}`);
+    choose.addEventListener('change', () => {
+      const keep = { sets: ex.sets, reps: ex.reps, rest_sec: ex.rest_sec, cues: ex.cues };
+      wk.exercises[i] = choose.value === 'own'
+        ? { name: lib ? lib.name : ex.name || '', muscles: '', equipment: lib ? lib.equipment : '', image: '', ...keep }
+        : { library_id: Number(choose.value), ...keep };
+      drawExercises();
+    });
+    const head = h('div', { class: 'list-item' }, h('div', { class: 'ex-choose' }, h('strong', {}, `Exercise ${i + 1}`), choose),
       h('div', { class: 'toolrow' },
         h('button', { class: 'btn ghost small', type: 'button', 'aria-label': 'Move up', onclick: move(-1) }, '↑'),
         h('button', { class: 'btn ghost small', type: 'button', 'aria-label': 'Move down', onclick: move(1) }, '↓'),
@@ -553,6 +563,14 @@ function editView(id) {
     h('option', { value: '' }, 'Choose an exercise from the library…'),
     [...new Set(state.library.exercises.map((x) => x.equipment || 'Other'))].map((g) => h('optgroup', { label: g },
       state.library.exercises.filter((x) => (x.equipment || 'Other') === g).map((x) => h('option', { value: x.id }, x.name)))));
+  function libSelect(value, label) {
+    const sel = h('select', { 'aria-label': `${label}: choose the exercise` },
+      h('option', { value: 'own' }, 'My own exercise (not in the library)'),
+      [...new Set(state.library.exercises.map((x) => x.equipment || 'Other'))].map((g) => h('optgroup', { label: g },
+        state.library.exercises.filter((x) => (x.equipment || 'Other') === g).map((x) => h('option', { value: x.id }, x.name)))));
+    sel.value = value;
+    return sel;
+  }
 
   // ---- pictures and screenshots for the class: choose several at once ----
   function photoEditor() {
@@ -616,7 +634,7 @@ function editView(id) {
         h('div', { class: 'row' },
           field('Class type', text(wk, 'category', { list: 'type-list', placeholder: types.slice(0, 3).join(', ') || 'Grid, Hyrox, HIIT…', maxlength: 40 })),
           field('Level', text(wk, 'level', { placeholder: 'Beginner', maxlength: 40 })),
-          field('Minutes', text(wk, 'duration_min', { inputmode: 'numeric', placeholder: '45' }))),
+          field('Duration (minutes)', text(wk, 'duration_min', { inputmode: 'numeric', placeholder: '45' }))),
         typeInfo(state.classes, wk.category)?.description ? h('p', { class: 'muted note' }, `Members also see your description of ${wk.category}: “${typeInfo(state.classes, wk.category).description}”`) : null,
         field('Description', bind(wk, 'description', h('textarea', { maxlength: 2000, value: wk.description || '', placeholder: 'e.g. 4 rounds, 40 seconds on and 20 off.' }))),
         h('p', {}, published, ' ', h('label', { for: 'pub' }, 'Published (shown in the Workout Library)'))),
@@ -854,6 +872,33 @@ function commentsView() {
       h('p', {}, 'Delete, hide or lock comments, and block people, directly on GitHub: ', h('a', { href: `${repoUrl}/discussions`, target: '_blank', rel: 'noopener noreferrer' }, 'open Discussions'), '. The members’ Comments page is the thread named “member-comments”, and each workout has its own thread named “workout-<number>”.')));
 }
 
+// ---------- music: the day's YouTube playlist ----------
+function musicView() {
+  const m = state.settings.music || { url: '', title: '' };
+  const status = h('p', { role: 'status', class: 'muted' });
+  const url = h('input', { type: 'url', value: m.url, placeholder: 'https://youtube.com/playlist?list=…', maxlength: 500 });
+  const title = h('input', { type: 'text', value: m.title, placeholder: 'e.g. Friday Grid mix', maxlength: 80 });
+  const test = h('a', { class: 'btn ghost', href: m.url || '#', target: '_blank', rel: 'noopener noreferrer', hidden: !m.url }, 'Test the link');
+  show(
+    h('h1', {}, '🎵 Music'),
+    h('p', {}, 'Paste the YouTube playlist for the day. Members get a big “Today’s playlist” button on the home screen and a 🎵 Music button at the top of every page. Change it whenever you like.'),
+    h('form', { class: 'panel', onsubmit: async (e) => {
+      e.preventDefault();
+      let music;
+      try { music = cleanMusic({ url: url.value.trim(), title: title.value.trim() }); } catch (err) { say(status, err.message, true); return; }
+      if (await trySave(status, music.url ? 'music for the day' : 'music switched off', (d) => { d.settings.music = music; },
+        music.url ? 'Saved. Members see the new playlist in about a minute.' : 'Saved. The music button is hidden until you add a link.')) {
+        test.href = music.url || '#'; test.hidden = !music.url;
+      }
+    } },
+    field('YouTube playlist (or video) link', url),
+    field('Name (optional)', title),
+    h('div', { class: 'toolrow' }, h('button', { class: 'btn', type: 'submit' }, 'Save'), test,
+      h('button', { class: 'btn danger', type: 'button', onclick: () => { url.value = ''; title.value = ''; } }, 'Clear')),
+    status),
+    h('p', { class: 'muted note' }, 'Each workout can also keep the playlist you played in that class (under the workout’s “Class playlist”).'));
+}
+
 // ---------- donations ----------
 function donationsView() {
   const d = state.settings.donate;
@@ -888,7 +933,7 @@ function route() {
   if (!state.gh) return;
   tabs.hidden = false;
   const path = (location.hash || '#/workouts').slice(1);
-  const tab = ['library', 'classes', 'comments', 'donations'].find((t) => path.startsWith(`/${t}`)) || 'workouts';
+  const tab = ['library', 'classes', 'music', 'comments', 'donations'].find((t) => path.startsWith(`/${t}`)) || 'workouts';
   tabs.querySelectorAll('[data-tab]').forEach((a) => a.classList.toggle('on', a.dataset.tab === tab));
   let m;
   if (path === '/workouts/new') editView(0);
@@ -897,6 +942,7 @@ function route() {
   else if ((m = path.match(/^\/library\/(\d+)$/))) libraryEditView(Number(m[1]));
   else if (tab === 'library') libraryView();
   else if (tab === 'classes') classesView();
+  else if (tab === 'music') musicView();
   else if (tab === 'comments') commentsView();
   else if (tab === 'donations') donationsView();
   else workoutsView();
@@ -925,3 +971,19 @@ document.getElementById('logout').addEventListener('click', (e) => {
 });
 addEventListener('hashchange', route);
 start();
+
+// ---------- Apex Training Admin as a phone app ----------
+const installBtn = document.getElementById('install');
+let deferredInstall;
+addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredInstall = e; installBtn.hidden = false; });
+addEventListener('appinstalled', () => { installBtn.hidden = true; });
+const iosDevice = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+if (iosDevice && !(matchMedia('(display-mode: standalone)').matches || navigator.standalone)) installBtn.hidden = false;
+installBtn.addEventListener('click', async () => {
+  if (deferredInstall) { deferredInstall.prompt(); await deferredInstall.userChoice; deferredInstall = null; installBtn.hidden = true; }
+  else if (!document.getElementById('ios-hint')) {
+    const hint = h('p', { id: 'ios-hint', class: 'banner' }, 'To install on iPhone or iPad: tap the Share button, then “Add to Home Screen”.');
+    document.querySelector('header').after(hint);
+  }
+});
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});

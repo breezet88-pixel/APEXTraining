@@ -39,7 +39,11 @@ const byId = (id) => data?.workouts.find((w) => w.id === id) || savedAll()[id] |
 // ---------- small bits ----------
 function setBanner(msg) { banner.textContent = msg || ''; banner.hidden = !msg; }
 function setTab(name) {
-  for (const t of ['workouts', 'exercises', 'comments']) document.getElementById(`tab-${t}`).classList.toggle('on', t === name);
+  for (const t of ['home', 'workouts', 'exercises', 'comments']) {
+    const a = document.getElementById(`tab-${t}`);
+    a.classList.toggle('on', t === name);
+    if (t === name) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+  }
 }
 
 // "Thu 20 Nov 2026 · 06:00 · Virgin Active Sandton"
@@ -257,9 +261,9 @@ function detailView(id) {
   setTab('workouts');
   const w = byId(id);
   setBanner(!data && w ? 'You are offline. Showing your saved copy.' : '');
-  if (!w) { show(h('p', { class: 'pad' }, 'This workout is not available.'), h('a', { class: 'pad', href: '#/' }, '← Workout Library')); return; }
+  if (!w) { show(h('p', { class: 'pad' }, 'This workout is not available.'), h('a', { class: 'pad', href: '#/workouts' }, '← Workout Library')); return; }
   show(
-    h('a', { class: 'back', href: '#/' }, '← Workout Library'),
+    h('a', { class: 'back', href: '#/workouts' }, '← Workout Library'),
     h('article', { class: 'detail' },
       h('h1', {}, w.title),
       classLine(w) ? h('p', { class: 'class-line' }, classLine(w)) : null,
@@ -272,6 +276,43 @@ function detailView(id) {
       playlist(w),
       exerciseList(w),
       data ? comments(w) : null));
+}
+
+// ---------- home: what Apex Training is, at a glance ----------
+// Kept short on purpose: one big next step, the music, one move to try, and three steps.
+const STRIP = [1, 88, 74, 13, 40, 36, 12, 59, 84]; // pictures shown on the home screen
+const today = () => new Date().toISOString().slice(0, 10);
+function musicCard(m) {
+  return h('a', { class: 'music-card', href: m.url, target: '_blank', rel: 'noopener noreferrer' },
+    h('span', { class: 'music-icon', 'aria-hidden': 'true' }, '🎵'),
+    h('span', {}, h('strong', {}, m.title || 'Today’s playlist'), h('span', { class: 'sub' }, 'Tap to play it on YouTube')));
+}
+function homeView() {
+  setTab('home');
+  setBanner('');
+  const lib = (data.library.exercises || []).filter((x) => x.image);
+  const strip = STRIP.map((id) => lib.find((x) => x.id === id)).filter(Boolean);
+  const n = [...today()].reduce((a, c) => a + c.charCodeAt(0), 0);
+  const move = lib.length ? lib[n % lib.length] : null; // a different move each day
+  const latest = [...data.workouts].sort(byDate)[0];
+  const music = data.settings.music;
+  show(
+    h('section', { class: 'home-hero' },
+      h('p', { class: 'kicker' }, 'Apex Training'),
+      h('h1', {}, 'Your coach’s classes.', h('br'), h('span', { class: 'hl' }, 'Any time. Free.')),
+      h('p', { class: 'hero-sub' }, 'Loved a class? Redo it with the timer, the music and how to do every move.'),
+      h('a', { class: 'btn hero-go', href: latest ? `#/w/${latest.id}` : '#/workouts' }, latest ? '▶  Start the latest class' : 'See the classes'),
+      strip.length ? h('div', { class: 'strip', 'aria-label': 'Some of the moves' }, strip.map((x) =>
+        h('a', { class: 'strip-card', href: `#/e/${x.id}` }, h('img', { src: x.image, alt: x.name, loading: 'lazy' })))) : null),
+    music?.url ? musicCard(music) : null,
+    move ? h('a', { class: 'move', href: `#/e/${move.id}` },
+      h('img', { src: move.image, alt: '' }),
+      h('span', {}, h('span', { class: 'kicker' }, 'Move of the day'), h('strong', {}, move.name), h('span', { class: 'sub' }, move.summary || 'Tap to see how to do it'))) : null,
+    h('div', { class: 'home-steps' }, [
+      ['1', 'Pick a class', '#/workouts'],
+      ['2', 'Press start', latest ? `#/w/${latest.id}` : '#/workouts'],
+      ['3', 'Learn the moves', '#/exercises'],
+    ].map(([num, label, href]) => h('a', { class: 'home-step', href }, h('span', { class: 'num', 'aria-hidden': 'true' }, num), h('span', {}, label)))));
 }
 
 // ---------- class timer ----------
@@ -303,7 +344,7 @@ function timerView(id) {
   setTab('workouts');
   const w = byId(id);
   const segs = w ? buildSegments(w.timer, w.exercises.map((e) => e.name)) : [];
-  if (!w || !segs.length) { show(h('p', { class: 'pad' }, 'This workout has no timer.'), h('a', { class: 'pad', href: '#/' }, '← Workout Library')); return; }
+  if (!w || !segs.length) { show(h('p', { class: 'pad' }, 'This workout has no timer.'), h('a', { class: 'pad', href: '#/workouts' }, '← Workout Library')); return; }
   setBanner('');
   let i = 0;
   let left = segs[0].sec;       // seconds left in this step (or seconds so far, for a stopwatch)
@@ -477,7 +518,7 @@ function supportView() {
   setBanner('');
   const d = data.settings.donate || {};
   if (!d.url) {
-    show(h('h1', {}, 'Apex Training is free'), h('p', {}, 'Everything here is free to use. Thank you for training with us.'), h('a', { class: 'btn ghost', href: '#/' }, 'Back to the workout library'));
+    show(h('h1', {}, 'Apex Training is free'), h('p', {}, 'Everything here is free to use. Thank you for training with us.'), h('a', { class: 'btn ghost', href: '#/workouts' }, 'Back to the workout library'));
     return;
   }
   const out = { target: '_blank', rel: 'noopener noreferrer' };
@@ -501,13 +542,17 @@ async function route() {
   if ((m = path.match(/^\/w\/(\d+)$/))) detailView(Number(m[1]));
   else if ((m = path.match(/^\/t\/(\d+)$/))) timerView(Number(m[1]));
   else if (!data) offlineView();                       // offline and nothing cached: show what is saved
-  else if (path === '/' || path === '' || path === '/workouts') listView();
+  else if (path === '/' || path === '') homeView();
+  else if (path === '/workouts') listView();
   else if (path === '/exercises') libraryView();
   else if ((m = path.match(/^\/e\/(\d+)$/))) exerciseView(Number(m[1]));
   else if (path === '/support') supportView();
   else if (path === '/comments') commentsView();
   else listView();
   document.getElementById('support-link').hidden = !data?.settings.donate?.url;
+  const ml = document.getElementById('music-link'); // the day's playlist, on every page
+  ml.hidden = !data?.settings.music?.url;
+  if (!ml.hidden) { ml.href = data.settings.music.url; ml.title = data.settings.music.title || 'Today’s playlist'; }
   window.scrollTo(0, 0);
 }
 addEventListener('hashchange', route);

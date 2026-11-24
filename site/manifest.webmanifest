@@ -1,7 +1,7 @@
 {
   "name": "Apex Training",
   "short_name": "Apex Training",
-  "description": "Today's workout, step-by-step exercise pictures and comments from other members.",
+  "description": "Your coach's classes, any time, free: the class timer, the music, and how to do every move.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

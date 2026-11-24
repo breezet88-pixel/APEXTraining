@@ -6,7 +6,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://giscus.app; frame-src https://giscus.app; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="referrer" content="no-referrer">
   <title>Apex Training</title>
-  <meta name="description" content="The coach's classes to redo any time: download any workout, run the class timer, see step-by-step exercise pictures and comments from other members. Free to use.">
+  <meta name="description" content="Your coach's classes, any time, free: the class timer, the music, and how to do every move.">
   <meta name="theme-color" content="#0d0d0d">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/favicon-48.png" type="image/png">
@@ -19,11 +19,13 @@
 <body>
   <header class="top">
     <a class="brand" href="#/"><img src="icons/apex-logo.jpg" alt="Apex by Breeze logo" width="44" height="40"><span>Apex Training</span></a>
-    <nav class="tabs" aria-label="Main">
-      <a href="#/" id="tab-workouts">Workouts</a>
-      <a href="#/exercises" id="tab-exercises">Exercises</a>
-      <a href="#/comments" id="tab-comments">Comments</a>
+    <nav class="tabs appnav" aria-label="Main">
+      <a href="#/" id="tab-home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></a>
+      <a href="#/workouts" id="tab-workouts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 10h2V8h2v8H4v-2H2zm4-3h2v10H6zm3 4h6v2H9zm7-4h2v10h-2zm2 1h2v2h2v4h-2v2h-2z"/></svg><span>Classes</span></a>
+      <a href="#/exercises" id="tab-exercises"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="13" cy="4" r="2"/><path d="M10.5 7.5 7 9.5V13h2v-2.3l1.6-.9L9 17l-3 3 1.4 1.4L11 18l1-3 2 2v5h2v-6l-2.4-2.8.7-3.4 1.2 1.7H19v-2h-2.5l-1.8-2.7A2 2 0 0 0 13 6.8z"/></svg><span>Exercises</span></a>
+      <a href="#/comments" id="tab-comments"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H9l-5 4v-4H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/></svg><span>Comments</span></a>
     </nav>
+    <a id="music-link" class="music-pill" href="#" target="_blank" rel="noopener noreferrer" hidden>🎵 Music</a>
     <button id="install" class="btn small" hidden>Install app</button>
   </header>
   <p id="banner" class="banner" role="status" hidden></p>

@@ -266,9 +266,16 @@ export function cleanComments(c = {}) {
   return out;
 }
 
+// The day's music: one YouTube playlist link the coach sets; members tap it from any page.
+export function cleanMusic(m = {}) {
+  if (!m.url) return { url: '', title: '' };
+  const [item] = cleanPlaylist([{ url: m.url, title: m.title }]);
+  return item;
+}
+
 export function cleanSettings(s) {
   if (!s || typeof s !== 'object') fail('settings.json is not valid.');
-  return { version: 1, donate: cleanDonate(s.donate || {}), comments: cleanComments(s.comments || {}) };
+  return { version: 1, donate: cleanDonate(s.donate || {}), comments: cleanComments(s.comments || {}), music: cleanMusic(s.music || {}) };
 }
 
 // Every picture the data uses (exercise pictures, timer pictures, library pictures). Anything else in
