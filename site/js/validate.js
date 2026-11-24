@@ -28,6 +28,21 @@ export function validDay(s) {
   return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s;
 }
 
+// Links pasted on a phone: "youtube.com/…" without https, http://, or YouTube's share text with the
+// link inside ("Check out this playlist https://…"). Returns a clean https:// link, or '' if empty.
+export function normalizeLink(v) {
+  let s = String(v ?? '').trim();
+  if (!s) return '';
+  const withScheme = s.match(/https?:\/\/[^\s<>"]+/i);
+  const bare = s.match(/(?:^|\s)((?:[a-z0-9-]+\.)+[a-z]{2,}\/[^\s<>"]*)/i);
+  if (withScheme) s = withScheme[0];
+  else if (bare) s = bare[1];
+  s = s.replace(/[),.;!?'"]+$/, '');
+  if (/^http:\/\//i.test(s)) s = `https://${s.slice(7)}`;
+  if (!/^https:\/\//i.test(s)) s = `https://${s}`;
+  return s;
+}
+
 // YouTube playlist links for the music played in the class
 const YOUTUBE_HOSTS = ['youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com', 'youtu.be'];
 export function cleanPlaylist(list) {
@@ -35,10 +50,10 @@ export function cleanPlaylist(list) {
   if (!Array.isArray(list) || list.length > 10) fail('A workout can have up to 10 playlist links.');
   return list.map((p, i) => {
     const item = typeof p === 'string' ? { url: p } : p || {};
-    const url = text(item.url, 500, `Playlist link ${i + 1}`, true);
+    const url = normalizeLink(text(item.url, 500, `Playlist link ${i + 1}`, true));
     let u;
-    try { u = new URL(url); } catch { fail(`Playlist link ${i + 1} is not a valid web address.`); }
-    if (u.protocol !== 'https:' || !YOUTUBE_HOSTS.includes(u.hostname)) fail(`Playlist link ${i + 1} must be a YouTube link (https://youtube.com/… or https://youtu.be/…).`);
+    try { u = new URL(url); } catch { fail(`Playlist link ${i + 1} is not a valid web address. In YouTube, tap Share → Copy link, then paste it here.`); }
+    if (!YOUTUBE_HOSTS.includes(u.hostname.toLowerCase())) fail(`Playlist link ${i + 1} must be a YouTube link (youtube.com or youtu.be). In YouTube, tap Share → Copy link, then paste it here.`);
     return { url, title: text(item.title, 80, `Playlist link ${i + 1} name`) };
   });
 }
@@ -286,8 +301,8 @@ export function cleanSocial(s = {}) {
   const out = {};
   for (const [k, hosts] of Object.entries(SOCIAL_HOSTS)) {
     const label = k === 'facebook' ? 'Facebook link' : 'Instagram link';
-    const url = httpsUrl(s[k], label);
-    if (url && !hosts.includes(new URL(url).hostname)) fail(`${label} must be a ${k === 'facebook' ? 'facebook.com' : 'instagram.com'} address.`);
+    const url = httpsUrl(normalizeLink(s[k]), label);
+    if (url && !hosts.includes(new URL(url).hostname.toLowerCase())) fail(`${label} must be a ${k === 'facebook' ? 'facebook.com' : 'instagram.com'} address.`);
     out[k] = url;
   }
   return out;

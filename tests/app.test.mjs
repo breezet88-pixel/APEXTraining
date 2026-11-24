@@ -124,7 +124,8 @@ test('comments go to Facebook and Instagram; classes can say which studio', () =
   assert.deepEqual(cleanSocial({}), { facebook: '', instagram: '' });
   assert.deepEqual(cleanSocial({ facebook: 'https://www.facebook.com/apex', instagram: 'https://www.instagram.com/apex' }), { facebook: 'https://www.facebook.com/apex', instagram: 'https://www.instagram.com/apex' });
   assert.throws(() => cleanSocial({ facebook: 'https://evil.example/apex' }), /facebook.com/);
-  assert.throws(() => cleanSocial({ instagram: 'http://www.instagram.com/apex' }), /https/);
+  assert.equal(cleanSocial({ instagram: 'instagram.com/apex' }).instagram, 'https://instagram.com/apex', 'pasted without https is fine');
+  assert.equal(cleanSocial({ facebook: 'http://www.facebook.com/apex' }).facebook, 'https://www.facebook.com/apex');
   assert.deepEqual(cleanSettings({}).social, { facebook: '', instagram: '' });
   const cls = cleanClasses({ weekly: [{ day: 1, time: '06:30', type: 'Grid', club: 'Virgin Active Rosebank', place: 'GRID studio' }] });
   assert.equal(cls.weekly[0].place, 'GRID studio');

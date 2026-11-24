@@ -126,10 +126,11 @@ function pictureEditor(obj, label, status, redraw) {
     obj.image = name;
     preview.src = picSrc(name);
     preview.hidden = false;
+    remove.hidden = false;
     say(status, 'Picture added. It goes online when you save.');
   } });
-  return h('div', {}, field(label, input), preview,
-    obj.image ? h('button', { class: 'btn danger small', type: 'button', onclick: () => { obj.image = ''; redraw(); } }, 'Remove picture') : null);
+  const remove = h('button', { class: 'btn danger small', type: 'button', hidden: !obj.image, onclick: () => { obj.image = ''; redraw(); } }, 'Remove picture');
+  return h('div', {}, field(label, input), preview, remove);
 }
 
 // "✨ Create image prompt" button with a copyable box.
@@ -233,7 +234,7 @@ function connectView(message) {
   h('p', {}, 'The coach page saves straight to your GitHub repository, so it signs in with a GitHub key that only you have.'),
   h('ol', { class: 'steps' },
     h('li', {}, 'Open ', h('a', { href: tokenUrl, target: '_blank', rel: 'noopener noreferrer' }, 'GitHub → new fine-grained token'), ' (signed in as the repository owner).'),
-    h('li', {}, 'Name it "Apex Training coach". Pick an expiry date (for example 1 year).'),
+    h('li', {}, 'Name it "Apex Training Admin". Pick an expiry date (for example 1 year).'),
     h('li', {}, 'Repository access: ', h('b', {}, 'Only select repositories'), ' → ', h('code', {}, SITE.repo), '.'),
     h('li', {}, 'Permissions → Repository: ', h('b', {}, 'Contents: Read and write'), ' and ', h('b', {}, 'Discussions: Read'), '.'),
     h('li', {}, 'Generate, copy the key and paste it here.')),
@@ -358,7 +359,13 @@ function editView(id) {
     };
     const num = (key, label, placeholder) => field(label, h('input', { type: 'number', min: 0, inputmode: 'numeric', value: t[key] ?? '', placeholder,
       oninput: (e) => { t[key] = e.target.value; refresh(); } }));
-    const type = h('select', { 'aria-label': 'Timer type', onchange: (e) => { t.type = e.target.value; drawTimer(); } },
+    // a new timer type starts from its own defaults, so numbers from the previous type don't carry over
+    const type = h('select', { 'aria-label': 'Timer type', onchange: (e) => {
+      t.type = e.target.value;
+      Object.assign(t, { work_sec: '', rest_sec: '', rounds: '', round_rest_sec: '', minutes: '' },
+        t.type === 'tabata' ? { work_sec: 20, rest_sec: 10, rounds: 8 } : {});
+      drawTimer();
+    } },
       Object.entries(TIMER_TYPES).map(([k, v]) => h('option', { value: k }, v)));
     type.value = t.type || '';
     const tab = t.type === 'tabata';
@@ -611,7 +618,7 @@ function editView(id) {
     const box = h('div');
     const draw = () => fill(box,
       wk.playlist.map((p, i) => h('div', { class: 'row playlist-row' },
-        field(`YouTube link ${i + 1}`, bind(p, 'url', h('input', { type: 'url', value: p.url, placeholder: 'https://youtube.com/playlist?list=…' }))),
+        field(`YouTube link ${i + 1}`, bind(p, 'url', h('input', { type: 'text', inputmode: 'url', autocapitalize: 'off', autocomplete: 'off', spellcheck: 'false', value: p.url, placeholder: 'Paste the YouTube link' }))),
         field('Name (optional)', bind(p, 'title', h('input', { type: 'text', value: p.title || '', maxlength: 80, placeholder: 'e.g. Friday HIIT mix' }))),
         h('div', {}, h('button', { class: 'btn danger small', type: 'button', onclick: () => { wk.playlist.splice(i, 1); draw(); } }, 'Remove')))),
       wk.playlist.length < 10 ? h('button', { class: 'btn ghost small', type: 'button', onclick: () => { wk.playlist.push({ url: '', title: '' }); draw(); } }, '+ Add a YouTube link') : null);
@@ -710,13 +717,13 @@ function libraryView(saved = '') {
     status, chips, listBox);
 }
 
-function libraryEditView(id) {
+function libraryEditView(id, saved = '') {
   const found = id ? state.library.exercises.find((x) => x.id === id) : null;
   if (id && !found) { show(h('p', { class: 'pad' }, 'Exercise not found.'), h('a', { href: '#/library' }, '← Exercise library')); return; }
   const x = found ? clone(found) : { id: 0, name: '', equipment: '', summary: '', key_points: [], movement: '', image_cue: '', image: '', sources: [] };
   const kp = h('textarea', { rows: 4, maxlength: 800, value: (x.key_points || []).join('\n'), placeholder: 'One per line, e.g.\nHinge: push the hips back\nKeep the back flat' });
   kp.addEventListener('input', () => { x.key_points = kp.value.split('\n').map((s) => s.trim()).filter(Boolean); });
-  const status = h('p', { role: 'status', class: 'muted' });
+  const status = h('p', { role: 'status', class: 'muted' }, saved);
   const upStatus = h('p', { role: 'status', class: 'muted' });
   const picBox = h('div');
   const drawPic = () => fill(picBox, pictureEditor(x, 'Picture (from your image tool)', upStatus, drawPic));
@@ -734,7 +741,8 @@ function libraryEditView(id) {
     });
     if (!ok && isNew) x.id = 0;
     saveBtn.disabled = false;
-    if (ok && isNew) history.replaceState(null, '', `#/library/${x.id}`);
+    // a new exercise now has an id: redraw so the Delete button and "see in the library" links work
+    if (ok && isNew) { history.replaceState(null, '', `#/library/${x.id}`); libraryEditView(x.id, status.textContent); }
   } }, 'Save exercise');
   show(
     h('a', { class: 'back', href: '#/library' }, '← Exercise library'),
@@ -743,7 +751,7 @@ function libraryEditView(id) {
         field('Exercise name', bind('name', h('input', { type: 'text', value: x.name, maxlength: 120, required: true }))),
         field('Equipment', bind('equipment', h('input', { type: 'text', value: x.equipment, maxlength: 40, list: 'kit-list', placeholder: 'Kettlebell, Dumbbell, Mat and bodyweight…' })))),
       kit,
-      field('Short description (one line: what it is and what it works)', bind('summary', h('input', { type: 'text', maxlength: 200, value: x.summary || '', placeholder: 'e.g. A squat holding the kettlebell at the chest. Builds the legs and glutes.' }))),
+      field('Short how-to (one line: how to do it)', bind('summary', h('input', { type: 'text', maxlength: 200, value: x.summary || '', placeholder: 'e.g. Hold the bell at your chest, sit down between your heels, then stand.' }))),
       field('Key points (up to 5 short cues, one per line, shown to members first)', kp),
       field('Movement (how to do it, shown to members)', bind('movement', h('textarea', { rows: 6, maxlength: 2000, value: x.movement }))),
       field('Image cue (what the picture should show)', bind('image_cue', h('textarea', { rows: 3, maxlength: 1000, value: x.image_cue }))),
@@ -880,7 +888,7 @@ function commentsView() {
 function musicView() {
   const m = state.settings.music || { url: '', title: '' };
   const status = h('p', { role: 'status', class: 'muted' });
-  const url = h('input', { type: 'url', value: m.url, placeholder: 'https://youtube.com/playlist?list=…', maxlength: 500 });
+  const url = h('input', { type: 'text', inputmode: 'url', autocapitalize: 'off', autocomplete: 'off', spellcheck: 'false', value: m.url, placeholder: 'Paste the YouTube link', maxlength: 500 });
   const title = h('input', { type: 'text', value: m.title, placeholder: 'e.g. Friday Grid mix', maxlength: 80 });
   const test = h('a', { class: 'btn ghost', href: m.url || '#', target: '_blank', rel: 'noopener noreferrer', hidden: !m.url }, 'Test the link');
   show(
@@ -907,8 +915,8 @@ function musicView() {
 function socialView() {
   const s = state.settings.social || {};
   const status = h('p', { role: 'status', class: 'muted' });
-  const fb = h('input', { type: 'url', value: s.facebook || '', placeholder: 'https://www.facebook.com/…', maxlength: 500 });
-  const ig = h('input', { type: 'url', value: s.instagram || '', placeholder: 'https://www.instagram.com/…', maxlength: 500 });
+  const fb = h('input', { type: 'text', inputmode: 'url', autocapitalize: 'off', spellcheck: 'false', value: s.facebook || '', placeholder: 'https://www.facebook.com/…', maxlength: 500 });
+  const ig = h('input', { type: 'text', inputmode: 'url', autocapitalize: 'off', spellcheck: 'false', value: s.instagram || '', placeholder: 'https://www.instagram.com/…', maxlength: 500 });
   show(
     h('a', { class: 'back', href: '#/more' }, '← More'),
     h('h1', {}, '💬 Comments'),

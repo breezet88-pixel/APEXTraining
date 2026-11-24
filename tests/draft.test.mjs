@@ -78,7 +78,15 @@ test('class details and playlist rules', () => {
   assert.throws(() => cleanWorkout({ ...base, date: '2026-02-30' }), /not a real date/);
   assert.throws(() => cleanWorkout({ ...base, time: '25:00' }), /06:00/);
   assert.throws(() => cleanPlaylist(['https://evil.example.com/x']), /YouTube/);
-  assert.throws(() => cleanPlaylist(['http://youtube.com/x']), /YouTube/);
+  // links as people paste them on a phone are cleaned up
+  assert.equal(cleanPlaylist(['http://youtube.com/x'])[0].url, 'https://youtube.com/x');
+  assert.equal(cleanPlaylist(['youtube.com/playlist?list=PL2'])[0].url, 'https://youtube.com/playlist?list=PL2');
+  assert.equal(cleanPlaylist(['www.youtube.com/watch?v=abc&list=PL3'])[0].url, 'https://www.youtube.com/watch?v=abc&list=PL3');
+  assert.equal(cleanPlaylist(['Check out this playlist on YouTube: https://youtube.com/playlist?list=PL4&si=xyz'])[0].url, 'https://youtube.com/playlist?list=PL4&si=xyz');
+  assert.equal(cleanPlaylist([' https://youtu.be/abc?si=1 '])[0].url, 'https://youtu.be/abc?si=1');
+  assert.equal(cleanPlaylist(['https://music.youtube.com/playlist?list=PL5'])[0].url, 'https://music.youtube.com/playlist?list=PL5');
+  assert.equal(cleanPlaylist(['https://M.YouTube.com/watch?v=x'])[0].url, 'https://M.YouTube.com/watch?v=x');
+  assert.throws(() => cleanPlaylist(['spotify.com/playlist/1']), /YouTube/);
   assert.throws(() => cleanPlaylist(['javascript:alert(1)']), /valid|YouTube/);
   assert.deepEqual(cleanWorkout(base).playlist, []);
 });
