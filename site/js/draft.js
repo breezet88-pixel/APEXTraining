@@ -83,11 +83,12 @@ function buildMatcher(library) {
       // distinctive: a rare word was said, or the words said together fit only one exercise ("front squat")
       const distinctive = hit.some((t) => (df.get(t) || 0) <= 3) || entries.filter((o) => hit.every((t) => o.toks.includes(t))).length === 1
         || entryCov === 1; // every word of the exercise's name was said
-      return { e, score: 0.5 * entryCov + 0.5 * clauseCov, distinctive };
+      return { e, score: 0.5 * entryCov + 0.5 * clauseCov, distinctive, all: clauseCov > 0.999 };
     }).filter((s) => s.score > 0).sort((a, b) => b.score - a.score);
     const [first, second] = scored;
     const options = scored.slice(0, 4).filter((s) => s.score >= 0.3).map((s) => ({ id: s.e.x.id, name: s.e.x.name }));
-    if (first && first.distinctive && first.score >= 0.5 && (!second || first.score - second.score >= 0.1)) return { best: first.e.x, options };
+    // clear winner, or the only exercise that covers every word said ("hang cleans" -> the hang clean, not "Clean")
+    if (first && first.distinctive && first.score >= 0.5 && (!second || first.score - second.score >= 0.1 || (first.all && !second.all))) return { best: first.e.x, options };
     return { best: null, options };
   };
 }

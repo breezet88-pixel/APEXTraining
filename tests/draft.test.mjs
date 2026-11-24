@@ -33,7 +33,7 @@ test('warm-up and cool-down, rounds of a list, "and" between exercises, yesterda
   assert.equal(d.time, '17:30');
   assert.equal(d.club, 'Planet Fitness Rosebank');
   assert.equal(d.category, 'HIIT');
-  assert.deepEqual(d.exercises.map(nameOf), ['Skillmill forward run', 'Dumbbell thruster', 'Dumbbell renegade row - without a push-up', 'Squat jump', 'Bear crawl', 'Dead bug', 'Bird-dog']);
+  assert.deepEqual(d.exercises.map(nameOf), ['Skillmill run', 'Dumbbell thruster', 'Renegade row', 'Squat jump', 'Bear crawl', 'Dead bug', 'Bird-dog']);
   assert.equal(d.exercises[0].cues, 'Warm-up');
   assert.equal(d.exercises[1].cues, '', 'the warm-up ends with its sentence');
   assert.deepEqual(d.exercises.slice(1, 5).map((e) => [e.sets, e.reps]), [['3', '12'], ['3', '10 each side'], ['3', '20'], ['3', '30 sec']]);
@@ -44,7 +44,7 @@ test('it asks when it is unsure, and offers the likely library exercises', () =>
   const { draft: d, questions } = draft('Class on 18 November at the Sandton club at 18:00. Burpees, lunges, jumping jacks, plank 45 seconds. Sled push 20 metres.');
   assert.equal(d.date, '2026-11-18');
   assert.equal(d.club, 'Sandton club');
-  assert.equal(nameOf(d.exercises[0]), 'Burpee without a push-up');
+  assert.equal(nameOf(d.exercises[0]), 'Burpee');
   const match = (name) => questions.find((q) => q.key === 'match' && d.exercises[q.index].name === name);
   assert.ok(match('Lunges').options.some((o) => /lunge/i.test(o.name)), 'lunges: offers the library lunges');
   assert.ok(match('Sled Push').options.some((o) => o.name === 'Skillmill high sled push') && match('Sled Push').options.some((o) => o.name === 'Skillmill low sled push'), 'sled push: high or low?');
@@ -59,7 +59,7 @@ test('"march 3 x 12" is the glute bridge march, not 3 March; called/beginner/str
   assert.equal(d.title, 'Leg Day Burner');
   assert.equal(d.date, '');
   assert.equal(d.level, 'Beginner');
-  assert.deepEqual(d.exercises.map(nameOf), ['Glute bridge march', 'Single-leg dumbbell Romanian deadlift', 'Light-barbell front squat']);
+  assert.deepEqual(d.exercises.map(nameOf), ['Glute bridge march', 'Single-leg Romanian deadlift', 'Front squat']);
   assert.deepEqual(questions.map((q) => q.key).sort(), ['club', 'date', 'time']);
 });
 
@@ -124,8 +124,8 @@ test('notes: one exercise per line, bullets and numbering, "40/20 x 4" timer', (
 });
 
 test('words that only fit one exercise together are matched; ambiguous ones ask', () => {
-  const { draft: d, questions } = draft('front squat, lateral raises, kettlebell cleans, dumbbell rows');
-  assert.deepEqual(d.exercises.slice(0, 3).map(nameOf), ['Light-barbell front squat', 'Dumbbell lateral raise', 'Kettlebell clean']);
-  const rows = questions.find((q) => q.key === 'match' && d.exercises[q.index].name === 'Dumbbell Rows');
-  assert.ok(rows && rows.options.some((o) => o.name === 'Dumbbell bent-over row'), 'dumbbell rows: asks which row');
+  const { draft: d, questions } = draft('front squat, lateral raises, kettlebell cleans, hang cleans, dumbbell rows, rows');
+  assert.deepEqual(d.exercises.slice(0, 5).map(nameOf), ['Front squat', 'Lateral raise', 'Clean', 'Hang clean', 'Dumbbell bent-over row']);
+  const rows = questions.find((q) => q.key === 'match' && d.exercises[q.index].name === 'Rows');
+  assert.ok(rows && rows.options.some((o) => o.name === 'Barbell bent-over row') && rows.options.some((o) => o.name === 'Kettlebell single-arm row'), 'rows: asks which row');
 });

@@ -240,7 +240,7 @@
     },
     {
       "id": 68,
-      "name": "Kettlebell clean",
+      "name": "Clean",
       "equipment": "Kettlebell",
       "summary": "Bringing the bell from between the legs to the shoulder in one smooth move. Powerful hips with a soft catch.",
       "key_points": [
@@ -305,7 +305,7 @@
     },
     {
       "id": 14,
-      "name": "Dumbbell walking lunge",
+      "name": "Walking lunge",
       "equipment": "Dumbbell",
       "summary": "Lunging forwards step after step with dumbbells at your sides. Builds the legs, glutes and balance.",
       "key_points": [
@@ -320,7 +320,7 @@
     },
     {
       "id": 15,
-      "name": "Single-leg dumbbell Romanian deadlift",
+      "name": "Single-leg Romanian deadlift",
       "equipment": "Dumbbell",
       "summary": "A one-leg hip hinge holding a dumbbell. Works the hamstrings and glutes and trains balance.",
       "key_points": [
@@ -335,7 +335,7 @@
     },
     {
       "id": 16,
-      "name": "Dumbbell farmer's carry",
+      "name": "Farmer's carry",
       "equipment": "Dumbbell",
       "summary": "Walking with a heavy dumbbell in each hand. Builds grip, shoulders, core and posture.",
       "key_points": [
@@ -355,7 +355,7 @@
     },
     {
       "id": 17,
-      "name": "Dumbbell renegade row - without a push-up",
+      "name": "Renegade row",
       "equipment": "Dumbbell",
       "summary": "Rowing one dumbbell at a time from a high plank. Works the back, arms and core.",
       "key_points": [
@@ -370,7 +370,7 @@
     },
     {
       "id": 18,
-      "name": "Dumbbell burpee deadlift",
+      "name": "Burpee deadlift",
       "equipment": "Dumbbell",
       "summary": "A burpee that finishes with a dumbbell deadlift. A full-body conditioning move.",
       "key_points": [
@@ -400,7 +400,7 @@
     },
     {
       "id": 20,
-      "name": "Dumbbell floor pullover",
+      "name": "Dumbbell pullover",
       "equipment": "Dumbbell",
       "summary": "Lowering a dumbbell behind the head while lying down. Works the lats, chest and core.",
       "key_points": [
@@ -460,7 +460,7 @@
     },
     {
       "id": 24,
-      "name": "Dumbbell diagonal chop",
+      "name": "Dumbbell woodchop",
       "equipment": "Dumbbell",
       "summary": "A diagonal chop across the body with one dumbbell. Works the core, especially the obliques.",
       "key_points": [
@@ -475,7 +475,7 @@
     },
     {
       "id": 58,
-      "name": "Dumbbell Russian twist",
+      "name": "Russian twist",
       "equipment": "Dumbbell",
       "summary": "Twisting the chest side to side while seated and leaning back. Works the core and obliques.",
       "key_points": [
@@ -505,7 +505,7 @@
     },
     {
       "id": 64,
-      "name": "Seated dumbbell concentration curl",
+      "name": "Concentration curl",
       "equipment": "Dumbbell",
       "summary": "A seated one-arm curl with the elbow braced on the thigh. Isolates the biceps.",
       "key_points": [
@@ -535,7 +535,7 @@
     },
     {
       "id": 66,
-      "name": "Dumbbell sumo squat",
+      "name": "Sumo squat",
       "equipment": "Dumbbell",
       "summary": "A wide-stance squat holding one dumbbell between the legs. Works the inner thighs, glutes and quads.",
       "key_points": [
@@ -565,7 +565,7 @@
     },
     {
       "id": 70,
-      "name": "Dumbbell biceps curl",
+      "name": "Bicep curl",
       "equipment": "Dumbbell",
       "summary": "Curling dumbbells up to the shoulders. Builds the biceps and forearms.",
       "key_points": [
@@ -580,7 +580,7 @@
     },
     {
       "id": 71,
-      "name": "Dumbbell front raise",
+      "name": "Front raise",
       "equipment": "Dumbbell",
       "summary": "Raising dumbbells forwards to shoulder height. Works the front of the shoulders.",
       "key_points": [
@@ -610,7 +610,7 @@
     },
     {
       "id": 73,
-      "name": "Dumbbell lateral raise",
+      "name": "Lateral raise",
       "equipment": "Dumbbell",
       "summary": "Raising dumbbells out to the sides. Works the side of the shoulders.",
       "key_points": [
@@ -655,7 +655,7 @@
     },
     {
       "id": 88,
-      "name": "Dumbbell man maker",
+      "name": "Man maker",
       "equipment": "Dumbbell",
       "summary": "A plank row on each side, then a squat clean and press. A tough full-body move.",
       "key_points": [
@@ -670,7 +670,7 @@
     },
     {
       "id": 25,
-      "name": "Light-barbell deadlift",
+      "name": "Barbell deadlift",
       "equipment": "Light barbell",
       "summary": "Lifting the bar from the floor to standing. Builds the whole back of the body: glutes, hamstrings and back.",
       "key_points": [
@@ -690,7 +690,7 @@
     },
     {
       "id": 26,
-      "name": "Light-barbell Romanian deadlift",
+      "name": "Barbell Romanian deadlift",
       "equipment": "Light barbell",
       "summary": "A hip hinge lowering the bar down the thighs. Works the hamstrings and glutes.",
       "key_points": [
@@ -705,7 +705,7 @@
     },
     {
       "id": 27,
-      "name": "Light-barbell bent-over row",
+      "name": "Barbell bent-over row",
       "equipment": "Light barbell",
       "summary": "Rowing the bar to the stomach from a hip hinge. Strengthens the upper back and arms.",
       "key_points": [
@@ -725,7 +725,7 @@
     },
     {
       "id": 28,
-      "name": "Light-barbell front squat",
+      "name": "Front squat",
       "equipment": "Light barbell",
       "summary": "A squat with the bar on the front of the shoulders. Builds the legs and an upright torso.",
       "key_points": [
@@ -740,7 +740,7 @@
     },
     {
       "id": 29,
-      "name": "Light-barbell push press",
+      "name": "Barbell push press",
       "equipment": "Light barbell",
       "summary": "A short knee dip that drives the bar overhead. Powerful legs and strong shoulders.",
       "key_points": [
@@ -755,7 +755,7 @@
     },
     {
       "id": 30,
-      "name": "Light-barbell thruster",
+      "name": "Barbell thruster",
       "equipment": "Light barbell",
       "summary": "A front squat straight into an overhead press. A full-body move for legs, shoulders and fitness.",
       "key_points": [
@@ -775,7 +775,7 @@
     },
     {
       "id": 59,
-      "name": "Light-barbell back squat",
+      "name": "Back squat",
       "equipment": "Light barbell",
       "summary": "A squat with the bar across the upper back. Builds the legs and glutes.",
       "key_points": [
@@ -790,7 +790,7 @@
     },
     {
       "id": 60,
-      "name": "Light-barbell overhead press",
+      "name": "Barbell overhead press",
       "equipment": "Light barbell",
       "summary": "Pressing the bar overhead with straight legs. Builds the shoulders, arms and core.",
       "key_points": [
@@ -805,7 +805,7 @@
     },
     {
       "id": 61,
-      "name": "Light-barbell reverse lunge",
+      "name": "Barbell reverse lunge",
       "equipment": "Light barbell",
       "summary": "A backward lunge with the bar on the upper back. Works the legs, glutes and balance.",
       "key_points": [
@@ -820,7 +820,7 @@
     },
     {
       "id": 62,
-      "name": "Light-barbell hang clean",
+      "name": "Hang clean",
       "equipment": "Light barbell",
       "summary": "A fast pull from the thighs, catching the bar on the shoulders. Builds power; learn it light.",
       "key_points": [
@@ -835,7 +835,7 @@
     },
     {
       "id": 31,
-      "name": "Skillmill forward run",
+      "name": "Skillmill run",
       "equipment": "Skillmill",
       "summary": "Running on the curved, self-powered belt. Cardio that builds leg drive.",
       "key_points": [
@@ -850,7 +850,7 @@
     },
     {
       "id": 32,
-      "name": "Skillmill supported high-knee drill",
+      "name": "Skillmill high knees",
       "equipment": "Skillmill",
       "summary": "High-knee running drill while holding the rails. Cardio and running technique.",
       "key_points": [
@@ -900,7 +900,7 @@
     },
     {
       "id": 35,
-      "name": "Skillmill lateral shuffle - experienced users",
+      "name": "Skillmill lateral shuffle",
       "equipment": "Skillmill",
       "summary": "Sideways shuffle on a slow belt, for experienced users. Agility and side-to-side strength.",
       "key_points": [
@@ -1014,7 +1014,7 @@
     },
     {
       "id": 41,
-      "name": "Burpee without a push-up",
+      "name": "Burpee",
       "equipment": "Mat and bodyweight",
       "summary": "Down to a plank and back up into a small jump. A full-body conditioning move.",
       "key_points": [
@@ -1059,7 +1059,7 @@
     },
     {
       "id": 44,
-      "name": "Inchworm walkout",
+      "name": "Inchworm",
       "equipment": "Mat and bodyweight",
       "summary": "Walking the hands out to a plank and back. A warm-up for the hamstrings, shoulders and core.",
       "key_points": [
@@ -1164,7 +1164,7 @@
     },
     {
       "id": 50,
-      "name": "Side-plank hip lift",
+      "name": "Side plank hip lift",
       "equipment": "Mat and bodyweight",
       "summary": "Lifting the hips from a forearm side plank. Works the obliques and side of the hips.",
       "key_points": [
@@ -1199,7 +1199,7 @@
     },
     {
       "id": 52,
-      "name": "Bodyweight lunge",
+      "name": "Forward lunge",
       "equipment": "Mat and bodyweight",
       "summary": "Stepping forwards into a lunge with no weights. Works the legs, glutes and balance.",
       "key_points": [
@@ -1259,7 +1259,7 @@
     },
     {
       "id": 56,
-      "name": "Standing calf raise",
+      "name": "Calf raise",
       "equipment": "Mat and bodyweight",
       "summary": "Rising onto the toes with no weights. Strengthens the calves and ankles.",
       "key_points": [
@@ -1274,7 +1274,7 @@
     },
     {
       "id": 57,
-      "name": "Bench tricep dip",
+      "name": "Tricep dip",
       "equipment": "Mat and bodyweight",
       "summary": "Lowering and pushing up from a bench behind you. Works the triceps.",
       "key_points": [
@@ -1304,7 +1304,7 @@
     },
     {
       "id": 74,
-      "name": "Hollow hold to rock",
+      "name": "Hollow rock",
       "equipment": "Mat and bodyweight",
       "summary": "Holding a hollow body shape and rocking in it. A tough exercise for the deep abs.",
       "key_points": [
@@ -1334,7 +1334,7 @@
     },
     {
       "id": 76,
-      "name": "Forearm plank hip dip",
+      "name": "Plank hip dip",
       "equipment": "Mat and bodyweight",
       "summary": "Rotating the hips side to side from a forearm plank. Works the obliques and core.",
       "key_points": [
