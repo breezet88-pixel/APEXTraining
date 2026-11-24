@@ -900,7 +900,7 @@ function musicView() {
     h('div', { class: 'toolrow' }, h('button', { class: 'btn', type: 'submit' }, 'Save'), test,
       h('button', { class: 'btn danger', type: 'button', onclick: () => { url.value = ''; title.value = ''; } }, 'Clear')),
     status),
-    h('p', { class: 'muted note' }, 'Each workout can also keep the playlist you played in that class (under the workout’s “Class playlist”).'));
+    h('p', { class: 'muted note' }, 'Each workout also keeps the playlist you played in that class (under the workout’s “🎵 Class playlist”). All of them appear in the members’ Music library, newest first.'));
 }
 
 // ---------- comments on social media ----------

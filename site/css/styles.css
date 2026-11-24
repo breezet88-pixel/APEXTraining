@@ -225,3 +225,12 @@ details.panel>summary{padding:4px 0}
 .btn.social.soon{opacity:.55;cursor:default;flex-wrap:wrap}
 .btn.social.soon small{flex-basis:100%;text-align:center;font-weight:600;font-size:.75rem}
 .comment-on{margin-top:20px}
+
+/* music library */
+.music-pill.on{background:var(--accent)}
+.music-list{display:grid;gap:10px;margin:10px 0}
+.music-item{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.music-play{display:flex;align-items:center;gap:14px;padding:14px;text-decoration:none;color:var(--fg)}
+.music-play strong{display:block;font-size:1.05rem}
+.music-dot{width:48px;height:48px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:1.1rem;flex:none}
+.music-class{display:block;padding:10px 14px;border-top:1px solid var(--line);font-weight:600;text-decoration:none;min-height:44px}

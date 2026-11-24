@@ -329,6 +329,48 @@ function homeView() {
     ].map(([num, label, href]) => h('a', { class: 'home-step', href }, h('span', { class: 'num', 'aria-hidden': 'true' }, num), h('span', {}, label)))));
 }
 
+// ---------- music library: every class's playlist, newest first ----------
+// Links open YouTube (on phones, the YouTube app), so members play them in their own YouTube account.
+function musicItems() {
+  if (!data) return [];
+  const seen = new Set();
+  const items = [];
+  for (const w of [...data.workouts].sort(byDate)) {
+    for (const p of w.playlist || []) {
+      if (!p.url || seen.has(p.url)) continue;
+      seen.add(p.url);
+      items.push({ url: p.url, title: p.title || `${w.title} playlist`, w });
+    }
+  }
+  return items;
+}
+function musicView() {
+  setTab('');
+  setBanner('');
+  const today = data.settings.music;
+  const items = musicItems();
+  let query = '';
+  const box = h('div', { class: 'music-list' });
+  const draw = () => {
+    const q = query.toLowerCase();
+    const shown = items.filter((x) => !q || [x.title, x.w.title, x.w.category, x.w.club, niceDate(x.w.date)].join(' ').toLowerCase().includes(q));
+    fill(box, shown.length ? shown.map((x) => h('div', { class: 'music-item' },
+      h('a', { class: 'music-play', href: x.url, target: '_blank', rel: 'noopener noreferrer' },
+        h('span', { class: 'music-dot', 'aria-hidden': 'true' }, '▶'),
+        h('span', {}, h('strong', {}, x.title), h('span', { class: 'sub muted' }, `📅 ${[niceDate(x.w.date), x.w.time].filter(Boolean).join(' · ')}`), h('span', { class: 'sub muted' }, `${x.w.title}${x.w.club ? ` · 📍 ${x.w.club}` : ''}`))),
+      h('a', { class: 'music-class', href: `#/w/${x.w.id}` }, 'Open the class →')))
+      : h('p', { class: 'muted' }, items.length ? 'No playlists match.' : `${SITE.coach} adds the playlist to each class after it has been run.`));
+  };
+  show(
+    h('h1', {}, '🎵 Music'),
+    h('p', { class: 'muted' }, 'Tap a playlist to play it on YouTube. If you are signed in to YouTube, it opens in your own account.'),
+    today?.url ? [h('h2', {}, 'Today'), musicCard(today)] : null,
+    h('h2', {}, 'From the classes'),
+    items.length > 6 ? h('input', { type: 'search', placeholder: 'Search by class, date or playlist', 'aria-label': 'Search music', oninput: (e) => { query = e.target.value; draw(); } }) : null,
+    box);
+  draw();
+}
+
 // ---------- this week: the coach's classes, Monday to Sunday ----------
 function nextClass() {
   const now = nowIn(SITE.timezone);
@@ -604,15 +646,16 @@ async function route() {
   else if (path === '/' || path === '') homeView();
   else if (path === '/workouts') listView();
   else if (path === '/week') weekView();
+  else if (path === '/music') musicView();
   else if (path === '/exercises') libraryView();
   else if ((m = path.match(/^\/e\/(\d+)$/))) exerciseView(Number(m[1]));
   else if (path === '/support') supportView();
   else if (path === '/comments') commentsView();
   else listView();
   document.getElementById('support-link').hidden = !data?.settings.donate?.url;
-  const ml = document.getElementById('music-link'); // the day's playlist, on every page
-  ml.hidden = !data?.settings.music?.url;
-  if (!ml.hidden) { ml.href = data.settings.music.url; ml.title = data.settings.music.title || 'Today’s playlist'; }
+  const ml = document.getElementById('music-link'); // the music library, on every page
+  ml.hidden = !musicItems().length && !data?.settings.music?.url;
+  ml.classList.toggle('on', path === '/music');
   window.scrollTo(0, 0);
 }
 addEventListener('hashchange', route);
