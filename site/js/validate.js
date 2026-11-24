@@ -209,10 +209,16 @@ export function cleanClasses(data) {
     if (!Array.isArray(v) || v.length > max) fail(`${label}: up to ${max}.`);
     return v;
   };
-  const types = list(data.types, 50, 'Class types').map((t, i) => ({
-    name: text(t?.name, 40, `Class type ${i + 1} name`, true),
-    description: text(t?.description, 500, `Class type ${i + 1} description`),
-  }));
+  const types = list(data.types, 50, 'Class types').map((t, i) => {
+    const minutes = intOrNull(t?.minutes, 1, 300, `Class type ${i + 1} length (minutes)`);
+    const link = httpsUrl(t?.link, `Class type ${i + 1} link`);
+    return {
+      name: text(t?.name, 40, `Class type ${i + 1} name`, true),
+      description: text(t?.description, 500, `Class type ${i + 1} description`),
+      ...(minutes ? { minutes } : {}),
+      ...(link ? { link } : {}),
+    };
+  });
   const names = new Set();
   for (const t of types) { const k = t.name.toLowerCase(); if (names.has(k)) fail(`The class type "${t.name}" is listed twice.`); names.add(k); }
   const slot = (c, label) => {

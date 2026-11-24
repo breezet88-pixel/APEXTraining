@@ -797,7 +797,9 @@ function classesView(saved = '') {
   };
 
   const drawTypes = () => fill(typesBox, c.types.map((t, i) => h('div', { class: 'panel' },
-    h('div', { class: 'row' }, field('Class type', inp(t, 'name', { type: 'text', maxlength: 40, required: true, placeholder: 'Grid' })), remove(c.types, i, drawTypes)),
+    h('div', { class: 'row' }, field('Class type', inp(t, 'name', { type: 'text', maxlength: 40, required: true, placeholder: 'Grid' })),
+      field('Length (minutes)', inp(t, 'minutes', { type: 'number', min: 1, max: 300, inputmode: 'numeric', placeholder: '45' })), remove(c.types, i, drawTypes)),
+    field('Link for members (optional, e.g. the Virgin Active class page)', inp(t, 'link', { type: 'url', maxlength: 500, placeholder: 'https://…' })),
     field('Short description (members see it on every workout of this type)', (() => {
       const el = h('textarea', { maxlength: 500, rows: 3, value: t.description || '', placeholder: 'What the class is and who it suits, in a sentence or two.' });
       el.addEventListener('input', () => { t.description = el.value; });

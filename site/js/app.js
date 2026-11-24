@@ -2,9 +2,9 @@
 // download or save any workout for offline use, look up exercises, and read and post comments.
 // Display only: the content comes from the data files the coach publishes.
 import { SITE } from './config.js';
-import { h, fill, metaLine, factsLine, libraryIndex, resolveWorkout } from './common.js';
+import { h, fill, metaLine, factsLine, libraryIndex, resolveWorkout, nowIn } from './common.js';
 import { buildWorkoutPage, fileName } from './download.js';
-import { typeInfo } from './classes.js';
+import { typeInfo, classesOn, addDays, weekdayOf, sameClass } from './classes.js';
 import { buildSegments, timerSummary, totalSeconds, secLabel } from './timer.js';
 
 const app = document.getElementById('app');
@@ -29,7 +29,7 @@ async function loadData() {
     const index = libraryIndex(lib);
     // "about": the coach's short description of the class type (Grid, Hyrox…), kept with the workout so it also works offline
     const withAbout = (x) => ({ ...x, about: typeInfo(cls, x.category)?.description || '' });
-    data = { workouts: (w.workouts || []).filter((x) => x.published).map((x) => withAbout(resolveWorkout(x, index))), settings: st, library: lib, index };
+    data = { workouts: (w.workouts || []).filter((x) => x.published).map((x) => withAbout(resolveWorkout(x, index))), settings: st, library: lib, index, classes: cls };
     return true;
   } catch { return false; }
 }
@@ -39,7 +39,7 @@ const byId = (id) => data?.workouts.find((w) => w.id === id) || savedAll()[id] |
 // ---------- small bits ----------
 function setBanner(msg) { banner.textContent = msg || ''; banner.hidden = !msg; }
 function setTab(name) {
-  for (const t of ['home', 'workouts', 'exercises', 'comments']) {
+  for (const t of ['home', 'week', 'workouts', 'exercises', 'comments']) {
     const a = document.getElementById(`tab-${t}`);
     a.classList.toggle('on', t === name);
     if (t === name) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
@@ -304,6 +304,12 @@ function homeView() {
       strip.length ? h('div', { class: 'strip', 'aria-label': 'Some of the moves' }, strip.map((x) =>
         h('a', { class: 'strip-card', href: `#/e/${x.id}` }, h('img', { src: x.image, alt: x.name, loading: 'lazy' })))) : null),
     music?.url ? musicCard(music) : null,
+    (() => {
+      const c = nextClass();
+      return c ? h('a', { class: 'move next', href: '#/week' },
+        h('span', { class: 'next-time' }, h('span', { class: 'sub' }, c.when), h('strong', {}, c.time)),
+        h('span', {}, h('span', { class: 'kicker' }, 'Next class'), h('strong', {}, c.type), h('span', { class: 'sub' }, `${c.club} · see the week`))) : null;
+    })(),
     move ? h('a', { class: 'move', href: `#/e/${move.id}` },
       h('img', { src: move.image, alt: '' }),
       h('span', {}, h('span', { class: 'kicker' }, 'Move of the day'), h('strong', {}, move.name), h('span', { class: 'sub' }, move.summary || 'Tap to see how to do it'))) : null,
@@ -312,6 +318,50 @@ function homeView() {
       ['2', 'Press start', latest ? `#/w/${latest.id}` : '#/workouts'],
       ['3', 'Learn the moves', '#/exercises'],
     ].map(([num, label, href]) => h('a', { class: 'home-step', href }, h('span', { class: 'num', 'aria-hidden': 'true' }, num), h('span', {}, label)))));
+}
+
+// ---------- this week: the coach's classes, Monday to Sunday ----------
+function nextClass() {
+  const now = nowIn(SITE.timezone);
+  for (let i = 0; i < 8; i++) {
+    const day = addDays(now.date, i);
+    const c = classesOn(data.classes, day).find((x) => i > 0 || x.time >= now.time);
+    if (c) return { ...c, when: i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : niceDate(day).split(',')[0] };
+  }
+  return null;
+}
+function weekView() {
+  setTab('week');
+  setBanner('');
+  const now = nowIn(SITE.timezone);
+  const monday = addDays(now.date, -((weekdayOf(now.date) + 6) % 7));
+  const days = [...Array(7)].map((_, i) => addDays(monday, i));
+  const shortDay = (d) => new Intl.DateTimeFormat('en-ZA', { timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'short' }).format(new Date(`${d}T00:00:00Z`));
+  const count = days.reduce((a, d) => a + classesOn(data.classes, d).length, 0);
+  show(
+    h('h1', {}, 'This week'),
+    h('p', { class: 'muted' }, count ? `${count} classes with the coach. Tap one to see what it is.` : 'No classes on the timetable this week.'),
+    days.map((d) => {
+      const list = classesOn(data.classes, d);
+      const today = d === now.date;
+      return h('section', { class: `week-day${today ? ' today' : ''}${d < now.date ? ' past' : ''}` },
+        h('h2', { class: 'day-head' }, today ? `Today · ${shortDay(d)}` : shortDay(d)),
+        list.length ? list.map((c) => {
+          const t = typeInfo(data.classes, c.type);
+          const w = data.workouts.find((x) => sameClass(x, c));
+          const done = d < now.date || (today && c.time < now.time);
+          return h('details', { class: 'week-class' },
+            h('summary', {},
+              h('span', { class: 'wc-time' }, c.time),
+              h('span', { class: 'wc-main' }, h('strong', {}, c.type),
+                h('span', { class: 'sub muted' }, [c.club, t?.minutes ? `${t.minutes} min` : '', c.adhoc ? 'extra class' : ''].filter(Boolean).join(' · '))),
+              w ? h('span', { class: 'wc-tag' }, 'Workout ✓') : null),
+            t?.description ? h('p', {}, t.description) : h('p', { class: 'muted' }, 'Ask the coach about this class.'),
+            h('div', { class: 'actions' },
+              w ? h('a', { class: 'btn', href: `#/w/${w.id}` }, done ? '▶ Redo this class' : '▶ Open the workout') : null,
+              t?.link ? h('a', { class: 'btn ghost', href: t.link, target: '_blank', rel: 'noopener noreferrer' }, 'Virgin Active page') : null));
+        }) : h('p', { class: 'muted rest' }, 'No classes'));
+    }));
 }
 
 // ---------- class timer ----------
@@ -543,6 +593,7 @@ async function route() {
   else if (!data) offlineView();                       // offline and nothing cached: show what is saved
   else if (path === '/' || path === '') homeView();
   else if (path === '/workouts') listView();
+  else if (path === '/week') weekView();
   else if (path === '/exercises') libraryView();
   else if ((m = path.match(/^\/e\/(\d+)$/))) exerciseView(Number(m[1]));
   else if (path === '/support') supportView();
