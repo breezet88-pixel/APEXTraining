@@ -19,19 +19,17 @@
 <body>
   <header class="top">
     <a class="brand" href="admin.html"><img src="icons/apex-logo.jpg" alt="Apex by Breeze logo" width="44" height="40"><span>Apex Training Admin</span></a>
-    <nav class="tabs" id="admin-tabs" aria-label="Coach" hidden>
-      <a href="#/workouts" data-tab="workouts">Workout Library</a>
-      <a href="#/library" data-tab="library">Exercise library</a>
-      <a href="#/classes" data-tab="classes">Class schedule</a>
-      <a href="#/music" data-tab="music">🎵 Music</a>
-      <a href="#/comments" data-tab="comments">Comments</a>
-      <a href="#/donations" data-tab="donations">Donations</a>
-      <a href="./">View app</a>
-      <a href="#" id="logout">Sign out</a>
+    <nav class="tabs appnav five" id="admin-tabs" aria-label="Coach" hidden>
+      <a href="#/workouts" data-tab="workouts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 10h2V8h2v8H4v-2H2zm4-3h2v10H6zm3 4h6v2H9zm7-4h2v10h-2zm2 1h2v2h2v4h-2v2h-2z"/></svg><span>Workouts</span></a>
+      <a href="#/library" data-tab="library"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="13" cy="4" r="2"/><path d="M10.5 7.5 7 9.5V13h2v-2.3l1.6-.9L9 17l-3 3 1.4 1.4L11 18l1-3 2 2v5h2v-6l-2.4-2.8.7-3.4 1.2 1.7H19v-2h-2.5l-1.8-2.7A2 2 0 0 0 13 6.8z"/></svg><span>Exercises</span></a>
+      <a href="#/classes" data-tab="classes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h2v2h6V2h2v2h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3zm-2 7v10h14V9zm2 2h4v4H7z"/></svg><span>Schedule</span></a>
+      <a href="#/music" data-tab="music"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3v11.6A3.5 3.5 0 1 0 11 18V8h8v6.6A3.5 3.5 0 1 0 21 18V3z"/></svg><span>Music</span></a>
+      <a href="#/more" data-tab="more"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="2.2"/><circle cx="12" cy="12" r="2.2"/><circle cx="19" cy="12" r="2.2"/></svg><span>More</span></a>
     </nav>
     <button id="install" class="btn small" hidden>Install app</button>
   </header>
   <main id="app"><p class="muted pad">Loading…</p></main>
+  <footer class="foot" id="foot"><button id="refresh" class="btn ghost small" type="button">↻ Refresh</button></footer>
   <script type="module" src="js/admin.js"></script>
 </body>
 </html>

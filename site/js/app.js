@@ -63,8 +63,7 @@ function card(w) {
     h('div', { class: 'card-body' },
       h('h3', {}, w.title),
       [w.time, w.club].some(Boolean) ? h('p', { class: 'class-line' }, [w.time, w.club].filter(Boolean).join(' · ')) : null, // the date is the group heading
-      w.category ? h('span', { class: 'chip static' }, w.category) : null,
-      h('p', { class: 'muted' }, metaLine(w))));
+      h('p', { class: 'muted' }, [w.category, metaLine(w)].filter(Boolean).join(' · '))));
 }
 
 function playlist(w) {
@@ -238,7 +237,7 @@ function listView() {
   };
   show(
     h('h1', {}, 'Workout Library'),
-    h('p', { class: 'muted' }, 'Every class the coach has run, newest first. Loved a class? Open it to redo it, download it, or save it for offline use.'),
+    h('p', { class: 'muted' }, 'Every class, newest first. Tap one to redo it.'),
     h('div', { class: 'toolbar' },
       h('input', { type: 'search', placeholder: 'Search by name, club, date or exercise', 'aria-label': 'Search workouts', oninput: (e) => { query = e.target.value; draw(); } }),
       clubs.length > 1 ? chips : null,
@@ -473,7 +472,7 @@ function libraryView() {
         note ? h('p', { class: 'muted note' }, note) : null,
         h('div', { class: 'grid' }, items.map((x) => h('a', { class: 'card', href: `#/e/${x.id}` },
           x.image ? h('img', { src: x.image, alt: '', loading: 'lazy' }) : h('div', { class: 'ph', 'aria-hidden': 'true' }, '🏋️'),
-          h('div', { class: 'card-body' }, h('h3', {}, x.name), x.summary ? h('p', { class: 'muted summary' }, x.summary) : null, h('span', { class: 'chip static' }, x.equipment))))));
+          h('div', { class: 'card-body' }, h('h3', {}, x.name), x.summary ? h('p', { class: 'muted summary' }, x.summary) : null)))));
     });
     fill(list, sections.some(Boolean) ? sections : h('p', { class: 'muted pad' }, lib.exercises.length ? 'That exercise is not in the library.' : 'The exercise library is empty.'));
     fill(online, query.trim() ? h('p', { class: 'google-search' }, 'Not what you need? ', googleLink(query.trim())) : null);
@@ -481,8 +480,8 @@ function libraryView() {
   };
   show(
     h('h1', {}, 'Exercise library'),
-    h('p', { class: 'muted' }, 'Not sure how to do an exercise? Look it up here. Can’t find it? Search for it and use “Search Google”.'),
-    lib.guide?.intro ? h('p', { class: 'muted' }, lib.guide.intro) : null,
+    h('p', { class: 'muted' }, 'Tap an exercise to see how to do it. Can’t find one? Search, then use “Search Google”.'),
+    lib.guide?.intro ? h('details', { class: 'about' }, h('summary', {}, 'About these exercises'), h('p', { class: 'muted' }, lib.guide.intro)) : null,
     h('div', { class: 'toolbar' },
       h('input', { type: 'search', placeholder: 'Search exercises', 'aria-label': 'Search exercises', oninput: (e) => { query = e.target.value; draw(); } }),
       online,
@@ -571,3 +570,9 @@ installBtn.addEventListener('click', async () => {
   else setBanner('To install on iPhone or iPad: tap the Share button, then “Add to Home Screen”.');
 });
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+
+// refresh: the installed app has no browser refresh button
+document.getElementById('refresh').addEventListener('click', async () => {
+  try { const r = await navigator.serviceWorker?.getRegistration(); await r?.update(); } catch { /* ignore */ }
+  location.reload();
+});

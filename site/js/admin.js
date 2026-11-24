@@ -260,7 +260,7 @@ function workoutsView(saved = '') {
   for (const w of list) { const k = w.date || ''; if (!days.has(k)) days.set(k, []); days.get(k).push(w); }
   show(
     h('div', { class: 'list-item' }, h('h1', {}, 'Workout Library'), h('a', { class: 'btn', href: '#/workouts/new' }, '+ New workout')),
-    h('p', { class: 'muted' }, 'Add each class after you run it: tap “+ Add workout” on the class, or “New workout”, then talk it through or paste your notes.'),
+    h('p', { class: 'muted' }, 'After a class, tap “+ Add workout” on it below.'),
     recent.length ? h('div', { class: 'panel' }, h('h2', {}, 'Your classes'),
       recent.map((c) => {
         const w = all.find((x) => sameClass(x, c));
@@ -366,9 +366,9 @@ function editView(id) {
       h('option', { value: 'circuit' }, 'Circuit: every exercise, then the next round'), h('option', { value: 'station' }, 'Station: all rounds of one exercise, then the next'));
     order.value = t.order || 'circuit';
     const upStatus = h('p', { role: 'status', class: 'muted' });
-    fill(timerBox, h('details', { class: 'panel', open: !!t.type || !existing },
-      h('summary', {}, '⏱ Class timer', t.type ? ` · ${TIMER_TYPES[t.type]}` : ''),
-      h('p', { class: 'muted' }, 'Set the timer you used, then explain the workout. Members get a timer that runs it, calling out each exercise.'),
+    fill(timerBox, h('details', { class: 'panel', open: !!t.type },
+      h('summary', {}, '⏱ Class timer', t.type ? ` · ${TIMER_TYPES[t.type]}` : ' (optional)'),
+      h('p', { class: 'muted' }, 'Members get a timer that runs it, calling out each exercise.'),
       field('Timer', type),
       t.type === 'intervals' || tab ? [
         h('div', { class: 'row' }, num('work_sec', 'Work (seconds)', tab ? '20' : '40'), num('rest_sec', 'Rest (seconds)', tab ? '10' : '20'), num('rounds', 'Rounds', tab ? '8' : '4')),
@@ -472,13 +472,14 @@ function editView(id) {
   const talkPanel = h(existing ? 'details' : 'div', { class: 'panel talk' },
     existing ? h('summary', {}, '🎤 Talk it through or paste notes (redraft this workout)') : h('h2', {}, '🎤 Talk it through, or paste your notes'),
     h('p', { class: 'muted' }, SR
-      ? 'Tap “Start talking” and describe the class: where and when, then each exercise with its sets, reps, time or rest. Or type it. Then tap “Draft my workout”: the app fills in the workout below and asks about anything it missed.'
-      : 'Describe the class here (on a phone, your keyboard’s microphone key lets you talk instead of type): where and when, then each exercise with its sets, reps, time or rest. Then tap “Draft my workout”.'),
+      ? 'Say or type each exercise with its sets, reps, time or rest, then tap “Draft my workout”.'
+      : 'Type each exercise with its sets, reps, time or rest (your keyboard’s microphone key lets you talk), then tap “Draft my workout”.'),
     talk,
     h('div', { class: 'toolrow' }, micBtn, draftBtn),
     field('📄 Or upload notes (a text file from your notes app)', notesFile),
-    h('p', { class: 'muted note' }, 'Notes work best one exercise per line, e.g. “Timer: 40/20 x 4”, then “10 kettlebell swings”, “12 goblet squats”. ',
-      'From a phone notes app you can also Share → Copy and paste here. Handwritten notes or a screenshot: use your phone’s “copy text from photo” (Google Lens, or Live Text on iPhone) and paste.'),
+    h('details', { class: 'about' }, h('summary', {}, 'Tips'),
+      h('p', { class: 'muted note' }, 'Notes work best one exercise per line, e.g. “Timer: 40/20 x 4”, then “10 kettlebell swings”, “12 goblet squats”. ',
+        'From a phone notes app you can also Share → Copy and paste here. Handwritten notes or a screenshot: use your phone’s “copy text from photo” (Google Lens, or Live Text on iPhone) and paste.')),
     talkStatus);
 
   // ---- 2. questions about anything the draft could not work out ----
@@ -933,8 +934,12 @@ function route() {
   if (!state.gh) return;
   tabs.hidden = false;
   const path = (location.hash || '#/workouts').slice(1);
-  const tab = ['library', 'classes', 'music', 'comments', 'donations'].find((t) => path.startsWith(`/${t}`)) || 'workouts';
-  tabs.querySelectorAll('[data-tab]').forEach((a) => a.classList.toggle('on', a.dataset.tab === tab));
+  const tab = ['library', 'classes', 'music', 'comments', 'donations', 'more'].find((t) => path.startsWith(`/${t}`)) || 'workouts';
+  const navTab = ['comments', 'donations'].includes(tab) ? 'more' : tab; // these live under More
+  tabs.querySelectorAll('[data-tab]').forEach((a) => {
+    a.classList.toggle('on', a.dataset.tab === navTab);
+    if (a.dataset.tab === navTab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+  });
   let m;
   if (path === '/workouts/new') editView(0);
   else if ((m = path.match(/^\/workouts\/(\d+)$/))) editView(Number(m[1]));
@@ -943,6 +948,7 @@ function route() {
   else if (tab === 'library') libraryView();
   else if (tab === 'classes') classesView();
   else if (tab === 'music') musicView();
+  else if (tab === 'more') moreView();
   else if (tab === 'comments') commentsView();
   else if (tab === 'donations') donationsView();
   else workoutsView();
@@ -963,12 +969,45 @@ async function start() {
   route();
 }
 
-document.getElementById('logout').addEventListener('click', (e) => {
-  e.preventDefault();
+function signOut() {
   keyClear();
   state.gh = null;
+  location.hash = '#/workouts';
   connectView('Signed out. The key is removed from this device.');
-});
+}
+
+// ---------- More: everything that is not used every day ----------
+function moreView() {
+  const item = (href, icon, title, sub, attrs = {}) => h('a', { class: 'more-item', href, ...attrs },
+    h('span', { class: 'more-icon', 'aria-hidden': 'true' }, icon), h('span', {}, h('strong', {}, title), h('span', { class: 'sub muted' }, sub)));
+  show(
+    h('h1', {}, 'More'),
+    h('div', { class: 'more-list' },
+      item('#/comments', '💬', 'Comments & reviews', 'Switch comments on and moderate them'),
+      item('#/donations', '♥', 'Donations', 'Your payment link for optional donations'),
+      item('./', '📱', 'Open the members’ app', 'See Apex Training as your members do'),
+      h('button', { class: 'more-item', type: 'button', onclick: signOut },
+        h('span', { class: 'more-icon', 'aria-hidden': 'true' }, '🚪'), h('span', {}, h('strong', {}, 'Sign out'), h('span', { class: 'sub muted' }, 'Removes your key from this phone')))));
+}
+
+// ---------- refresh (the installed app has no browser refresh button) ----------
+const foot = document.getElementById('foot');
+function refreshButton() {
+  const btn = h('button', { id: 'refresh', class: 'btn ghost small', type: 'button' }, '↻ Refresh');
+  btn.addEventListener('click', () => {
+    if (/^#\/(workouts|library)\/(new|\d+)$/.test(location.hash) || location.hash === '#/classes') {
+      fill(foot, h('span', { class: 'err' }, 'Anything not saved on this page will be lost. '),
+        h('button', { class: 'btn danger small', type: 'button', onclick: hardRefresh }, 'Refresh anyway'), ' ',
+        h('button', { class: 'btn ghost small', type: 'button', onclick: () => fill(foot, refreshButton()) }, 'Cancel'));
+    } else hardRefresh();
+  });
+  return btn;
+}
+async function hardRefresh() {
+  try { const r = await navigator.serviceWorker?.getRegistration(); await r?.update(); } catch { /* ignore */ }
+  location.reload();
+}
+fill(foot, refreshButton());
 addEventListener('hashchange', route);
 start();
 
