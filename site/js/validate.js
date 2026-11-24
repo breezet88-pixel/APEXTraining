@@ -145,6 +145,16 @@ function sources(list, label) {
   }));
 }
 
+// Up to 5 short "key points" for doing the exercise correctly, e.g. "Hinge: push the hips back"
+function keyPoints(list, label) {
+  if (list === undefined || list === null || list === '') return [];
+  if (typeof list === 'string') list = list.split('\n');
+  if (!Array.isArray(list)) fail(`${label}: key points must be a list.`);
+  const out = list.map((k, i) => text(k, 150, `${label} key point ${i + 1}`)).filter(Boolean);
+  if (out.length > 5) fail(`${label}: up to 5 key points.`);
+  return out;
+}
+
 export function cleanLibrary(data) {
   if (!data || !Array.isArray(data.exercises)) fail('exercises.json must contain an "exercises" list.');
   if (data.exercises.length > 1000) fail('The library can hold up to 1000 exercises.');
@@ -158,6 +168,7 @@ export function cleanLibrary(data) {
       id: intOrNull(e.id, 1, 1e9, `${label} id`) ?? fail(`${label} has no id.`),
       name: text(e.name, 120, `${label} name`, true),
       equipment: text(e.equipment, 40, `${label} equipment`),
+      key_points: keyPoints(e.key_points, label),
       movement: text(e.movement, 2000, `${label} movement description`),
       image_cue: text(e.image_cue, 1000, `${label} image cue`),
       image,

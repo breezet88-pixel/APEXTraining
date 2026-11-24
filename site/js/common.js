@@ -38,8 +38,8 @@ export function metaLine(w) {
 export const libraryIndex = (lib) => new Map((lib?.exercises || []).map((x) => [x.id, x]));
 export function resolveExercise(e, index) {
   const x = e.library_id ? index.get(e.library_id) : null;
-  if (!x) return { ...e, movement: '' };
-  return { ...e, name: x.name, equipment: x.equipment, image: x.image, movement: x.movement };
+  if (!x) return { ...e, movement: '', key_points: [] };
+  return { ...e, name: x.name, equipment: x.equipment, image: x.image, movement: x.movement, key_points: x.key_points || [] };
 }
 export const resolveWorkout = (w, index) => ({ ...w, exercises: w.exercises.map((e) => resolveExercise(e, index)) });
 

@@ -71,6 +71,9 @@ function playlist(w) {
     h('ul', {}, w.playlist.map((p, i) => h('li', {}, h('a', { href: p.url, target: '_blank', rel: 'noopener noreferrer' }, p.title || (w.playlist.length > 1 ? `Playlist ${i + 1}` : 'Open the playlist'))))));
 }
 
+// Short cues for doing an exercise correctly
+const keyPointList = (list) => (list?.length ? h('ul', { class: 'key-points' }, list.map((k) => h('li', {}, k))) : null);
+
 function exerciseList(w) {
   return h('ol', { class: 'exercises' }, w.exercises.map((e) => {
     const facts = factsLine(e);
@@ -80,7 +83,8 @@ function exerciseList(w) {
       e.image ? h('img', { src: e.image, alt: `How to do ${e.name}`, loading: 'lazy' }) : null,
       e.muscles ? h('p', {}, h('b', {}, 'Muscles: '), e.muscles) : null,
       e.equipment ? h('p', {}, h('b', {}, 'Equipment: '), e.equipment) : null,
-      e.movement ? h('p', {}, e.movement) : null,
+      keyPointList(e.key_points),
+      e.movement ? h('details', { class: 'how' }, h('summary', {}, 'Full description'), h('p', {}, e.movement)) : null,
       e.cues ? h('p', {}, e.movement ? h('b', {}, 'Coach’s notes: ') : null, e.cues) : null,
       !e.library_id && e.name ? h('p', { class: 'muted note' }, 'Not sure how? ', googleLink(e.name, 'Look it up on Google')) : null);
   }));
@@ -459,6 +463,7 @@ function exerciseView(id) {
       h('h1', {}, x.name),
       x.equipment ? h('span', { class: 'chip static' }, x.equipment) : null,
       x.image ? h('img', { class: 'hero', src: x.image, alt: `How to do ${x.name}` }) : null,
+      x.key_points?.length ? [h('h2', {}, 'Key points'), keyPointList(x.key_points)] : null,
       h('h2', {}, 'How to do it'),
       h('p', {}, x.movement),
       note?.note ? h('p', { class: 'support-card' }, h('b', {}, `${x.equipment}: `), note.note) : null,

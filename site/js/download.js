@@ -33,13 +33,14 @@ export async function buildWorkoutPage(w, siteName, pictureAsDataUrl) {
       (dataPic(pic) ? `<img src="${pic}" alt="How to do ${esc(e.name)}">` : '') +
       (e.muscles ? `<p><b>Muscles:</b> ${esc(e.muscles)}</p>` : '') +
       (e.equipment ? `<p><b>Equipment:</b> ${esc(e.equipment)}</p>` : '') +
+      (e.key_points?.length ? `<ul class="kp">${e.key_points.map((k) => `<li>${esc(k)}</li>`).join('')}</ul>` : '') +
       (e.movement ? `<p>${esc(e.movement)}</p>` : '') +
       (e.cues ? `<p>${e.movement ? '<b>Coach’s notes:</b> ' : ''}${esc(e.cues)}</p>` : '') + '</section>');
   }
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(w.title)} · ${esc(siteName)}</title>` +
     '<style>body{font:16px/1.5 system-ui,sans-serif;max-width:720px;margin:0 auto;padding:20px;color:#111}h1{margin:0 0 4px}.meta{color:#555;margin:0 0 12px}' +
     'section{border-top:1px solid #ddd;padding:14px 0;break-inside:avoid}h2{margin:0 0 4px;font-size:1.15rem}.facts{font-weight:600;color:#c40500;margin:0 0 8px}' +
-    'img{max-width:100%;height:auto;border-radius:8px;border:1px solid #eee}p{margin:6px 0}figure{margin:10px 0}figcaption{color:#555;font-size:.9rem}</style></head><body>' +
+    'img{max-width:100%;height:auto;border-radius:8px;border:1px solid #eee}p{margin:6px 0}figure{margin:10px 0}figcaption{color:#555;font-size:.9rem}.kp{margin:6px 0;padding-left:20px;font-weight:600}</style></head><body>' +
     `<p class="meta">${esc(siteName)} · Workout Library</p><h1>${esc(w.title)}</h1>` +
     `${when ? `<p class="meta"><b>Class:</b> ${esc(when)}</p>` : ''}<p class="meta">${esc(meta)}</p>` +
     `${w.about ? `<p><b>About ${esc(w.category)}:</b> ${esc(w.about)}</p>` : ''}${w.description ? `<p>${esc(w.description)}</p>` : ''}${timerHtml}${music ? `<p><b>Class playlist:</b></p><ul>${music}</ul>` : ''}${photos.join('')}${rows.join('')}</body></html>`;

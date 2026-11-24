@@ -52,6 +52,11 @@
       "id": 1,
       "name": "Two-handed kettlebell swing",
       "equipment": "Kettlebell",
+      "key_points": [
+        "Hinge: push the hips back, don't squat down",
+        "Snap the hips forwards to float the bell to chest height",
+        "Arms stay long and relaxed; stand tall without leaning back"
+      ],
       "movement": "Stand with feet slightly wider than hip-width, holding one kettlebell handle with both hands. Push the hips backwards, soften the knees and guide the bell between the upper thighs. Drive the hips forwards to stand tall, allowing the bell to swing to approximately chest height. Let it return between the thighs for the next repetition. The power comes from the hips; keep the arms long and avoid leaning backwards at the top.",
       "image_cue": "Side view showing the hips pushed backwards with the bell between the legs, followed by an upright position with the bell floating in front of the chest.",
       "image": "images/8188813bc481f457f04766a95e698133.jpg",
@@ -66,6 +71,11 @@
       "id": 2,
       "name": "Kettlebell goblet squat",
       "equipment": "Kettlebell",
+      "key_points": [
+        "Hold the bell close at chest height",
+        "Sit between the heels; knees follow the toes",
+        "Keep the chest up and heels down; drive up through the whole foot"
+      ],
       "movement": "Stand with feet approximately shoulder-width apart and toes turned slightly outwards. Hold the sides of the kettlebell handle with both hands at chest height, with the round body of the bell hanging below the hands. Bend the hips and knees to lower into a squat, keeping the heels grounded and knees following the direction of the toes. Push through the feet to return to standing.",
       "image_cue": "Front three-quarter view showing an upright start and a lowered squat, with the kettlebell held close to the chest in both positions.",
       "image": "images/db4269425d00eccc0b783aea68349987.jpg",
@@ -75,6 +85,11 @@
       "id": 3,
       "name": "Kettlebell suitcase deadlift",
       "equipment": "Kettlebell",
+      "key_points": [
+        "Bell beside the foot, hips back, back long",
+        "Stand up keeping the shoulders level; don't lean towards the bell",
+        "Lower along the same path, then switch sides"
+      ],
       "movement": "Place one kettlebell beside the right foot. Stand with feet hip-width apart, push the hips backwards and bend the knees enough to grasp the handle with the right hand. Keep the back long and shoulders level as you stand, bringing the bell up beside the right thigh. Lower along the same path without twisting or leaning sideways. Repeat on the other side.",
       "image_cue": "Front three-quarter view showing the kettlebell outside one foot in the lowered position, then hanging beside the same thigh when standing.",
       "image": "images/f2ee29f79ccfe0f16253986b2d218d8d.jpg",
@@ -84,6 +99,11 @@
       "id": 4,
       "name": "Kettlebell goblet lateral lunge",
       "equipment": "Kettlebell",
+      "key_points": [
+        "Big step to the side; that knee bends, the other leg stays straight",
+        "Sit the hips back with both feet flat",
+        "Chest faces forwards; push off the bent leg to return"
+      ],
       "movement": "Hold one kettlebell at chest height with both hands. Step widely to the right, bend the right knee and send the hips backwards while keeping the left leg relatively straight. Keep both feet grounded and the chest facing forwards. Push through the right foot to return to the centre, then repeat to the left.",
       "image_cue": "Front view showing one knee bent, the opposite leg extended sideways and the kettlebell centred at the chest.",
       "image": "images/5062a6f520e404752c2aba694d7bc311.jpg",
@@ -93,6 +113,11 @@
       "id": 5,
       "name": "Kettlebell front-rack reverse lunge",
       "equipment": "Kettlebell",
+      "key_points": [
+        "Bell racked at the shoulder, wrist straight, elbow by the ribs",
+        "Step back and lower the back knee towards the floor",
+        "Front foot stays planted; push through it to stand"
+      ],
       "movement": "Hold a kettlebell in the right hand beside the right shoulder, with the bell resting against the outside of the forearm and the elbow close to the ribs. Step the right foot backwards and bend both knees, lowering the rear knee towards the floor. Keep the left foot planted. Push through the left foot to return to standing, then change sides.",
       "image_cue": "Front three-quarter view showing the bell beside the right shoulder, the left foot in front and the right knee lowered behind.",
       "image": "images/2bdbbbc63db5ee606226e48c3889fe26.jpg",
@@ -102,6 +127,11 @@
       "id": 6,
       "name": "Kettlebell single-arm row",
       "equipment": "Kettlebell",
+      "key_points": [
+        "Hinge with a flat back, free hand on the front thigh",
+        "Pull the elbow back towards the hip",
+        "Torso stays still: no twisting to lift the bell"
+      ],
       "movement": "Place the left foot forwards and the right foot behind. Hinge forwards at the hips, rest the left hand on the left thigh and let a kettlebell hang from the right hand. Pull the right elbow backwards towards the hip, bringing the bell beside the lower ribs. Lower it under control while keeping the torso still. Repeat on the other side.",
       "image_cue": "Side three-quarter view showing the same hinged torso position in both panels: first with the working arm extended, then with the elbow drawn backwards.",
       "image": "images/5e2ebbb26a9d60fa6c1b4a2103bca9f1.jpg",
@@ -111,6 +141,11 @@
       "id": 7,
       "name": "Kettlebell single-arm floor press",
       "equipment": "Kettlebell",
+      "key_points": [
+        "Wrist straight, bell above the shoulder",
+        "Lower until the upper arm just touches the mat, elbow angled from the body",
+        "Press straight up and keep the shoulder blade on the floor"
+      ],
       "movement": "Lie on your back on a mat with knees bent and feet flat. Hold a kettlebell in the right hand above the right shoulder, with the bell resting against the back of the forearm. Bend the elbow until the upper arm gently touches the mat, keeping it diagonally away from the torso. Press the bell upwards again. Keep the wrist straight and repeat on the other side.",
       "image_cue": "Three-quarter view from the feet, showing the upper arm resting on the mat and then the arm extended vertically above the shoulder.",
       "image": "images/8682b4547ea692d0e5749b01855c0560.jpg",
@@ -120,6 +155,11 @@
       "id": 8,
       "name": "Kettlebell suitcase carry",
       "equipment": "Kettlebell",
+      "key_points": [
+        "Tall posture, shoulders and hips level",
+        "Don't lean away from or towards the bell",
+        "Slow, steady steps; swap hands each length"
+      ],
       "movement": "Stand tall with one kettlebell hanging from the right hand beside the thigh. Walk forwards using steady steps, keeping the shoulders and hips level. Maintain an upright torso as the single-sided weight challenges your balance. Keep the opposite hand empty and relaxed. Change the carrying hand for the next length.",
       "image_cue": "Front three-quarter view showing the athlete walking with one kettlebell, level shoulders and the free arm clearly visible.",
       "image": "images/9ac8767b79997da781aed7ca674c18ff.jpg",
@@ -129,6 +169,11 @@
       "id": 9,
       "name": "Kettlebell front-rack march",
       "equipment": "Kettlebell",
+      "key_points": [
+        "Bell racked at the shoulder and kept still",
+        "Lift each knee to hip height slowly",
+        "Stand tall and keep the hips level"
+      ],
       "movement": "Hold one kettlebell beside the right shoulder in the front-rack position, with the wrist straight and elbow close to the ribs. Stand tall and slowly lift the left knee towards hip height. Lower the foot, then lift the right knee. Continue alternating while keeping the kettlebell still and the pelvis level. Change the holding arm between sets.",
       "image_cue": "Front view showing one knee lifted, the supporting leg grounded and the bell held securely beside one shoulder.",
       "image": "images/33d5ba1f1a916a76429666fedfb42ee0.jpg",
@@ -138,6 +183,11 @@
       "id": 10,
       "name": "Half-kneeling kettlebell overhead press",
       "equipment": "Kettlebell",
+      "key_points": [
+        "Back knee under the hip, front foot flat",
+        "Squeeze the glute of the back leg and brace",
+        "Press straight up without leaning back; lower slowly"
+      ],
       "movement": "Kneel on the right knee on a mat, with the left foot planted in front and the left knee bent. Hold a kettlebell beside the right shoulder. Brace the abdomen and press the bell upwards until the hand is above the shoulder. Lower it slowly to the starting position, keeping the torso upright and lower back steady. Repeat on the other side.",
       "image_cue": "Side three-quarter view showing the rear knee on the mat, the front foot planted and the working arm moving from shoulder height to overhead.",
       "image": "images/4a01872a577c8a8b56f778c50a4884f0.jpg",
@@ -147,6 +197,11 @@
       "id": 11,
       "name": "High-plank kettlebell drag",
       "equipment": "Kettlebell",
+      "key_points": [
+        "Feet wide, hips square to the floor",
+        "Reach under the body and drag the bell across",
+        "Don't let the hips twist or lift"
+      ],
       "movement": "Begin in a high plank with palms on the floor beneath the shoulders and feet wider than hip-width. Place a kettlebell outside the right hand. Reach the left hand underneath the chest, grasp the handle and move the bell across to the outside of the left hand. Replace the palm on the floor, then change hands and reverse the movement. Keep the hips facing downwards.",
       "image_cue": "Front three-quarter view showing one palm supporting the body while the opposite hand reaches beneath the chest to move the kettlebell.",
       "image": "images/f08b09c4c4ef2af1b012fcb207ede21d.jpg",
@@ -156,6 +211,11 @@
       "id": 12,
       "name": "Kettlebell halo",
       "equipment": "Kettlebell",
+      "key_points": [
+        "Light bell held upside down at the chest",
+        "Circle it close around the head, shoulder to shoulder",
+        "Keep the body still; change direction each set"
+      ],
       "movement": "Stand upright, holding a light kettlebell by the sides of its handle in front of the chest. Guide the bell over the right shoulder, around the back of the head and over the left shoulder, returning it to the chest. Keep the trunk still and use a smooth, comfortable circle. Reverse direction. Perform this as a controlled movement.",
       "image_cue": "Three panels showing the bell at the chest, beside one side of the head and behind the head, with a curved directional arrow.",
       "image": "images/7cdb2b1231b2548de3299d365fad3730.jpg",
@@ -170,6 +230,11 @@
       "id": 68,
       "name": "Kettlebell clean",
       "equipment": "Kettlebell",
+      "key_points": [
+        "Hinge to start, bell close to the body",
+        "Drive the hips; elbow stays near the ribs",
+        "Let the bell roll softly onto the forearm: don't flip it"
+      ],
       "movement": "Stand with the kettlebell between the feet. Hinge at the hips with a flat back and grip the handle with one hand. Drive the hips forwards to stand, keeping the kettlebell close to the body, and guide it up so the elbow stays near the ribs and the bell rolls softly around the wrist into the rack position at the front of the shoulder. Lower it back between the legs with a hinge and repeat, then change hands.",
       "image_cue": "Side three-quarter view showing the hinge with the kettlebell between the legs, then standing tall with it racked at the front of the shoulder.",
       "image": "images/c892acfaa77ee17eb21200a8a6e1bd98.jpg",
@@ -179,6 +244,11 @@
       "id": 13,
       "name": "Dumbbell thruster",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Squat with the heels down and chest up",
+        "Use the drive out of the squat to press overhead",
+        "Finish tall with arms straight, then lower to the shoulders"
+      ],
       "movement": "Stand with a dumbbell beside each shoulder, palms facing inwards. Lower into a squat with the heels grounded. Push through the feet to stand, continuing the upward movement into an overhead press. Finish tall with both weights above the shoulders. Lower the dumbbells to shoulder height before beginning the next squat.",
       "image_cue": "Side three-quarter view showing the bottom of the squat with weights at the shoulders, followed by the standing overhead position.",
       "image": "images/b3a8bfcbed204731da17499feaaaef30.jpg",
@@ -193,6 +263,11 @@
       "id": 14,
       "name": "Dumbbell walking lunge",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Long step; lower the back knee towards the floor",
+        "Front knee over the ankle, torso upright",
+        "Weights stay still at your sides"
+      ],
       "movement": "Stand with one dumbbell hanging at each side. Take a controlled step forwards and bend both knees, lowering the rear knee towards the floor. Keep the front foot flat and torso upright. Push through the front foot, bring the rear leg forwards and step into the next lunge. Keep the weights steady beside the hips.",
       "image_cue": "Side view showing a long walking stride, both knees bent and one dumbbell hanging beside each hip.",
       "image": "images/ce83409f11509f8e8855ce77bddfd13c.jpg",
@@ -202,6 +277,11 @@
       "id": 15,
       "name": "Single-leg dumbbell Romanian deadlift",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Soft standing knee, hips square to the floor",
+        "Hinge forwards as the back leg reaches behind",
+        "Keep the back long; lower only as far as you control"
+      ],
       "movement": "Stand on the left leg with a slight bend in the knee, holding one dumbbell in the right hand. Hinge forwards at the left hip while extending the right leg behind you. Let the weight lower towards the left shin, keeping the hips facing the floor and the back long. Return to standing under control, then change sides.",
       "image_cue": "Side view showing the torso leaning forwards, the rear leg extending backwards and the dumbbell hanging near the standing leg.",
       "image": "images/b2be19c516915dba16f8cea8b69b6897.jpg",
@@ -211,6 +291,11 @@
       "id": 16,
       "name": "Dumbbell farmer's carry",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Stand tall with shoulders back and level",
+        "Tight grip, weights clear of the legs",
+        "Short, steady steps; turn with small steps"
+      ],
       "movement": "Stand with a dumbbell in each hand, arms straight beside the body and palms facing the thighs. Walk forwards with controlled steps, keeping the torso upright, shoulders level and weights clear of the legs. Maintain a firm grip. When turning, use several small steps before walking back.",
       "image_cue": "Front three-quarter view showing the athlete walking with two equally sized dumbbells hanging beside the thighs.",
       "image": "images/f21d0d8959d83324be09bbb80502f38d.jpg",
@@ -225,6 +310,11 @@
       "id": 17,
       "name": "Dumbbell renegade row - without a push-up",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Feet wide for balance, hands under the shoulders",
+        "Row one dumbbell to the ribs",
+        "Keep the hips level: minimise twisting"
+      ],
       "movement": "Use stable, flat-sided dumbbells. Grip their handles in a high-plank position, with the weights beneath the shoulders and feet wider than the hips. Pull the right dumbbell towards the lower ribs while the left remains grounded. Lower it carefully, then change arms. Keep the hips level and minimise rotation throughout.",
       "image_cue": "Front three-quarter view showing one dumbbell grounded beneath the shoulder and the other raised beside the ribs, with both legs extended.",
       "image": "images/0d364dd6ef8ffaf76f84c99a76a75baf.jpg",
@@ -234,6 +324,11 @@
       "id": 18,
       "name": "Dumbbell burpee deadlift",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Hinge or squat to set the dumbbells down",
+        "Step back to a plank, then step in again",
+        "Brace and stand up with a flat back"
+      ],
       "movement": "Start standing with two dumbbells at your sides. Bend the hips and knees to place them on the floor beside the feet. Put both palms on the floor between the weights and step the feet backwards into a plank. Step forwards again, regrip the dumbbells, brace the torso and stand up. The weights stay grounded during the plank.",
       "image_cue": "Four panels: standing with weights; crouching with palms on the floor; high plank between the weights; standing with weights again.",
       "image": "images/7938ffda782dabc462ef4f2362b7754c.jpg",
@@ -243,6 +338,11 @@
       "id": 19,
       "name": "Dumbbell glute bridge",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Dumbbell across the hips, feet flat",
+        "Push through the heels to lift the hips",
+        "Squeeze the glutes at the top; don't over-arch the back"
+      ],
       "movement": "Lie on your back with knees bent and feet flat. Place one dumbbell horizontally across the front of the hips and secure it with both hands. Press through the feet and lift the hips until the shoulders, hips and knees form a sloping line. Lower slowly, keeping the movement at the hips and avoiding an excessive arch through the lower back.",
       "image_cue": "Side view showing the hips near the mat, followed by the raised bridge, with the dumbbell held across the pelvis.",
       "image": "images/7c8299db64080691c817981410f7d693.jpg",
@@ -252,6 +352,11 @@
       "id": 20,
       "name": "Dumbbell floor pullover",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Hold one end of a light dumbbell with both hands",
+        "Lower behind the head with soft elbows, ribs down",
+        "Stop where the shoulders are comfortable"
+      ],
       "movement": "Lie on a mat with knees bent and feet flat. Hold one light, fixed-weight dumbbell above the chest with both hands securely cupping one end. Maintain a slight bend in the elbows as you lower the arms towards the floor behind the head. Stop within a comfortable shoulder range, then bring the weight back above the chest while keeping the ribs down.",
       "image_cue": "Side view showing the dumbbell above the chest and then behind the head, with an arrow tracing the curved movement of the arms.",
       "image": "images/d8a32bc7a70a61aa14ab148c05c9ae0a.jpg",
@@ -261,6 +366,11 @@
       "id": 21,
       "name": "Alternating dumbbell overhead press",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Dumbbells at the shoulders, stomach braced",
+        "Press one arm straight up while the other stays at the shoulder",
+        "Torso stays centred: no leaning to the side"
+      ],
       "movement": "Stand with feet hip-width apart and a dumbbell beside each shoulder, palms facing inwards. Press the right dumbbell overhead while the left remains at shoulder height. Lower the right weight, then press the left. Keep the abdomen braced, knees softly unlocked and torso centred throughout.",
       "image_cue": "Front view showing one arm extended overhead while the opposite arm remains bent with its dumbbell beside the shoulder.",
       "image": "images/f8228bfb4ab7087e8b67e3d070e35140.jpg",
@@ -270,6 +380,11 @@
       "id": 22,
       "name": "Dumbbell bent-over reverse fly",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Hinge forwards with a flat back and soft knees",
+        "Open the arms wide with a small bend in the elbows",
+        "Stay bent over: don't stand up to lift"
+      ],
       "movement": "Stand with knees slightly bent and hinge forwards at the hips. Let two light dumbbells hang beneath the chest, palms facing each other. Keep a small bend in the elbows and open the arms out to the sides until the upper arms are approximately level with the torso. Lower slowly while maintaining the same back position.",
       "image_cue": "Rear three-quarter view showing the hinged torso and arms opening outwards into a broad \"T\" shape.",
       "image": "images/cb33e97c15508611b3387ef2300195e4.jpg",
@@ -279,6 +394,11 @@
       "id": 23,
       "name": "Dumbbell reverse lunge to knee drive",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Step back into a lunge, front foot planted",
+        "Drive up and lift the back knee to hip height",
+        "Balance for a moment before the next rep"
+      ],
       "movement": "Hold a dumbbell beside each thigh. Step the right foot backwards and lower into a lunge, keeping the left foot planted. Push through the left foot to stand, bringing the right knee forwards and upwards towards hip height. Balance briefly, then lower the foot to reset. Repeat on the other side. Keep this version grounded, without a jump.",
       "image_cue": "Side view showing the right leg behind in the lunge, then the same right knee lifted forwards while the athlete balances on the left leg.",
       "image": "images/cf41a654956629904bb83a4270d8710c.jpg",
@@ -288,6 +408,11 @@
       "id": 24,
       "name": "Dumbbell diagonal chop",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Start at one shoulder, finish outside the opposite knee",
+        "Turn the hips and shoulders together; pivot the feet",
+        "Control the weight both ways"
+      ],
       "movement": "Hold one light dumbbell securely in both hands near the right shoulder. Guide it diagonally across the body towards the outside of the left thigh, slightly bending the knees. Turn the hips and shoulders together and allow the feet to pivot. Return along the same diagonal path, then change sides. Use controlled movement throughout.",
       "image_cue": "Front three-quarter view showing a high starting position beside one shoulder and a low finishing position beside the opposite thigh, joined by a diagonal arrow.",
       "image": "images/1ae4615a72bdc228595e9998a5067dd2.jpg",
@@ -297,6 +422,11 @@
       "id": 58,
       "name": "Dumbbell Russian twist",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Lean back with a long spine and braced stomach",
+        "Turn the chest, not just the arms",
+        "Keep the heels down to make it easier"
+      ],
       "movement": "Sit on the mat with the knees bent and hold a light dumbbell (or one in each hand) close to the chest. Lean back slightly with a long spine and brace the stomach; keep the heels down, or lift them to make it harder. Rotate the chest and dumbbell to one side, return to the middle and rotate to the other side. Move with control and turn from the ribs rather than just swinging the arms.",
       "image_cue": "Front three-quarter view showing the seated lean-back position with the dumbbell held at the chest, rotated to one side.",
       "image": "images/7d2313a809954c693d10dd0521682a65.jpg",
@@ -306,6 +436,11 @@
       "id": 63,
       "name": "Dumbbell calf raise",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Stand tall, dumbbells by the sides",
+        "Rise high onto the balls of the feet and pause",
+        "Lower the heels slowly"
+      ],
       "movement": "Stand tall with the feet hip-width apart and a dumbbell in each hand by the sides. Rise onto the balls of the feet as high as you can, pause briefly, then lower the heels slowly to the floor. Keep the body tall, the knees straight but not locked and the weight over the big toes.",
       "image_cue": "Side three-quarter view showing the heels down with dumbbells by the sides, then raised high onto the balls of the feet.",
       "image": "images/ad733609e97d158b03c7f62047eaeda5.jpg",
@@ -315,6 +450,11 @@
       "id": 64,
       "name": "Seated dumbbell concentration curl",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Back of the upper arm against the inner thigh",
+        "Curl to the shoulder without moving the upper arm",
+        "Lower slowly to a straight arm"
+      ],
       "movement": "Sit on the end of a bench with the feet wide. Hold a dumbbell in one hand and rest the back of that upper arm against the inside of the thigh, with the other hand on the opposite knee. Curl the dumbbell towards the shoulder without moving the upper arm, squeeze, then lower slowly until the arm is straight. Complete the set, then change arms.",
       "image_cue": "Front three-quarter view showing the seated position with the working arm straight against the inner thigh, then the dumbbell curled to the shoulder.",
       "image": "images/8dd61629a89cb126f9b867cae7fbab51.jpg",
@@ -324,6 +464,11 @@
       "id": 65,
       "name": "Dumbbell lateral lunge",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Wide step to the side; sit the hips back",
+        "Bent knee over the toes, other leg straight",
+        "Chest lifted, both feet flat"
+      ],
       "movement": "Stand tall with a dumbbell in each hand by the sides. Take a wide step to one side, push the hips back and bend that knee while keeping the other leg straight, letting the dumbbells come down either side of the bent knee. Keep the chest lifted and both feet flat. Push through the bent leg to return to the start and alternate sides.",
       "image_cue": "Front three-quarter view showing a standing start with dumbbells by the sides, then a wide side step with one knee bent and the other leg straight.",
       "image": "images/d2f431aa1b245651dce00a5dd85107bf.jpg",
@@ -333,6 +478,11 @@
       "id": 66,
       "name": "Dumbbell sumo squat",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Wide stance, toes turned out",
+        "Push the knees out over the toes as you lower",
+        "Chest up; drive through the heels to stand"
+      ],
       "movement": "Stand with the feet wider than the shoulders and the toes turned out. Hold one dumbbell vertically by one end with both hands, letting it hang between the legs. Push the hips back and bend the knees to lower, keeping the chest lifted and the knees pushing out over the toes. Drive through the heels to stand tall.",
       "image_cue": "Front three-quarter view showing a wide stance with one dumbbell hanging between the legs, then the bottom of the squat with the knees out over the toes.",
       "image": "images/52157e9f1d46d8696644669ff0e51720.jpg",
@@ -342,6 +492,11 @@
       "id": 69,
       "name": "Dumbbell floor press",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Upper arms at about 45 degrees from the body",
+        "Lower until the upper arms touch the floor",
+        "Press up over the chest; keep the wrists straight"
+      ],
       "movement": "Lie on the mat with the knees bent and the feet flat, holding a dumbbell in each hand. Rest the upper arms on the floor at about 45 degrees from the body, with the dumbbells above the chest. Press both dumbbells up until the arms are straight above the shoulders, then lower slowly until the upper arms touch the floor.",
       "image_cue": "Side view showing the upper arms resting on the floor with the dumbbells at the chest, then pressed up with straight arms.",
       "image": "images/024ee51a2bf83db523291bfe31eb26db.jpg",
@@ -351,6 +506,11 @@
       "id": 70,
       "name": "Dumbbell biceps curl",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Elbows stay by the sides",
+        "Curl up, squeeze, then lower slowly",
+        "No swinging: keep the body still"
+      ],
       "movement": "Stand tall with a dumbbell in each hand, arms by the sides and palms facing forwards. Keeping the elbows close to the body, curl the dumbbells up towards the shoulders. Squeeze at the top, then lower slowly until the arms are straight. Avoid swinging the body to lift the weight.",
       "image_cue": "Side three-quarter view showing the arms straight with dumbbells by the thighs, then curled up to the shoulders with the elbows by the sides.",
       "image": "images/76137fc7ff9efa3dce620e48c69750e5.jpg",
@@ -360,6 +520,11 @@
       "id": 71,
       "name": "Dumbbell front raise",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Light dumbbells, small bend in the elbows",
+        "Raise to shoulder height only",
+        "Lower slowly; don't rock the body"
+      ],
       "movement": "Stand tall with a dumbbell in each hand in front of the thighs, palms facing the body. Brace the stomach and, with a small bend in the elbows, raise both dumbbells forwards to shoulder height. Pause, then lower slowly. Keep the body still and use light dumbbells.",
       "image_cue": "Side view showing the dumbbells in front of the thighs, then raised forwards to shoulder height with nearly straight arms.",
       "image": "images/6d024c866f715467156d16bc3adccfe6.jpg",
@@ -369,6 +534,11 @@
       "id": 72,
       "name": "Dumbbell bent-over row",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Hinge with a flat back, chest well forwards",
+        "Pull the dumbbells to the lower ribs, elbows close",
+        "Squeeze the shoulder blades; hold the hinge"
+      ],
       "movement": "Stand holding a dumbbell in each hand, soften the knees and hinge forwards at the hips until the chest is well forwards, with a flat back and the dumbbells hanging below the shoulders. Pull the dumbbells towards the lower ribs, keeping the elbows close to the body and squeezing the shoulder blades together. Lower with control and keep the hinge throughout.",
       "image_cue": "Side three-quarter view showing the hip hinge with dumbbells hanging, then pulled up towards the ribs with the elbows behind the body.",
       "image": "images/ff97ea6c7619becd8c09e490a74b8ee5.jpg",
@@ -378,6 +548,11 @@
       "id": 73,
       "name": "Dumbbell lateral raise",
       "equipment": "Dumbbell",
+      "key_points": [
+        "Light dumbbells, small bend in the elbows",
+        "Raise out to the sides to shoulder height",
+        "Keep the shoulders down away from the ears"
+      ],
       "movement": "Stand tall with a dumbbell in each hand by the sides, palms facing in. With a small bend in the elbows, raise the arms out to the sides until they reach shoulder height. Pause, then lower slowly. Keep the shoulders down away from the ears and use light dumbbells.",
       "image_cue": "Front view showing the dumbbells by the sides, then raised out to shoulder height with nearly straight arms.",
       "image": "images/d761157acb0a631437cf2a866797f576.jpg",
@@ -387,6 +562,11 @@
       "id": 25,
       "name": "Light-barbell deadlift",
       "equipment": "Light barbell",
+      "key_points": [
+        "Bar close to the shins, hips back, back flat",
+        "Brace, then push the floor away to stand",
+        "Bar stays close to the legs all the way"
+      ],
       "movement": "Stand with feet about hip-width apart and the bar close to the shins. Bend at the hips and knees, taking an overhand grip just outside the legs. Brace the torso and push through the feet to stand, keeping the bar close to the body. Finish upright, then lower under control. Use a starting height that allows the back to remain steady.",
       "image_cue": "Side three-quarter view showing the bar close to the shins at the start and against the thighs at the standing finish.",
       "image": "images/5cd4786dbaac6e445c35745f8cc5769c.jpg",
@@ -401,6 +581,11 @@
       "id": 26,
       "name": "Light-barbell Romanian deadlift",
       "equipment": "Light barbell",
+      "key_points": [
+        "Soft knees; push the hips back",
+        "Bar slides close down the thighs",
+        "Lower only as far as the back stays flat"
+      ],
       "movement": "Begin standing with the bar in front of the thighs, arms straight and hands just outside the hips. Soften the knees, push the hips backwards and let the bar travel close to the legs. Lower only as far as you can maintain a steady back position. Bring the hips forwards to stand again, keeping the knees slightly bent during the lowering phase.",
       "image_cue": "Side view showing an upright start and a clear hip hinge, with the bar below the knees and the hips pushed backwards.",
       "image": "images/5b43d1ae893f58260911c68d67004e3f.jpg",
@@ -410,6 +595,11 @@
       "id": 27,
       "name": "Light-barbell bent-over row",
       "equipment": "Light barbell",
+      "key_points": [
+        "Hinge with soft knees and a flat back",
+        "Pull the bar to the upper stomach, elbows back",
+        "Keep the torso angle the same every rep"
+      ],
       "movement": "Hold the bar with an overhand grip slightly wider than shoulder-width. Soften the knees and hinge forwards, allowing the bar to hang beneath the shoulders. Pull it towards the upper abdomen by drawing both elbows backwards. Lower to straight arms while keeping the torso at the same angle throughout.",
       "image_cue": "Side three-quarter view showing the bar hanging below the shoulders, then drawn towards the torso, with the back position unchanged.",
       "image": "images/d6fe2029aebe626117826731b437c127.jpg",
@@ -424,6 +614,11 @@
       "id": 28,
       "name": "Light-barbell front squat",
       "equipment": "Light barbell",
+      "key_points": [
+        "Elbows high, bar on the front of the shoulders",
+        "Squat with the chest up and heels down",
+        "Drive up through the middle of the foot"
+      ],
       "movement": "Support the bar across the fronts of the shoulders, with hands just outside shoulder-width and elbows pointing forwards. Stand with feet around shoulder-width apart. Bend the hips and knees to lower into a squat, keeping the chest lifted and heels grounded. Push through the feet to stand, keeping the bar balanced over the middle of the feet.",
       "image_cue": "Side three-quarter view showing the bar resting on the shoulders, elbows pointing forwards and the athlete in the lowered squat position.",
       "image": "images/cdedaf610ac8804036779cd1794d4872.jpg",
@@ -433,6 +628,11 @@
       "id": 29,
       "name": "Light-barbell push press",
       "equipment": "Light barbell",
+      "key_points": [
+        "Short dip at the knees, torso tall",
+        "Drive with the legs, then finish with the arms",
+        "Lower to the shoulders with control"
+      ],
       "movement": "Begin upright with the bar across the fronts of the shoulders. Make a shallow knee dip while keeping the torso tall. Straighten the legs to drive the bar upwards, then extend the arms to finish overhead. Lower the bar to the shoulders under control. The leg movement is a short dip and drive.",
       "image_cue": "Two side-view panels: a shallow knee bend with the bar at the shoulders, followed by a tall position with the bar overhead.",
       "image": "images/383c455784ee4ed37ebeaad8c069a7cf.jpg",
@@ -442,6 +642,11 @@
       "id": 30,
       "name": "Light-barbell thruster",
       "equipment": "Light barbell",
+      "key_points": [
+        "Front squat with elbows high and heels down",
+        "Drive up and press overhead in one movement",
+        "Finish tall with the bar over the middle of the feet"
+      ],
       "movement": "Hold the bar across the fronts of the shoulders and lower into a front squat. Push through the feet to rise, using the upward drive to continue into an overhead press. Finish with the legs and arms extended and the bar balanced above the body. Return the bar to the shoulders before starting the next squat.",
       "image_cue": "Three panels showing the front squat, the rising transition and the standing overhead finish.",
       "image": "images/6865b26fd1ba4901986295c075272ea9.jpg",
@@ -456,6 +661,11 @@
       "id": 59,
       "name": "Light-barbell back squat",
       "equipment": "Light barbell",
+      "key_points": [
+        "Bar on the upper back, not the neck",
+        "Hips back, knees over the toes, chest up",
+        "Use a rack to take and return the bar"
+      ],
       "movement": "Take the bar from a rack set at about chest height and rest it across the upper back, not the neck, with the hands just outside the shoulders. Step back, place the feet about shoulder-width apart and brace. Push the hips back and bend the knees to lower, keeping the chest lifted and the knees tracking over the toes. Drive through the whole foot to stand, then return the bar to the rack.",
       "image_cue": "Front three-quarter view showing the bar across the upper back, a tall start and the bottom of the squat with the knees over the toes.",
       "image": "images/3979d6c8260bab078ab9fe3c626d6ceb.jpg",
@@ -465,6 +675,11 @@
       "id": 60,
       "name": "Light-barbell overhead press",
       "equipment": "Light barbell",
+      "key_points": [
+        "Brace the stomach and squeeze the glutes",
+        "Press straight up, moving the head out of the way",
+        "Legs stay straight: no dipping"
+      ],
       "movement": "Start standing with the bar resting across the fronts of the shoulders and the hands just outside shoulder width. Brace the stomach and squeeze the glutes. Press the bar straight up, moving the head back slightly to let it pass, then bring the head through once the bar is above the forehead. Finish with the arms straight and the bar over the middle of the feet, then lower it back to the shoulders with control. Keep the legs straight throughout.",
       "image_cue": "Front view showing the bar at the shoulders, then pressed overhead with straight arms and the body upright.",
       "image": "images/011bc3a14dbf31b1938651ca01c275b7.jpg",
@@ -474,6 +689,11 @@
       "id": 61,
       "name": "Light-barbell reverse lunge",
       "equipment": "Light barbell",
+      "key_points": [
+        "Bar on the upper back, taken from a rack",
+        "Step back and lower the back knee towards the floor",
+        "Torso upright; push through the front heel"
+      ],
       "movement": "Rest the bar across the upper back, taken from a rack set at about chest height. Stand tall with the feet hip-width apart and brace. Step one foot back and lower until the back knee is just above the floor, keeping the front knee over the ankle and the chest upright. Push through the front heel to return to standing and alternate legs.",
       "image_cue": "Side view showing the bar across the upper back and the bottom of the reverse lunge, with the torso upright and the back knee just above the floor.",
       "image": "images/05993d61474281bbbdc485bfa5e65cf2.jpg",
@@ -483,6 +703,11 @@
       "id": 62,
       "name": "Light-barbell hang clean",
       "equipment": "Light barbell",
+      "key_points": [
+        "Start at mid-thigh with straight arms",
+        "Drive the hips and legs, keeping the bar close",
+        "Fast elbows to catch on the shoulders; learn it light"
+      ],
       "movement": "Stand holding the bar at mid-thigh with the hands just outside the thighs and the arms straight. Hinge slightly at the hips, then drive the hips and legs to stand tall quickly, letting the bar travel close to the body. Pull yourself under the bar, turning the elbows quickly forwards to catch it on the fronts of the shoulders in a partial squat, then stand tall. Lower the bar to the thighs with control. Learn this with a very light bar and an experienced coach before adding speed.",
       "image_cue": "Side view showing the bar at mid-thigh, then caught on the fronts of the shoulders with the elbows high and the knees slightly bent.",
       "image": "images/56508aca95d27d4fcf825f7a7dcc4856.jpg",
@@ -492,6 +717,11 @@
       "id": 31,
       "name": "Skillmill forward run",
       "equipment": "Skillmill",
+      "key_points": [
+        "Start walking, then build to a run",
+        "Stand tall, head in line with the body",
+        "Opposite arm swings with each knee"
+      ],
       "movement": "Face forwards and begin walking before building to a controlled run. Alternate the legs, pushing the belt backwards with each foot contact. Swing the opposite arm forwards as each knee advances, keeping the torso tall and head aligned with the body.",
       "image_cue": "Full side view showing the curved belt, one knee moving forwards, the opposite leg extending behind and both arms clear of the rails.",
       "image": "images/200f5fc82def288020f0a5ee1e3b4aa0.jpg",
@@ -501,6 +731,11 @@
       "id": 32,
       "name": "Skillmill supported high-knee drill",
       "equipment": "Skillmill",
+      "key_points": [
+        "Hold the rails for support",
+        "Lift the knees towards hip height",
+        "Short, controlled steps at a pace you can balance"
+      ],
       "movement": "Face forwards and hold the fixed side rails for support. Lift one knee towards hip height while the other foot pushes the belt backwards. Alternate with short, controlled steps, maintaining an upright torso. Begin at a pace that allows you to stay balanced.",
       "image_cue": "Side view showing both hands on the rails, one knee raised in front and the opposite foot contacting the belt.",
       "image": "images/d0bbb99b7023fcd55936040ef583923e.jpg",
@@ -510,6 +745,11 @@
       "id": 33,
       "name": "Skillmill high sled push",
       "equipment": "Skillmill",
+      "key_points": [
+        "Hands on the high handles, resistance you can manage",
+        "Lean in with a braced, long back",
+        "Drive each foot down and back"
+      ],
       "movement": "Select manageable resistance and place both hands on the higher front pushing handles. Lean forwards with a braced torso and long spine. Drive one foot down and backwards against the belt, then alternate legs. Keep the hands fixed on the handles.",
       "image_cue": "Side view showing the higher hand position, a moderate forward lean and alternating leg drive.",
       "image": "images/5294c5d16e654a75be87b567b79dbff5.jpg",
@@ -519,6 +759,11 @@
       "id": 34,
       "name": "Skillmill low sled push",
       "equipment": "Skillmill",
+      "key_points": [
+        "Hands on the low handles",
+        "Deeper forward lean, back long",
+        "Short, powerful pushes with steady shoulders"
+      ],
       "movement": "Hold the lower front pushing handles with suitable resistance selected. Lower the torso into a stronger forward lean while keeping the back long. Alternate short, powerful backward pushes against the belt, maintaining stable shoulders and fixed hands. Technogym's dual handlebar supports both high and low pushing positions.",
       "image_cue": "Side view showing the hands on the lower grips and the torso positioned lower than in the high sled push.",
       "image": "images/1109a481fdd41c8e6316ffd4d6a5f2d9.jpg",
@@ -533,6 +778,11 @@
       "id": 35,
       "name": "Skillmill lateral shuffle - experienced users",
       "equipment": "Skillmill",
+      "key_points": [
+        "Experienced users only; start with the belt stopped",
+        "Knees bent, feet never cross",
+        "Slow and controlled; stop before changing sides"
+      ],
       "movement": "With the belt stopped, turn sideways and slightly bend the knees. At a slow, controlled pace, step sideways towards the front of the belt, then bring the trailing foot towards the lead foot without crossing the feet. Stop before changing sides. Technogym includes sideways movement and high-knee drills among its Skillmill agility exercises.",
       "image_cue": "Three-quarter view showing the torso facing the side of the machine, knees slightly bent and feet separated on the belt.",
       "image": "images/42957179d271c1e8c408d746c11e5b44.jpg",
@@ -547,6 +797,11 @@
       "id": 36,
       "name": "SkiErg double-pole pull",
       "equipment": "SkiErg",
+      "key_points": [
+        "Start with handles above eye level, elbows bent",
+        "Hinge and pull both handles down to the thighs",
+        "Stand tall to recover smoothly"
+      ],
       "movement": "Face the machine with feet shoulder-width apart, knees soft and handles slightly above eye level. Begin with elbows bent. Engage the trunk and hinge forwards at the hips as both handles travel down towards the thighs. Allow a small knee bend, then stand and return the handles smoothly. Keep a slight bend in the elbows at the finish.",
       "image_cue": "Side-view panels showing the upright start and hinged finish, with both handles beside the thighs and cords extending to the overhead pulleys.",
       "image": "images/3a3ea7a291835a7363d538b096dd6df6.jpg",
@@ -561,6 +816,11 @@
       "id": 37,
       "name": "SkiErg alternating-arm pull",
       "equipment": "SkiErg",
+      "key_points": [
+        "Soft knees, torso controlled",
+        "Pull one handle down as the other rises",
+        "Keep a slight bend in the pulling elbow"
+      ],
       "movement": "Face the machine with knees softly bent. Start with one handle raised near head height and the other beside the thigh. Pull the raised handle down while allowing the opposite handle to return upwards. Continue alternating, keeping a slight bend in the pulling elbow and the torso controlled. Use a SkiErg with independently moving handles.",
       "image_cue": "Front three-quarter view showing one handle high, the other low and the two cords clearly separated.",
       "image": "images/03357d628d0b4ea4cd5656ea0ec65f4d.jpg",
@@ -579,6 +839,11 @@
       "id": 38,
       "name": "SkiErg staggered-stance double pull",
       "equipment": "SkiErg",
+      "key_points": [
+        "One foot slightly in front",
+        "Hinge and pull both handles to the thighs",
+        "Swap the front foot each set"
+      ],
       "movement": "Stand facing the machine with one foot a short step ahead of the other, keeping some width between the feet. Begin with both handles raised and elbows bent. Hinge forwards and pull both handles towards the thighs, then recover upright. Keep the feet planted and change the leading foot between sets. This is a stance variation of the double-pole pull.",
       "image_cue": "Side three-quarter view showing the staggered feet and both handles moving down together, with a small knee bend.",
       "image": "images/873a4e0322761ef717df2605f338b415.jpg",
@@ -593,6 +858,11 @@
       "id": 39,
       "name": "Squat jump",
       "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Squat down, swing the arms",
+        "Jump straight up",
+        "Land softly with bent knees and reset"
+      ],
       "movement": "Stand with feet around shoulder-width apart. Bend the hips and knees into a comfortable squat, then swing the arms forwards and extend the legs to jump vertically. Land on both feet, bending the hips and knees to absorb the landing. Regain control before repeating.",
       "image_cue": "Three side-view panels showing the squat, the airborne position and the landing with knees bent.",
       "image": "images/ae8cb28499ca10bf0d2e8c918cf44d2b.jpg",
@@ -602,6 +872,11 @@
       "id": 40,
       "name": "Lateral skater bound",
       "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Push off sideways from one leg",
+        "Land softly on the other foot with a bent knee",
+        "Trailing leg behind; use the arms to balance"
+      ],
       "movement": "Start balanced on the left leg with the knee slightly bent. Push sideways and land on the right foot, bending the right hip and knee. Allow the left leg to trail diagonally behind without bearing weight. Push back towards the left, using the arms to help balance and controlling each landing.",
       "image_cue": "Front three-quarter view showing alternating left-foot and right-foot landings, with the free leg trailing behind the supporting leg.",
       "image": "images/e6f098400f5a08f5aa026cdf007003ac.jpg",
@@ -611,6 +886,11 @@
       "id": 41,
       "name": "Burpee without a push-up",
       "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Hands down, step or jump back to a plank",
+        "Straight arms in the plank, hips level",
+        "Feet in, stand and make a small jump; land soft"
+      ],
       "movement": "Start standing. Bend the hips and knees and place both hands on the floor. Step or jump the feet backwards into a high plank. Bring the feet forwards near the hands, rise and make a small vertical jump. Land with soft knees before repeating. The plank stage uses straight arms throughout.",
       "image_cue": "Four side-view panels: crouch with hands planted, high plank, feet returned forwards and vertical jump.",
       "image": "images/e0947f16aec9ada73e5691881d7fc3c0.jpg",
@@ -620,6 +900,11 @@
       "id": 42,
       "name": "Mountain climber",
       "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Shoulders over the hands",
+        "Drive the knees to the chest one at a time",
+        "Keep the hips level and low"
+      ],
       "movement": "Start in a high plank with hands beneath the shoulders and legs extended. Draw the right knee forwards towards the chest while the left leg remains extended. Return the right foot and bring the left knee forwards. Continue alternating while keeping the shoulders above the hands and hips relatively level.",
       "image_cue": "Side three-quarter view showing one knee drawn beneath the chest and the opposite leg extended backwards.",
       "image": "images/b20a8834673fbf6f065666d8f4d8e3eb.jpg",
@@ -629,6 +914,11 @@
       "id": 43,
       "name": "Push-up",
       "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Body straight from head to heels",
+        "Elbows angled back, not flared wide",
+        "Chest and hips move together"
+      ],
       "movement": "Begin in a high plank with hands slightly wider than the shoulders and the body aligned from head to heels. Bend the elbows diagonally backwards, lowering the chest towards the floor while the shoulders and hips descend together. Push through the palms to return to straight arms. Keep the abdomen engaged throughout.",
       "image_cue": "Front three-quarter view showing the high-plank start and lowered position, with elbows angled backwards and the body remaining aligned.",
       "image": "images/811a21d62d104a395a215468ed23902b.jpg",
@@ -638,6 +928,11 @@
       "id": 44,
       "name": "Inchworm walkout",
       "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Hinge and place the hands down",
+        "Walk the hands out to a plank",
+        "Walk the hands back and stand tall"
+      ],
       "movement": "Stand with feet hip-width apart. Soften the knees, fold forwards at the hips and place the hands on the floor. Keep the feet in place while walking the hands forwards until you reach a high plank. Walk the hands back towards the feet and return to standing.",
       "image_cue": "Three side-view panels showing the forward fold, hands travelling away from the feet and the final high plank.",
       "image": "images/319e4e262109f20b52ca918cfb9cc951.jpg",
@@ -647,6 +942,11 @@
       "id": 45,
       "name": "Bear crawl",
       "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Knees hover just off the floor",
+        "Move the opposite hand and foot together",
+        "Small steps with a flat back"
+      ],
       "movement": "Begin on hands and knees, with hands beneath shoulders and knees beneath hips. Tuck the toes and lift the knees a few centimetres off the floor. Move the right hand and left foot forwards together, then the left hand and right foot. Use small steps, keeping the back approximately level and knees hovering.",
       "image_cue": "Side three-quarter view showing bent knees hovering above the floor and opposite hand-foot pairs moving forwards.",
       "image": "images/d7ad3f28019864a1f6f9242210a7c17d.jpg",
@@ -661,6 +961,11 @@
       "id": 46,
       "name": "Bicycle crunch",
       "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Hands light on the head: don't pull the neck",
+        "Turn the shoulder towards the opposite knee",
+        "Slow and controlled, extending the other leg"
+      ],
       "movement": "Lie on your back with fingertips lightly touching the sides of the head and knees lifted. Raise the shoulder blades slightly. Rotate the rib cage to bring the right shoulder towards the left knee while extending the right leg away. Return through the centre and change sides. Move slowly enough to control the torso, keeping the hands light against the head.",
       "image_cue": "Elevated three-quarter view showing one knee bent towards the opposite shoulder while the other leg extends away from the body.",
       "image": "images/5875bbd90f27cc00c40bfa30d68017af.jpg",
@@ -670,6 +975,11 @@
       "id": 47,
       "name": "Glute bridge march",
       "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Lift the hips into a bridge",
+        "Lift one foot a little at a time",
+        "Keep the hips level: no dropping"
+      ],
       "movement": "Lie on your back with knees bent and feet flat. Lift the hips into a bridge, forming a sloping line from shoulders through hips to knees. Maintain this position while lifting one foot a short distance off the floor, keeping its knee bent. Replace it and lift the other foot, keeping the pelvis level.",
       "image_cue": "Side three-quarter view showing a raised bridge with both feet grounded, followed by the same bridge with one bent leg lifted.",
       "image": "images/faaf0754fa259c2bf769da9beb08f4a1.jpg",
@@ -684,6 +994,11 @@
       "id": 48,
       "name": "Dead bug",
       "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Lower back stays gently pressed to the floor",
+        "Reach the opposite arm and leg away slowly",
+        "Stop before the back arches"
+      ],
       "movement": "Lie on your back with arms pointing towards the ceiling, thighs vertical and knees bent to approximately 90 degrees. Slowly reach the right arm overhead while extending the left leg away from the body. Stop before the lower back begins to arch. Return to the start and switch to the left arm and right leg.",
       "image_cue": "Elevated three-quarter view showing the bent-knee starting position and an opposite arm-leg extension, with the unused arm vertical and unused knee bent.",
       "image": "images/6faffa1ebf91635c671ab4599a779655.jpg",
@@ -693,6 +1008,11 @@
       "id": 49,
       "name": "Bird-dog",
       "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Hands under the shoulders, knees under the hips",
+        "Reach the opposite arm and leg long",
+        "Keep the hips level; don't arch"
+      ],
       "movement": "Begin on hands and knees, with hands beneath shoulders and knees beneath hips. Extend the right arm forwards and the left leg backwards until both are approximately level with the torso. Keep the pelvis level and avoid arching the back. Return the hand and knee to the floor, then change sides.",
       "image_cue": "Side three-quarter view showing one arm reaching forwards and the opposite leg extending backwards, with the other hand and knee supporting the body.",
       "image": "images/d03d047b18d00a2d4a2c79bf608ed3c9.jpg",
@@ -707,6 +1027,11 @@
       "id": 50,
       "name": "Side-plank hip lift",
       "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Elbow under the shoulder",
+        "Lift the hips into a straight line",
+        "Chest faces sideways; lower and lift with control"
+      ],
       "movement": "Lie on the right side with the right elbow beneath the shoulder and legs extended, with feet stacked or slightly staggered. Press through the forearm and feet to lift the hips until the shoulders, hips and ankles align. Lower the hips a small distance, then lift back to alignment. Keep the chest facing sideways and repeat on the other side.",
       "image_cue": "View facing the athlete's chest, showing the supporting forearm on the mat and two positions: hips slightly lowered, then the body aligned in a side plank.",
       "image": "images/7b4841468f1b809681819931b4276bcb.jpg",
@@ -721,6 +1046,11 @@
       "id": 51,
       "name": "Air squat",
       "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Hips back, chest up",
+        "Knees follow the toes, heels down",
+        "Drive up through the whole foot"
+      ],
       "movement": "Stand with the feet about shoulder-width apart and the toes turned out slightly. Push the hips backwards and bend the knees to lower, keeping the chest lifted and the heels on the floor; the arms can reach forwards for balance. Lower as far as you can keep the back steady and the knees tracking over the toes. Drive through the whole foot to stand tall again.",
       "image_cue": "Front three-quarter view showing a tall standing start and the bottom of the squat, with the hips back, the heels down and the arms reaching forwards.",
       "image": "images/f5241456083f6ba8ce83c0e7048e9885.jpg",
@@ -730,6 +1060,11 @@
       "id": 52,
       "name": "Bodyweight lunge",
       "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Long step; both knees bend",
+        "Front knee over the ankle, chest lifted",
+        "Push back through the front heel"
+      ],
       "movement": "Stand tall with the feet hip-width apart. Take a long step forwards and lower until both knees are bent, with the back knee just above the floor and the front knee over the ankle. Keep the chest lifted and the weight through the front heel. Push back to the start and alternate legs.",
       "image_cue": "Side view showing a standing start and the bottom of the lunge, with the front shin upright and the back knee just above the floor.",
       "image": "images/a95f637941a522ac6b182c79af726533.jpg",
@@ -739,6 +1074,11 @@
       "id": 53,
       "name": "High plank hold",
       "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Hands under the shoulders, body in a straight line",
+        "Brace the stomach and squeeze the glutes",
+        "Hips don't sag or lift; breathe steadily"
+      ],
       "movement": "Place the hands beneath the shoulders and step the feet back so the body forms a straight line from head to heels. Press the floor away, brace the stomach and squeeze the glutes so the hips neither sag nor lift. Breathe steadily and hold for the set time. Lower the knees to the mat to rest.",
       "image_cue": "Side view showing the arms straight beneath the shoulders and a straight line from the head through the hips to the heels.",
       "image": "images/cbb6d5cdf604aa91cf9fff93ca2e602f.jpg",
@@ -748,6 +1088,11 @@
       "id": 54,
       "name": "Jumping jack",
       "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Jump the feet out as the arms go up",
+        "Land softly on the balls of the feet",
+        "Steady rhythm"
+      ],
       "movement": "Stand with the feet together and the arms by the sides. Jump the feet out wider than the hips while sweeping the arms out and overhead. Jump the feet back together as the arms return to the sides. Land softly on the balls of the feet and keep a steady rhythm.",
       "image_cue": "Front view showing the feet together with the arms down, and the feet wide with the arms overhead.",
       "image": "images/9863641c96f002955cb7691f793dd680.jpg",
@@ -757,6 +1102,11 @@
       "id": 55,
       "name": "High knees",
       "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Knees up towards hip height",
+        "Light, quick feet",
+        "Stay tall: don't lean back"
+      ],
       "movement": "Stand tall and run on the spot, driving one knee up towards hip height at a time. Land lightly on the balls of the feet and swing the arms in time with the legs. Keep the chest lifted and avoid leaning back. Slow the pace or march if you need to reduce the impact.",
       "image_cue": "Front three-quarter view showing one knee driven up to hip height with the opposite arm forwards.",
       "image": "images/b38e715d8484e3e5f3632b5e9ad9fee9.jpg",
@@ -766,6 +1116,11 @@
       "id": 56,
       "name": "Standing calf raise",
       "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Tall posture; hold a wall for balance if needed",
+        "Rise high and pause",
+        "Lower the heels slowly"
+      ],
       "movement": "Stand tall with the feet hip-width apart, holding a wall or rail lightly for balance if needed. Rise onto the balls of the feet as high as you can, pause briefly, then lower the heels slowly to the floor. Keep the knees straight but not locked and the weight over the big toes.",
       "image_cue": "Side view showing the heels on the floor, then raised high with the weight on the balls of the feet.",
       "image": "images/8210f6254c1096627b97a0ebbe3f95de.jpg",
@@ -775,6 +1130,11 @@
       "id": 57,
       "name": "Bench tricep dip",
       "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Use a stable bench or box",
+        "Bend the elbows straight back, back close to the bench",
+        "Stop before the shoulders strain"
+      ],
       "movement": "Sit on the edge of a stable bench or box with the hands beside the hips, fingers facing forwards. Slide the hips off the edge with the knees bent and the feet flat. Bend the elbows straight backwards to lower the hips, keeping the back close to the bench, then press through the hands to straighten the arms. Stop before the shoulders feel strained; straighter legs make it harder.",
       "image_cue": "Side view showing the hands on the bench edge and the hips lowered in front of it with the elbows bent backwards, then the arms straight.",
       "image": "images/13593d847a3c4652463888a44ef60167.jpg",
@@ -784,6 +1144,11 @@
       "id": 67,
       "name": "Plank shoulder tap",
       "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Feet wide, hands under the shoulders",
+        "Tap the opposite shoulder with one hand at a time",
+        "Keep the hips still"
+      ],
       "movement": "Start in a high plank with the hands beneath the shoulders and the feet hip-width apart or wider. Brace the stomach and squeeze the glutes. Lift one hand to tap the opposite shoulder, place it back down and repeat on the other side. Keep the hips as still and level as you can; widen the feet to make it easier.",
       "image_cue": "Side three-quarter view showing a high plank, then one hand lifted to touch the opposite shoulder with the hips level.",
       "image": "images/6961043a7a8408b6a5a1ef98301eb273.jpg",

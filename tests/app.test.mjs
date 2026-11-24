@@ -136,6 +136,9 @@ test('exercise library: the coach\'s 73 exercises load, with equipment groups an
   assert.equal(lib.exercises[0].name, 'Two-handed kettlebell swing');
   assert.equal(lib.exercises.at(-1).name, 'Plank shoulder tap');
   assert.ok(lib.exercises.every((x) => x.movement && x.image_cue), 'every exercise has a movement and an image cue');
+  assert.ok(lib.exercises.every((x) => x.key_points.length >= 2 && x.key_points.every((k) => k.length <= 150)), 'every exercise has short key points');
+  assert.deepEqual(cleanLibrary({ exercises: [{ id: 1, name: 'A', key_points: 'Hips back\n\nChest up ' }] }).exercises[0].key_points, ['Hips back', 'Chest up']);
+  assert.throws(() => cleanLibrary({ exercises: [{ id: 1, name: 'A', key_points: ['a', 'b', 'c', 'd', 'e', 'f'] }] }), /up to 5 key points/);
   assert.match(lib.guide.image_rules, /same adult athlete/);
   assert.ok(lib.equipment.find((q) => q.name === 'Skillmill').note.includes('Stop the belt'));
 });

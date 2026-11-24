@@ -694,7 +694,9 @@ function libraryView(saved = '') {
 function libraryEditView(id) {
   const found = id ? state.library.exercises.find((x) => x.id === id) : null;
   if (id && !found) { show(h('p', { class: 'pad' }, 'Exercise not found.'), h('a', { href: '#/library' }, '← Exercise library')); return; }
-  const x = found ? clone(found) : { id: 0, name: '', equipment: '', movement: '', image_cue: '', image: '', sources: [] };
+  const x = found ? clone(found) : { id: 0, name: '', equipment: '', key_points: [], movement: '', image_cue: '', image: '', sources: [] };
+  const kp = h('textarea', { rows: 4, maxlength: 800, value: (x.key_points || []).join('\n'), placeholder: 'One per line, e.g.\nHinge: push the hips back\nKeep the back flat' });
+  kp.addEventListener('input', () => { x.key_points = kp.value.split('\n').map((s) => s.trim()).filter(Boolean); });
   const status = h('p', { role: 'status', class: 'muted' });
   const upStatus = h('p', { role: 'status', class: 'muted' });
   const picBox = h('div');
@@ -722,6 +724,7 @@ function libraryEditView(id) {
         field('Exercise name', bind('name', h('input', { type: 'text', value: x.name, maxlength: 120, required: true }))),
         field('Equipment', bind('equipment', h('input', { type: 'text', value: x.equipment, maxlength: 40, list: 'kit-list', placeholder: 'Kettlebell, Dumbbell, Mat and bodyweight…' })))),
       kit,
+      field('Key points (up to 5 short cues, one per line, shown to members first)', kp),
       field('Movement (how to do it, shown to members)', bind('movement', h('textarea', { rows: 6, maxlength: 2000, value: x.movement }))),
       field('Image cue (what the picture should show)', bind('image_cue', h('textarea', { rows: 3, maxlength: 1000, value: x.image_cue }))),
       x.sources?.length ? h('p', { class: 'muted note' }, 'Guidance: ', x.sources.map((s, i) => [i ? ' · ' : '', h('a', { href: s.url, target: '_blank', rel: 'noopener noreferrer' }, s.title)])) : null),
