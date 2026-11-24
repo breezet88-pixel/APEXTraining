@@ -415,16 +415,16 @@
     },
     {
       "id": 21,
-      "name": "Alternating dumbbell overhead press",
+      "name": "Dumbbell overhead press",
       "equipment": "Dumbbell",
-      "summary": "Pressing one dumbbell overhead at a time. Builds the shoulders and arms with core control.",
+      "summary": "Pressing two dumbbells overhead from the shoulders. Builds the shoulders and arms with core control.",
       "key_points": [
         "Dumbbells at the shoulders, stomach braced",
-        "Press one arm straight up while the other stays at the shoulder",
-        "Torso stays centred: no leaning to the side"
+        "Press both straight up until the arms are straight",
+        "Don't lean back; lower slowly to the shoulders"
       ],
-      "movement": "Stand with feet hip-width apart and a dumbbell beside each shoulder, palms facing inwards. Press the right dumbbell overhead while the left remains at shoulder height. Lower the right weight, then press the left. Keep the abdomen braced, knees softly unlocked and torso centred throughout.",
-      "image_cue": "Front view showing one arm extended overhead while the opposite arm remains bent with its dumbbell beside the shoulder.",
+      "movement": "Stand with feet hip-width apart and a dumbbell beside each shoulder, palms facing forwards or inwards. Brace the stomach and press both dumbbells overhead until the arms are straight. Lower them slowly back to the shoulders. Keep the knees softly unlocked and the torso upright without leaning back. You can also press one arm at a time.",
+      "image_cue": "Front view showing dumbbells at the shoulders, then both pressed overhead with straight arms and the body upright.",
       "image": "images/f8228bfb4ab7087e8b67e3d070e35140.jpg",
       "sources": []
     },
