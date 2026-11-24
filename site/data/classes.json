@@ -16,23 +16,6 @@
       "name": "Hyrox",
       "description": "Training for HYROX fitness racing through Virgin Active's HYROX partnership. Structured, progressive sessions build your running, strength and endurance on the race stations: SkiErg, sled push and pull, burpee broad jumps, rowing, farmer's carry, sandbag lunges and wall balls.",
       "link": "https://hello.virginactive.co.za/support/solutions/articles/201000127146-hyrox-partnership"
-    },
-    {
-      "name": "Rumble",
-      "description": "A 45-minute zero-contact boxing class for all levels, no experience needed. You learn the basic punches and combinations, with cardio bursts and partner work in between. Bring a towel, water and your own gloves (MMA-style gloves work well).",
-      "link": "https://www.virginactive.co.za/gym-classes/boxing/rumble",
-      "minutes": 45
-    },
-    {
-      "name": "Shape",
-      "description": "A 45-minute conditioning class in the studio, built around coordination, flexibility and light resistance, to tone up and build muscular endurance.",
-      "link": "https://virginactive.co.za/gym-classes/conditioning",
-      "minutes": 45
-    },
-    {
-      "name": "Pump",
-      "description": "A conditioning class to music with light weights and higher reps, working every major muscle group.",
-      "link": "https://virginactive.co.za/gym-classes/conditioning"
     }
   ],
   "weekly": [
