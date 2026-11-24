@@ -422,7 +422,7 @@ function libraryView() {
   const chips = h('div', { class: 'chips', role: 'group', 'aria-label': 'Equipment' });
   const draw = () => {
     const q = query.toLowerCase();
-    const shown = lib.exercises.filter((x) => (!group || x.equipment === group) && (!q || `${x.name} ${x.equipment} ${x.movement}`.toLowerCase().includes(q)));
+    const shown = lib.exercises.filter((x) => (!group || x.equipment === group) && (!q || `${x.name} ${x.equipment} ${x.summary || ''} ${x.movement}`.toLowerCase().includes(q)));
     const sections = groups.filter((g) => !group || g === group).map((g) => {
       const items = shown.filter((x) => x.equipment === g);
       if (!items.length) return null;
@@ -432,7 +432,7 @@ function libraryView() {
         note ? h('p', { class: 'muted note' }, note) : null,
         h('div', { class: 'grid' }, items.map((x) => h('a', { class: 'card', href: `#/e/${x.id}` },
           x.image ? h('img', { src: x.image, alt: '', loading: 'lazy' }) : h('div', { class: 'ph', 'aria-hidden': 'true' }, '🏋️'),
-          h('div', { class: 'card-body' }, h('h3', {}, x.name), h('span', { class: 'chip static' }, x.equipment))))));
+          h('div', { class: 'card-body' }, h('h3', {}, x.name), x.summary ? h('p', { class: 'muted summary' }, x.summary) : null, h('span', { class: 'chip static' }, x.equipment))))));
     });
     fill(list, sections.some(Boolean) ? sections : h('p', { class: 'muted pad' }, lib.exercises.length ? 'That exercise is not in the library.' : 'The exercise library is empty.'));
     fill(online, query.trim() ? h('p', { class: 'google-search' }, 'Not what you need? ', googleLink(query.trim())) : null);
@@ -463,6 +463,7 @@ function exerciseView(id) {
       h('h1', {}, x.name),
       x.equipment ? h('span', { class: 'chip static' }, x.equipment) : null,
       x.image ? h('img', { class: 'hero', src: x.image, alt: `How to do ${x.name}` }) : null,
+      x.summary ? h('p', { class: 'lead' }, x.summary) : null,
       x.key_points?.length ? [h('h2', {}, 'Key points'), keyPointList(x.key_points)] : null,
       h('h2', {}, 'How to do it'),
       h('p', {}, x.movement),

@@ -129,3 +129,5 @@ code{font-size:.9em;background:var(--soft);padding:1px 5px;border-radius:5px}
 .key-points{margin:6px 0 8px;padding-left:20px;font-weight:600}
 .key-points li{margin:2px 0}
 details.how summary{cursor:pointer;color:var(--accent);font-weight:600;margin:4px 0}
+.card .summary{font-size:.88rem;margin:2px 0 6px}
+.detail .lead{font-size:1.05rem;margin:6px 0 4px}

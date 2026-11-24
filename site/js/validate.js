@@ -168,6 +168,7 @@ export function cleanLibrary(data) {
       id: intOrNull(e.id, 1, 1e9, `${label} id`) ?? fail(`${label} has no id.`),
       name: text(e.name, 120, `${label} name`, true),
       equipment: text(e.equipment, 40, `${label} equipment`),
+      summary: text(e.summary, 200, `${label} short description`),
       key_points: keyPoints(e.key_points, label),
       movement: text(e.movement, 2000, `${label} movement description`),
       image_cue: text(e.image_cue, 1000, `${label} image cue`),

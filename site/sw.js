@@ -1,6 +1,6 @@
 // Service worker: makes Apex Training installable and usable offline.
 // Works under any sub-path (e.g. /APEXTraining/ on GitHub Pages). The coach page is never cached.
-const SHELL = 'apex-shell-v5';
+const SHELL = 'apex-shell-v6';
 const RUNTIME = 'apex-runtime-v1';
 const KEEP = [SHELL, RUNTIME, 'apex-saved-v1'];
 const SCOPE = self.registration.scope; // ends with '/'
