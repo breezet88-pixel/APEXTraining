@@ -133,7 +133,7 @@ test('exercise library: the coach\'s 88 exercises load, with equipment groups an
   }
   const count = (q) => lib.exercises.filter((x) => x.equipment === q).length;
   assert.deepEqual(['Kettlebell', 'Dumbbell', 'Light barbell', 'Skillmill', 'SkiErg', 'Mat and bodyweight'].map(count), [15,  25,  10,  5,  3,  30]);
-  assert.equal(lib.exercises[0].name, 'Two-handed kettlebell swing');
+  assert.equal(lib.exercises[0].name, 'Kettlebell swing');
   assert.equal(lib.exercises.at(-1).name, 'Side plank hip dip with reach');
   assert.ok(lib.exercises.every((x) => x.movement && x.image_cue), 'every exercise has a movement and an image cue');
   assert.ok(lib.exercises.every((x) => x.summary && x.summary.length <= 200), 'every exercise has a short description');

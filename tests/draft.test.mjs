@@ -21,7 +21,7 @@ test('a typical class: club, date, time, rounds, interval, library exercises, re
   assert.equal(d.date, '2026-11-20');
   assert.equal(d.time, '06:00');
   assert.equal(d.club, 'Virgin Active Sandton');
-  assert.deepEqual(d.exercises.map(nameOf), ['Two-handed kettlebell swing', 'Goblet squat', 'Mountain climber', 'Push-up']);
+  assert.deepEqual(d.exercises.map(nameOf), ['Kettlebell swing', 'Goblet squat', 'Mountain climber', 'Push-up']);
   assert.deepEqual(d.exercises.slice(0, 3).map((e) => [e.sets, e.reps, e.rest_sec]), [['4', '40 sec', 20], ['4', '40 sec', 20], ['4', '40 sec', 20]]);
   assert.deepEqual([d.exercises[3].sets, d.exercises[3].reps, d.exercises[3].rest_sec], ['3', '10', 60]);
   assert.deepEqual(questions.map((q) => q.key), ['title']);
