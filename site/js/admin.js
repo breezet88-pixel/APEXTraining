@@ -2,7 +2,7 @@
 // Each save is a commit to the GitHub repository (see github.js); GitHub Pages republishes the site.
 import { SITE } from './config.js';
 import { h, fill, todayIn, nowIn, libraryIndex } from './common.js';
-import { cleanWorkouts, cleanClasses, cleanSettings, cleanDonate, cleanMusic, cleanLibrary, checkLinks, usedImages, IMAGE_PATH, DataError } from './validate.js';
+import { cleanWorkouts, cleanClasses, cleanSettings, cleanDonate, cleanMusic, cleanSocial, cleanLibrary, checkLinks, usedImages, IMAGE_PATH, DataError } from './validate.js';
 import { DAY_NAMES, WEEK_ORDER, classesOn, sameClass, suggestClass, typeInfo, clubsOf, addDays } from './classes.js';
 import { TIMER_TYPES, timerSummary, buildSegments, totalSeconds, secLabel, effective } from './timer.js';
 import { createGitHub, bytesToBase64, GitHubError } from './github.js';
@@ -777,7 +777,8 @@ function classesView(saved = '') {
   const slot = (x) => [
     field('Time', inp(x, 'time', { type: 'time', required: true })),
     field('Class type', inp(x, 'type', { type: 'text', list: 'sched-types', maxlength: 40, placeholder: 'Grid' })),
-    field('Club', inp(x, 'club', { type: 'text', list: 'sched-clubs', maxlength: 80, placeholder: 'Virgin Active Rosebank' }))];
+    field('Club', inp(x, 'club', { type: 'text', list: 'sched-clubs', maxlength: 80, placeholder: 'Virgin Active Rosebank' })),
+    field('Studio or room (optional)', inp(x, 'place', { type: 'text', maxlength: 40, placeholder: 'GRID studio' }))];
   const lists = () => [h('datalist', { id: 'sched-types' }, c.types.map((t) => h('option', { value: t.name }))), h('datalist', { id: 'sched-clubs' }, clubs.map((x) => h('option', { value: x })))];
 
   const drawWeekly = () => fill(weeklyBox, c.weekly.map((x, i) => {
@@ -902,6 +903,28 @@ function musicView() {
     h('p', { class: 'muted note' }, 'Each workout can also keep the playlist you played in that class (under the workout’s “Class playlist”).'));
 }
 
+// ---------- comments on social media ----------
+function socialView() {
+  const s = state.settings.social || {};
+  const status = h('p', { role: 'status', class: 'muted' });
+  const fb = h('input', { type: 'url', value: s.facebook || '', placeholder: 'https://www.facebook.com/…', maxlength: 500 });
+  const ig = h('input', { type: 'url', value: s.instagram || '', placeholder: 'https://www.instagram.com/…', maxlength: 500 });
+  show(
+    h('a', { class: 'back', href: '#/more' }, '← More'),
+    h('h1', {}, '💬 Comments'),
+    h('p', {}, 'Members comment on your social media. Paste your Facebook and Instagram page links. Until a link is added, members see that button as “Coming soon”.'),
+    h('form', { class: 'panel', onsubmit: async (e) => {
+      e.preventDefault();
+      let social;
+      try { social = cleanSocial({ facebook: fb.value.trim(), instagram: ig.value.trim() }); } catch (err) { say(status, err.message, true); return; }
+      await trySave(status, 'social media links', (d) => { d.settings.social = social; }, 'Saved. Members see the comment buttons in about a minute.');
+    } },
+    field('Facebook page link', fb),
+    field('Instagram link', ig),
+    h('div', { class: 'toolrow' }, h('button', { class: 'btn', type: 'submit' }, 'Save')),
+    status));
+}
+
 // ---------- donations ----------
 function donationsView() {
   const d = state.settings.donate;
@@ -936,8 +959,8 @@ function route() {
   if (!state.gh) return;
   tabs.hidden = false;
   const path = (location.hash || '#/workouts').slice(1);
-  const tab = ['library', 'classes', 'music', 'comments', 'donations', 'more'].find((t) => path.startsWith(`/${t}`)) || 'workouts';
-  const navTab = ['comments', 'donations'].includes(tab) ? 'more' : tab; // these live under More
+  const tab = ['library', 'classes', 'music', 'comments', 'social', 'donations', 'more'].find((t) => path.startsWith(`/${t}`)) || 'workouts';
+  const navTab = ['comments', 'social', 'donations'].includes(tab) ? 'more' : tab; // these live under More
   tabs.querySelectorAll('[data-tab]').forEach((a) => {
     a.classList.toggle('on', a.dataset.tab === navTab);
     if (a.dataset.tab === navTab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
@@ -951,6 +974,7 @@ function route() {
   else if (tab === 'classes') classesView();
   else if (tab === 'music') musicView();
   else if (tab === 'more') moreView();
+  else if (tab === 'social') socialView();
   else if (tab === 'comments') commentsView();
   else if (tab === 'donations') donationsView();
   else workoutsView();
@@ -985,7 +1009,7 @@ function moreView() {
   show(
     h('h1', {}, 'More'),
     h('div', { class: 'more-list' },
-      item('#/comments', '💬', 'Comments & reviews', 'Switch comments on and moderate them'),
+      item('#/social', '💬', 'Comments: Facebook & Instagram', 'Where members tap to comment'),
       item('#/donations', '♥', 'Donations', 'Your payment link for optional donations'),
       item('./', '📱', 'Open the members’ app', 'See Apex Training as your members do'),
       h('button', { class: 'more-item', type: 'button', onclick: signOut },

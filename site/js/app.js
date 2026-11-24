@@ -62,7 +62,7 @@ function card(w) {
     cover ? h('img', { src: cover, alt: '', loading: 'lazy' }) : h('div', { class: 'ph', 'aria-hidden': 'true' }, '🏋️'),
     h('div', { class: 'card-body' },
       h('h3', {}, w.title),
-      [w.time, w.club].some(Boolean) ? h('p', { class: 'class-line' }, [w.time, w.club].filter(Boolean).join(' · ')) : null, // the date is the group heading
+      [w.time, w.club].some(Boolean) ? h('p', { class: 'class-line' }, [w.time, w.club && `📍 ${w.club}`].filter(Boolean).join(' · ')) : null, // the date is the group heading
       h('p', { class: 'muted' }, [w.category, metaLine(w)].filter(Boolean).join(' · '))));
 }
 
@@ -179,25 +179,31 @@ function comments(w) {
   return h('section', { class: 'reviews' }, h('h2', {}, 'Comments & reviews'), postNote(), commentThread(`workout-${w.id}`));
 }
 
-// The members' comments page: one shared thread for general comments, questions and feedback
+// Comments go to Breeze Kobola's social media: Facebook and Instagram (links set on the coach page)
+function socialButtons() {
+  const s = data?.settings?.social || {};
+  const btn = (url, cls, icon, label) => url
+    ? h('a', { class: `btn social ${cls}`, href: url, target: '_blank', rel: 'noopener noreferrer' }, h('span', { 'aria-hidden': 'true' }, icon), ` ${label}`)
+    : h('span', { class: `btn social ${cls} soon`, 'aria-disabled': 'true' }, h('span', { 'aria-hidden': 'true' }, icon), ` ${label}`, h('small', {}, 'Coming soon'));
+  return h('div', { class: 'social-row' },
+    btn(s.facebook, 'fb', 'f', 'Comment on Facebook'),
+    btn(s.instagram, 'ig', '◎', 'Comment on Instagram'));
+}
 function commentsView() {
   setTab('comments');
   setBanner('');
   show(
-    h('h1', {}, 'Member comments'),
-    h('p', {}, 'Share feedback, questions and your results with the coach and other members.'),
-    commentsOn()
-      ? h('section', { class: 'reviews' }, postNote(),
-        h('p', { class: 'muted comments-note' }, 'Comments about one workout go under that workout (Workouts tab).'),
-        commentThread('member-comments'))
-      : h('p', { class: 'muted' }, 'Comments open soon. Check back shortly.'));
+    h('h1', {}, 'Comments'),
+    h('p', {}, `Share feedback, questions and your results with ${SITE.coach} on social media.`),
+    socialButtons(),
+    commentsOn() ? h('section', { class: 'reviews' }, postNote(), commentThread('member-comments')) : null);
 }
 
 function supportCard() {
   if (!data?.settings.donate?.url) return null;
   return h('div', { class: 'support-card' },
     h('p', {}, 'Apex Training is free. If it helps you, you can chip in. It is completely optional.'),
-    h('a', { href: '#/support' }, '♥ Support the coach'));
+    h('a', { href: '#/support' }, `♥ Support ${SITE.coach}`));
 }
 
 // ---------- views ----------
@@ -231,7 +237,7 @@ function listView() {
   const draw = () => {
     const q = query.toLowerCase();
     const shown = workouts.filter((w) => (!club || w.club === club) && (!type || w.category === type) && (!q || [w.title, w.category, w.level, w.description, w.club, niceDate(w.date), ...w.exercises.map((e) => e.name)].join(' ').toLowerCase().includes(q)));
-    fill(box, shown.length ? groupedByDay(shown) : h('p', { class: 'muted pad' }, workouts.length ? 'No workouts match.' : 'No workouts yet. The coach adds each class after it has been run.'));
+    fill(box, shown.length ? groupedByDay(shown) : h('p', { class: 'muted pad' }, workouts.length ? 'No workouts match.' : `No workouts yet. ${SITE.coach} adds each class after it has been run.`));
     fill(chips, ['', ...clubs].map((c) => chip(c, c === club, c || 'All clubs', (v) => { club = v; })));
     fill(typeChips, ['', ...types].map((c) => chip(c, c === type, c || 'All classes', (v) => { type = v; })));
   };
@@ -265,7 +271,8 @@ function detailView(id) {
     h('a', { class: 'back', href: '#/workouts' }, '← Workout Library'),
     h('article', { class: 'detail' },
       h('h1', {}, w.title),
-      classLine(w) ? h('p', { class: 'class-line' }, classLine(w)) : null,
+      w.date || w.time ? h('p', { class: 'class-line' }, '📅 ', [niceDate(w.date), w.time].filter(Boolean).join(' · ')) : null,
+      w.club ? h('p', { class: 'class-line' }, '📍 ', w.club) : null,
       h('p', { class: 'muted' }, [w.category, metaLine(w)].filter(Boolean).join(' · ')),
       w.about ? h('p', { class: 'about' }, h('b', {}, `About ${w.category}: `), w.about) : null,
       w.description ? h('p', {}, w.description) : null,
@@ -274,6 +281,7 @@ function detailView(id) {
       photoGallery(w),
       playlist(w),
       exerciseList(w),
+      h('section', { class: 'comment-on' }, h('h2', {}, '💬 Comment on this class'), socialButtons()),
       data ? comments(w) : null));
 }
 
@@ -298,7 +306,7 @@ function homeView() {
   show(
     h('section', { class: 'home-hero' },
       h('p', { class: 'kicker' }, 'Apex Training'),
-      h('h1', {}, 'Your coach’s classes.', h('br'), h('span', { class: 'hl' }, 'Any time. Free.')),
+      h('h1', {}, `${SITE.coach}’s classes.`, h('br'), h('span', { class: 'hl' }, 'Any time. Free.')),
       h('p', { class: 'hero-sub' }, 'Loved a class? Redo it with the timer, the music and how to do every move.'),
       h('a', { class: 'btn hero-go', href: latest ? `#/w/${latest.id}` : '#/workouts' }, latest ? '▶  Start the latest class' : 'See the classes'),
       strip.length ? h('div', { class: 'strip', 'aria-label': 'Some of the moves' }, strip.map((x) =>
@@ -308,7 +316,8 @@ function homeView() {
       const c = nextClass();
       return c ? h('a', { class: 'move next', href: '#/week' },
         h('span', { class: 'next-time' }, h('span', { class: 'sub' }, c.when), h('strong', {}, c.time)),
-        h('span', {}, h('span', { class: 'kicker' }, 'Next class'), h('strong', {}, c.type), h('span', { class: 'sub' }, `${c.club} · see the week`))) : null;
+        h('span', {}, h('span', { class: 'kicker' }, 'Next class'), h('strong', {}, c.type),
+          h('span', { class: 'sub' }, `📅 ${c.dateText}`), h('span', { class: 'sub' }, `📍 ${[c.club, c.place].filter(Boolean).join(', ')}`))) : null;
     })(),
     move ? h('a', { class: 'move', href: `#/e/${move.id}` },
       h('img', { src: move.image, alt: '' }),
@@ -326,7 +335,7 @@ function nextClass() {
   for (let i = 0; i < 8; i++) {
     const day = addDays(now.date, i);
     const c = classesOn(data.classes, day).find((x) => i > 0 || x.time >= now.time);
-    if (c) return { ...c, when: i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : niceDate(day).split(',')[0] };
+    if (c) return { ...c, when: i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : niceDate(day).split(',')[0], dateText: niceDate(day) };
   }
   return null;
 }
@@ -340,7 +349,7 @@ function weekView() {
   const count = days.reduce((a, d) => a + classesOn(data.classes, d).length, 0);
   show(
     h('h1', {}, 'This week'),
-    h('p', { class: 'muted' }, count ? `${count} classes with the coach. Tap one to see what it is.` : 'No classes on the timetable this week.'),
+    h('p', { class: 'muted' }, count ? `${count} classes with ${SITE.coach}. Tap one to see what it is.` : 'No classes on the timetable this week.'),
     days.map((d) => {
       const list = classesOn(data.classes, d);
       const today = d === now.date;
@@ -354,9 +363,10 @@ function weekView() {
             h('summary', {},
               h('span', { class: 'wc-time' }, c.time),
               h('span', { class: 'wc-main' }, h('strong', {}, c.type),
-                h('span', { class: 'sub muted' }, [c.club, t?.minutes ? `${t.minutes} min` : '', c.adhoc ? 'extra class' : ''].filter(Boolean).join(' · '))),
+                h('span', { class: 'sub muted' }, [`📍 ${[c.club, c.place].filter(Boolean).join(', ')}`, t?.minutes ? `${t.minutes} min` : '', c.adhoc ? 'extra class' : ''].filter(Boolean).join(' · '))),
               w ? h('span', { class: 'wc-tag' }, 'Workout ✓') : null),
-            t?.description ? h('p', {}, t.description) : h('p', { class: 'muted' }, 'Ask the coach about this class.'),
+            h('p', { class: 'class-line' }, `📅 ${shortDay(d)}, ${c.time}`, h('br'), `📍 ${[c.club, c.place].filter(Boolean).join(', ')}`),
+            t?.description ? h('p', {}, t.description) : h('p', { class: 'muted' }, `Ask ${SITE.coach} about this class.`),
             h('div', { class: 'actions' },
               w ? h('a', { class: 'btn', href: `#/w/${w.id}` }, done ? '▶ Redo this class' : '▶ Open the workout') : null,
               t?.link ? h('a', { class: 'btn ghost', href: t.link, target: '_blank', rel: 'noopener noreferrer' }, 'Virgin Active page') : null));
@@ -384,7 +394,7 @@ function timerPanel(w) {
     h('h2', {}, '⏱ Class timer'),
     summary ? h('p', { class: 'facts' }, summary, total ? h('span', { class: 'muted' }, ` · about ${secLabel(total)}`) : null) : null,
     w.timer?.notes ? h('p', {}, w.timer.notes) : null,
-    w.timer?.image ? h('img', { src: w.timer.image, alt: 'The coach’s timer settings', loading: 'lazy' }) : null,
+    w.timer?.image ? h('img', { src: w.timer.image, alt: `${SITE.coach}’s timer settings`, loading: 'lazy' }) : null,
     segs.length ? h('a', { class: 'btn', href: `#/t/${w.id}` }, '▶ Start the timer') : null);
 }
 
@@ -574,7 +584,7 @@ function supportView() {
   const host = new URL(d.url).hostname;
   const presets = d.amount_url ? d.amounts.map((n) => h('a', { class: 'btn', href: d.amount_url.split('{amount}').join(String(n)), ...out }, `R${n}`)) : [];
   show(
-    h('h1', {}, 'Support the coach'),
+    h('h1', {}, `Support ${SITE.coach}`),
     h('p', {}, h('strong', {}, 'Apex Training is free to use.')),
     h('p', {}, d.message || 'If these workouts help you, you can say thanks with a donation of any size. It is completely optional and does not unlock anything.'),
     presets.length ? h('div', { class: 'amounts', role: 'group', 'aria-label': 'Choose an amount' }, presets) : null,

@@ -20,8 +20,8 @@ export function classesOn(classes, day) {
   if (!classes || !day) return [];
   const wd = weekdayOf(day);
   const list = [
-    ...(classes.extra || []).filter((c) => c.date === day).map((c) => ({ date: day, time: c.time, type: c.type, club: c.club, adhoc: true })),
-    ...(classes.weekly || []).filter((c) => c.day === wd).map((c) => ({ date: day, time: c.time, type: c.type, club: c.club, adhoc: false })),
+    ...(classes.extra || []).filter((c) => c.date === day).map((c) => ({ date: day, time: c.time, type: c.type, club: c.club, place: c.place || '', adhoc: true })),
+    ...(classes.weekly || []).filter((c) => c.day === wd).map((c) => ({ date: day, time: c.time, type: c.type, club: c.club, place: c.place || '', adhoc: false })),
   ];
   const seen = new Set();
   return list.filter((c) => { const k = `${c.time}|${c.club.toLowerCase()}`; if (seen.has(k)) return false; seen.add(k); return true; })

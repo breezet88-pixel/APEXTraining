@@ -1,13 +1,13 @@
 {
   "name": "Apex Training",
   "short_name": "Apex Training",
-  "description": "Your coach's classes, any time, free: the class timer, the music, and how to do every move.",
+  "description": "Breeze Kobola's classes, any time, free: the class timer, the music, and how to do every move.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#0d0d0d",
-  "theme_color": "#0d0d0d",
+  "background_color": "#1e1e1e",
+  "theme_color": "#1e1e1e",
   "icons": [
     {
       "src": "icons/icon-192.png",

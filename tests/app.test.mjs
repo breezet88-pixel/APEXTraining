@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { cleanWorkouts, cleanClasses, cleanTimer, cleanMusic, usedImages, cleanSettings, cleanDonate, cleanComments, cleanLibrary, checkLinks, validDay, DataError } from '../site/js/validate.js';
+import { cleanWorkouts, cleanClasses, cleanTimer, cleanMusic, cleanSocial, usedImages, cleanSettings, cleanDonate, cleanComments, cleanLibrary, checkLinks, validDay, DataError } from '../site/js/validate.js';
 import { libraryIndex, resolveWorkout } from '../site/js/common.js';
 import { createGitHub, bytesToBase64 } from '../site/js/github.js';
 import { buildWorkoutPage, fileName } from '../site/js/download.js';
@@ -118,6 +118,18 @@ test('music for the day: YouTube links only, empty switches it off', () => {
   assert.throws(() => cleanMusic({ url: 'https://evil.example/x' }), /YouTube link/);
   assert.throws(() => cleanMusic({ url: 'javascript:alert(1)' }), /valid web address|YouTube/);
   assert.deepEqual(cleanSettings({}).music, { url: '', title: '' });
+});
+
+test('comments go to Facebook and Instagram; classes can say which studio', () => {
+  assert.deepEqual(cleanSocial({}), { facebook: '', instagram: '' });
+  assert.deepEqual(cleanSocial({ facebook: 'https://www.facebook.com/apex', instagram: 'https://www.instagram.com/apex' }), { facebook: 'https://www.facebook.com/apex', instagram: 'https://www.instagram.com/apex' });
+  assert.throws(() => cleanSocial({ facebook: 'https://evil.example/apex' }), /facebook.com/);
+  assert.throws(() => cleanSocial({ instagram: 'http://www.instagram.com/apex' }), /https/);
+  assert.deepEqual(cleanSettings({}).social, { facebook: '', instagram: '' });
+  const cls = cleanClasses({ weekly: [{ day: 1, time: '06:30', type: 'Grid', club: 'Virgin Active Rosebank', place: 'GRID studio' }] });
+  assert.equal(cls.weekly[0].place, 'GRID studio');
+  const real = cleanClasses(JSON.parse(fs.readFileSync(path.join(ROOT, 'site/data/classes.json'), 'utf8')));
+  assert.deepEqual(real.types.map((t) => t.name), ['Grid', 'Lift Club', 'Hyrox'], 'only the classes Breeze Kobola teaches');
 });
 
 test('both apps can be installed: Apex Training and Apex Training Admin', () => {

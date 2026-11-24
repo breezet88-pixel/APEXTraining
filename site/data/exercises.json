@@ -52,7 +52,7 @@
       "id": 1,
       "name": "Kettlebell swing",
       "equipment": "Kettlebell",
-      "summary": "A powerful hip hinge that swings the bell to chest height. Works glutes, hamstrings and grip, and gets the heart rate up.",
+      "summary": "Push your hips back, then snap them forwards to swing the bell up to chest height with long arms.",
       "key_points": [
         "Hinge: push the hips back, don't squat down",
         "Snap the hips forwards to float the bell to chest height",
@@ -72,7 +72,7 @@
       "id": 2,
       "name": "Goblet squat",
       "equipment": "Kettlebell",
-      "summary": "A squat holding the kettlebell at the chest. Builds the legs and glutes and teaches an upright squat.",
+      "summary": "Hold the bell at your chest, sit down between your heels with your chest up, then stand.",
       "key_points": [
         "Hold the bell close at chest height",
         "Sit between the heels; knees follow the toes",
@@ -87,7 +87,7 @@
       "id": 3,
       "name": "Suitcase deadlift",
       "equipment": "Kettlebell",
-      "summary": "A one-sided deadlift with the bell beside the foot. Works the legs and glutes while the core stops you leaning.",
+      "summary": "With the bell beside one foot, push your hips back, grab it and stand tall with level shoulders.",
       "key_points": [
         "Bell beside the foot, hips back, back long",
         "Stand up keeping the shoulders level; don't lean towards the bell",
@@ -102,7 +102,7 @@
       "id": 4,
       "name": "Kettlebell lateral lunge",
       "equipment": "Kettlebell",
-      "summary": "A side-step lunge holding the bell at the chest. Works the inner thighs, glutes and hip mobility.",
+      "summary": "Hold the bell at your chest, take a big step to the side and sit into that hip, then push back.",
       "key_points": [
         "Big step to the side; that knee bends, the other leg stays straight",
         "Sit the hips back with both feet flat",
@@ -117,7 +117,7 @@
       "id": 5,
       "name": "Front-rack reverse lunge",
       "equipment": "Kettlebell",
-      "summary": "A backward lunge with the bell held at one shoulder. Builds the legs and challenges balance and core.",
+      "summary": "With the bell at one shoulder, step back and lower the back knee, then push up through the front foot.",
       "key_points": [
         "Bell racked at the shoulder, wrist straight, elbow by the ribs",
         "Step back and lower the back knee towards the floor",
@@ -132,7 +132,7 @@
       "id": 6,
       "name": "Kettlebell single-arm row",
       "equipment": "Kettlebell",
-      "summary": "A one-arm row from a hip hinge. Strengthens the upper back and arms.",
+      "summary": "Hinge forwards with a hand on your front thigh and row the bell to your hip.",
       "key_points": [
         "Hinge with a flat back, free hand on the front thigh",
         "Pull the elbow back towards the hip",
@@ -147,7 +147,7 @@
       "id": 7,
       "name": "Kettlebell floor press",
       "equipment": "Kettlebell",
-      "summary": "A one-arm press lying on the floor. Works the chest, shoulders and triceps with a safe range of movement.",
+      "summary": "Lie on your back, lower the bell until your upper arm touches the floor, then press it straight up.",
       "key_points": [
         "Wrist straight, bell above the shoulder",
         "Lower until the upper arm just touches the mat, elbow angled from the body",
@@ -162,7 +162,7 @@
       "id": 8,
       "name": "Suitcase carry",
       "equipment": "Kettlebell",
-      "summary": "Walking with one bell at your side. Builds grip, core and upright posture.",
+      "summary": "Hold one bell at your side and walk tall without leaning.",
       "key_points": [
         "Tall posture, shoulders and hips level",
         "Don't lean away from or towards the bell",
@@ -177,7 +177,7 @@
       "id": 9,
       "name": "Front-rack march",
       "equipment": "Kettlebell",
-      "summary": "Marching on the spot with a bell racked at the shoulder. Trains core control, balance and hip strength.",
+      "summary": "Hold a bell at your shoulder, stand tall and lift one knee at a time to hip height.",
       "key_points": [
         "Bell racked at the shoulder and kept still",
         "Lift each knee to hip height slowly",
@@ -192,7 +192,7 @@
       "id": 10,
       "name": "Kettlebell half-kneeling press",
       "equipment": "Kettlebell",
-      "summary": "A one-arm press from a half-kneeling position. Builds the shoulders while the core keeps you steady.",
+      "summary": "Kneel on one knee, brace and press the bell straight overhead, then lower it slowly.",
       "key_points": [
         "Back knee under the hip, front foot flat",
         "Squeeze the glute of the back leg and brace",
@@ -207,7 +207,7 @@
       "id": 11,
       "name": "High-plank drag",
       "equipment": "Kettlebell",
-      "summary": "Dragging a bell across under your body from a high plank. A tough core and shoulder stability exercise.",
+      "summary": "In a high plank, reach under your body and drag the bell to the other side, keeping your hips still.",
       "key_points": [
         "Feet wide, hips square to the floor",
         "Reach under the body and drag the bell across",
@@ -222,7 +222,7 @@
       "id": 12,
       "name": "Halo",
       "equipment": "Kettlebell",
-      "summary": "Circling a light bell around the head. Mobilises the shoulders and works the upper back and core.",
+      "summary": "Hold a light bell upside down at your chest and circle it around your head.",
       "key_points": [
         "Light bell held upside down at the chest",
         "Circle it close around the head, shoulder to shoulder",
@@ -242,7 +242,7 @@
       "id": 68,
       "name": "Clean",
       "equipment": "Kettlebell",
-      "summary": "Bringing the bell from between the legs to the shoulder in one smooth move. Powerful hips with a soft catch.",
+      "summary": "Hinge to grab the bell, drive your hips and guide it up to rest on your forearm at your shoulder.",
       "key_points": [
         "Hinge to start, bell close to the body",
         "Drive the hips; elbow stays near the ribs",
@@ -257,7 +257,7 @@
       "id": 77,
       "name": "Kettlebell overhead press",
       "equipment": "Kettlebell",
-      "summary": "A standing one-arm press overhead. Builds the shoulders, arms and core.",
+      "summary": "With the bell at your shoulder, brace and press it straight overhead, then lower it slowly.",
       "key_points": [
         "Bell racked at the shoulder, wrist straight",
         "Brace the stomach and squeeze the glutes",
@@ -272,7 +272,7 @@
       "id": 82,
       "name": "Kettlebell Romanian deadlift",
       "equipment": "Kettlebell",
-      "summary": "A hip hinge holding one bell in both hands. Works the hamstrings, glutes and back.",
+      "summary": "Hold the bell at your thighs, push your hips back to lower it down your legs, then stand tall.",
       "key_points": [
         "Soft knees; push the hips back",
         "Bell stays close to the legs",
@@ -287,7 +287,7 @@
       "id": 13,
       "name": "Dumbbell thruster",
       "equipment": "Dumbbell",
-      "summary": "A squat straight into an overhead press. A full-body move for legs, shoulders and fitness.",
+      "summary": "Squat with dumbbells at your shoulders, then drive up and press them overhead in one move.",
       "key_points": [
         "Squat with the heels down and chest up",
         "Use the drive out of the squat to press overhead",
@@ -307,7 +307,7 @@
       "id": 14,
       "name": "Walking lunge",
       "equipment": "Dumbbell",
-      "summary": "Lunging forwards step after step with dumbbells at your sides. Builds the legs, glutes and balance.",
+      "summary": "Hold dumbbells at your sides and lunge forwards step after step, back knee towards the floor.",
       "key_points": [
         "Long step; lower the back knee towards the floor",
         "Front knee over the ankle, torso upright",
@@ -322,7 +322,7 @@
       "id": 15,
       "name": "Single-leg Romanian deadlift",
       "equipment": "Dumbbell",
-      "summary": "A one-leg hip hinge holding a dumbbell. Works the hamstrings and glutes and trains balance.",
+      "summary": "Stand on one leg and hinge forwards as the other leg reaches back, then return to standing.",
       "key_points": [
         "Soft standing knee, hips square to the floor",
         "Hinge forwards as the back leg reaches behind",
@@ -337,7 +337,7 @@
       "id": 16,
       "name": "Farmer's carry",
       "equipment": "Dumbbell",
-      "summary": "Walking with a heavy dumbbell in each hand. Builds grip, shoulders, core and posture.",
+      "summary": "Hold a heavy dumbbell in each hand and walk tall with small steps.",
       "key_points": [
         "Stand tall with shoulders back and level",
         "Tight grip, weights clear of the legs",
@@ -357,7 +357,7 @@
       "id": 17,
       "name": "Renegade row",
       "equipment": "Dumbbell",
-      "summary": "Rowing one dumbbell at a time from a high plank. Works the back, arms and core.",
+      "summary": "In a plank on the dumbbells, row one to your ribs, lower it, then row the other.",
       "key_points": [
         "Feet wide for balance, hands under the shoulders",
         "Row one dumbbell to the ribs",
@@ -372,7 +372,7 @@
       "id": 18,
       "name": "Burpee deadlift",
       "equipment": "Dumbbell",
-      "summary": "A burpee that finishes with a dumbbell deadlift. A full-body conditioning move.",
+      "summary": "Set the dumbbells down, step back to a plank and in again, then stand up holding them.",
       "key_points": [
         "Hinge or squat to set the dumbbells down",
         "Step back to a plank, then step in again",
@@ -387,7 +387,7 @@
       "id": 19,
       "name": "Dumbbell glute bridge",
       "equipment": "Dumbbell",
-      "summary": "Lifting the hips with a dumbbell across them. Strengthens the glutes and hamstrings.",
+      "summary": "Lie with a dumbbell across your hips and push through your heels to lift your hips.",
       "key_points": [
         "Dumbbell across the hips, feet flat",
         "Push through the heels to lift the hips",
@@ -402,7 +402,7 @@
       "id": 20,
       "name": "Dumbbell pullover",
       "equipment": "Dumbbell",
-      "summary": "Lowering a dumbbell behind the head while lying down. Works the lats, chest and core.",
+      "summary": "Lie on your back holding one dumbbell above your chest and lower it behind your head with soft elbows.",
       "key_points": [
         "Hold one end of a light dumbbell with both hands",
         "Lower behind the head with soft elbows, ribs down",
@@ -417,7 +417,7 @@
       "id": 21,
       "name": "Dumbbell overhead press",
       "equipment": "Dumbbell",
-      "summary": "Pressing two dumbbells overhead from the shoulders. Builds the shoulders and arms with core control.",
+      "summary": "With dumbbells at your shoulders, brace and press both straight overhead, then lower slowly.",
       "key_points": [
         "Dumbbells at the shoulders, stomach braced",
         "Press both straight up until the arms are straight",
@@ -432,7 +432,7 @@
       "id": 22,
       "name": "Bent-over reverse fly",
       "equipment": "Dumbbell",
-      "summary": "Opening the arms wide while bent over. Strengthens the rear shoulders and upper back for good posture.",
+      "summary": "Hinge forwards with a flat back and open your arms wide to the sides, then lower slowly.",
       "key_points": [
         "Hinge forwards with a flat back and soft knees",
         "Open the arms wide with a small bend in the elbows",
@@ -447,7 +447,7 @@
       "id": 23,
       "name": "Dumbbell reverse lunge to knee drive",
       "equipment": "Dumbbell",
-      "summary": "A backward lunge that finishes with a knee lift. Works the legs, glutes and balance.",
+      "summary": "Step back into a lunge, then drive up and lift that knee to hip height.",
       "key_points": [
         "Step back into a lunge, front foot planted",
         "Drive up and lift the back knee to hip height",
@@ -462,7 +462,7 @@
       "id": 24,
       "name": "Dumbbell woodchop",
       "equipment": "Dumbbell",
-      "summary": "A diagonal chop across the body with one dumbbell. Works the core, especially the obliques.",
+      "summary": "Hold one dumbbell at your shoulder and chop it diagonally across your body to the opposite knee.",
       "key_points": [
         "Start at one shoulder, finish outside the opposite knee",
         "Turn the hips and shoulders together; pivot the feet",
@@ -477,7 +477,7 @@
       "id": 58,
       "name": "Russian twist",
       "equipment": "Dumbbell",
-      "summary": "Twisting the chest side to side while seated and leaning back. Works the core and obliques.",
+      "summary": "Sit leaning back with a long spine and turn your chest from side to side.",
       "key_points": [
         "Lean back with a long spine and braced stomach",
         "Turn the chest, not just the arms",
@@ -492,7 +492,7 @@
       "id": 63,
       "name": "Dumbbell calf raise",
       "equipment": "Dumbbell",
-      "summary": "Rising onto the toes holding dumbbells. Strengthens the calves and ankles.",
+      "summary": "Hold dumbbells at your sides, rise high onto your toes, then lower your heels slowly.",
       "key_points": [
         "Stand tall, dumbbells by the sides",
         "Rise high onto the balls of the feet and pause",
@@ -507,7 +507,7 @@
       "id": 64,
       "name": "Concentration curl",
       "equipment": "Dumbbell",
-      "summary": "A seated one-arm curl with the elbow braced on the thigh. Isolates the biceps.",
+      "summary": "Seated, brace your upper arm against your inner thigh and curl the dumbbell to your shoulder.",
       "key_points": [
         "Back of the upper arm against the inner thigh",
         "Curl to the shoulder without moving the upper arm",
@@ -522,7 +522,7 @@
       "id": 65,
       "name": "Dumbbell lateral lunge",
       "equipment": "Dumbbell",
-      "summary": "A side-step lunge holding dumbbells at the chest. Works the inner thighs, glutes and hip mobility.",
+      "summary": "Hold the dumbbells at your chest, take a big step to the side and sit into that hip, then push back.",
       "key_points": [
         "Dumbbells held close at the chest",
         "Wide step to the side; sit the hips back, other leg straight",
@@ -537,7 +537,7 @@
       "id": 66,
       "name": "Sumo squat",
       "equipment": "Dumbbell",
-      "summary": "A wide-stance squat holding one dumbbell between the legs. Works the inner thighs, glutes and quads.",
+      "summary": "Stand wide with toes out, hold one dumbbell between your legs and squat with knees out.",
       "key_points": [
         "Wide stance, toes turned out",
         "Push the knees out over the toes as you lower",
@@ -552,7 +552,7 @@
       "id": 69,
       "name": "Dumbbell chest press",
       "equipment": "Dumbbell",
-      "summary": "Pressing two dumbbells up while lying on the floor. Works the chest, shoulders and triceps.",
+      "summary": "Lie on your back, lower the dumbbells until your upper arms touch the floor, then press up.",
       "key_points": [
         "Upper arms at about 45 degrees from the body",
         "Lower until the upper arms touch the floor",
@@ -567,7 +567,7 @@
       "id": 70,
       "name": "Bicep curl",
       "equipment": "Dumbbell",
-      "summary": "Curling dumbbells up to the shoulders. Builds the biceps and forearms.",
+      "summary": "Keep your elbows by your sides and curl the dumbbells up to your shoulders, then lower slowly.",
       "key_points": [
         "Elbows stay by the sides",
         "Curl up, squeeze, then lower slowly",
@@ -582,7 +582,7 @@
       "id": 71,
       "name": "Front raise",
       "equipment": "Dumbbell",
-      "summary": "Raising dumbbells forwards to shoulder height. Works the front of the shoulders.",
+      "summary": "Raise the dumbbells forwards to shoulder height with nearly straight arms, then lower slowly.",
       "key_points": [
         "Light dumbbells, small bend in the elbows",
         "Raise to shoulder height only",
@@ -597,7 +597,7 @@
       "id": 72,
       "name": "Dumbbell bent-over row",
       "equipment": "Dumbbell",
-      "summary": "Rowing two dumbbells to the ribs from a hip hinge. Strengthens the upper back and arms.",
+      "summary": "Hinge forwards with a flat back and row both dumbbells to your lower ribs.",
       "key_points": [
         "Hinge with a flat back, chest well forwards",
         "Pull the dumbbells to the lower ribs, elbows close",
@@ -612,7 +612,7 @@
       "id": 73,
       "name": "Lateral raise",
       "equipment": "Dumbbell",
-      "summary": "Raising dumbbells out to the sides. Works the side of the shoulders.",
+      "summary": "Raise the dumbbells out to the sides to shoulder height, then lower slowly.",
       "key_points": [
         "Light dumbbells, small bend in the elbows",
         "Raise out to the sides to shoulder height",
@@ -627,7 +627,7 @@
       "id": 86,
       "name": "Dumbbell push press",
       "equipment": "Dumbbell",
-      "summary": "A short knee dip that drives two dumbbells overhead. Powerful legs and strong shoulders.",
+      "summary": "With dumbbells at your shoulders, dip your knees, then drive up and press them overhead.",
       "key_points": [
         "Dumbbells at the shoulders, torso tall",
         "Short dip at the knees, then drive up hard",
@@ -642,7 +642,7 @@
       "id": 87,
       "name": "Dumbbell Romanian deadlift",
       "equipment": "Dumbbell",
-      "summary": "A hip hinge lowering two dumbbells down the legs. Works the hamstrings, glutes and back.",
+      "summary": "Hold the dumbbells at your thighs, push your hips back to lower them down your legs, then stand tall.",
       "key_points": [
         "Soft knees; push the hips back",
         "Dumbbells slide close down the thighs",
@@ -657,7 +657,7 @@
       "id": 88,
       "name": "Man maker",
       "equipment": "Dumbbell",
-      "summary": "A plank row on each side, then a squat clean and press. A tough full-body move.",
+      "summary": "Plank on the dumbbells, row each side, jump your feet in, clean them to your shoulders and press overhead.",
       "key_points": [
         "Plank on the dumbbells, feet wide; row one side then the other",
         "Step or jump the feet in, then clean the dumbbells to the shoulders",
@@ -672,7 +672,7 @@
       "id": 25,
       "name": "Barbell deadlift",
       "equipment": "Light barbell",
-      "summary": "Lifting the bar from the floor to standing. Builds the whole back of the body: glutes, hamstrings and back.",
+      "summary": "With the bar over your feet, hips back and back flat, push the floor away to stand tall.",
       "key_points": [
         "Bar close to the shins, hips back, back flat",
         "Brace, then push the floor away to stand",
@@ -692,7 +692,7 @@
       "id": 26,
       "name": "Barbell Romanian deadlift",
       "equipment": "Light barbell",
-      "summary": "A hip hinge lowering the bar down the thighs. Works the hamstrings and glutes.",
+      "summary": "Hold the bar at your thighs, push your hips back to slide it down your legs, then stand tall.",
       "key_points": [
         "Soft knees; push the hips back",
         "Bar slides close down the thighs",
@@ -707,7 +707,7 @@
       "id": 27,
       "name": "Barbell bent-over row",
       "equipment": "Light barbell",
-      "summary": "Rowing the bar to the stomach from a hip hinge. Strengthens the upper back and arms.",
+      "summary": "Hinge forwards with a flat back and row the bar to your stomach.",
       "key_points": [
         "Hinge with soft knees and a flat back",
         "Pull the bar to the upper stomach, elbows back",
@@ -727,7 +727,7 @@
       "id": 28,
       "name": "Front squat",
       "equipment": "Light barbell",
-      "summary": "A squat with the bar on the front of the shoulders. Builds the legs and an upright torso.",
+      "summary": "With the bar on the front of your shoulders and elbows high, squat down and stand back up.",
       "key_points": [
         "Elbows high, bar on the front of the shoulders",
         "Squat with the chest up and heels down",
@@ -742,7 +742,7 @@
       "id": 29,
       "name": "Barbell push press",
       "equipment": "Light barbell",
-      "summary": "A short knee dip that drives the bar overhead. Powerful legs and strong shoulders.",
+      "summary": "With the bar at your shoulders, dip your knees, then drive up and press it overhead.",
       "key_points": [
         "Short dip at the knees, torso tall",
         "Drive with the legs, then finish with the arms",
@@ -757,7 +757,7 @@
       "id": 30,
       "name": "Barbell thruster",
       "equipment": "Light barbell",
-      "summary": "A front squat straight into an overhead press. A full-body move for legs, shoulders and fitness.",
+      "summary": "Front squat, then drive up and press the bar overhead in one move.",
       "key_points": [
         "Front squat with elbows high and heels down",
         "Drive up and press overhead in one movement",
@@ -777,7 +777,7 @@
       "id": 59,
       "name": "Back squat",
       "equipment": "Light barbell",
-      "summary": "A squat with the bar across the upper back. Builds the legs and glutes.",
+      "summary": "With the bar on your upper back, push your hips back and squat, then stand tall.",
       "key_points": [
         "Bar on the upper back, not the neck",
         "Hips back, knees over the toes, chest up",
@@ -792,7 +792,7 @@
       "id": 60,
       "name": "Barbell overhead press",
       "equipment": "Light barbell",
-      "summary": "Pressing the bar overhead with straight legs. Builds the shoulders, arms and core.",
+      "summary": "With the bar at your shoulders, brace and press it straight overhead, keeping your legs straight.",
       "key_points": [
         "Brace the stomach and squeeze the glutes",
         "Press straight up, moving the head out of the way",
@@ -807,7 +807,7 @@
       "id": 61,
       "name": "Barbell reverse lunge",
       "equipment": "Light barbell",
-      "summary": "A backward lunge with the bar on the upper back. Works the legs, glutes and balance.",
+      "summary": "With the bar on your upper back, step back and lower the back knee, then push up.",
       "key_points": [
         "Bar on the upper back, taken from a rack",
         "Step back and lower the back knee towards the floor",
@@ -822,7 +822,7 @@
       "id": 62,
       "name": "Hang clean",
       "equipment": "Light barbell",
-      "summary": "A fast pull from the thighs, catching the bar on the shoulders. Builds power; learn it light.",
+      "summary": "From mid-thigh, drive your hips and legs, then pull under and catch the bar on your shoulders.",
       "key_points": [
         "Start at mid-thigh with straight arms",
         "Drive the hips and legs, keeping the bar close",
@@ -837,7 +837,7 @@
       "id": 31,
       "name": "Skillmill run",
       "equipment": "Skillmill",
-      "summary": "Running on the curved, self-powered belt. Cardio that builds leg drive.",
+      "summary": "Start walking on the belt, then build to a run with tall posture.",
       "key_points": [
         "Start walking, then build to a run",
         "Stand tall, head in line with the body",
@@ -852,7 +852,7 @@
       "id": 32,
       "name": "Skillmill high knees",
       "equipment": "Skillmill",
-      "summary": "High-knee running drill while holding the rails. Cardio and running technique.",
+      "summary": "Hold the rails and drive your knees up to hip height with short steps.",
       "key_points": [
         "Hold the rails for support",
         "Lift the knees towards hip height",
@@ -867,7 +867,7 @@
       "id": 33,
       "name": "Skillmill high sled push",
       "equipment": "Skillmill",
-      "summary": "Pushing the belt from the high handles like a sled. Works the legs and fitness.",
+      "summary": "Hold the high handles, lean in with a braced back and drive the belt back with each foot.",
       "key_points": [
         "Hands on the high handles, resistance you can manage",
         "Lean in with a braced, long back",
@@ -882,7 +882,7 @@
       "id": 34,
       "name": "Skillmill low sled push",
       "equipment": "Skillmill",
-      "summary": "A deeper, lower sled push from the low handles. Hard work for the legs and lungs.",
+      "summary": "Hold the low handles, lean in further and drive the belt back with short, powerful steps.",
       "key_points": [
         "Hands on the low handles",
         "Deeper forward lean, back long",
@@ -902,7 +902,7 @@
       "id": 35,
       "name": "Skillmill lateral shuffle",
       "equipment": "Skillmill",
-      "summary": "Sideways shuffle on a slow belt, for experienced users. Agility and side-to-side strength.",
+      "summary": "With the belt slow, turn sideways and shuffle without crossing your feet.",
       "key_points": [
         "Experienced users only; start with the belt stopped",
         "Knees bent, feet never cross",
@@ -922,7 +922,7 @@
       "id": 36,
       "name": "SkiErg double-pole pull",
       "equipment": "SkiErg",
-      "summary": "Pulling both handles down together on the SkiErg. Works the back, arms, core and fitness.",
+      "summary": "Reach the handles up high, then hinge and pull both down to your thighs.",
       "key_points": [
         "Start with handles above eye level, elbows bent",
         "Hinge and pull both handles down to the thighs",
@@ -942,7 +942,7 @@
       "id": 37,
       "name": "SkiErg alternating-arm pull",
       "equipment": "SkiErg",
-      "summary": "Pulling one handle at a time on the SkiErg. Works the back, arms and core in a steady rhythm.",
+      "summary": "Pull one handle down as the other rises, in a steady rhythm.",
       "key_points": [
         "Soft knees, torso controlled",
         "Pull one handle down as the other rises",
@@ -966,7 +966,7 @@
       "id": 38,
       "name": "SkiErg staggered-stance double pull",
       "equipment": "SkiErg",
-      "summary": "A double-pole pull with one foot in front. Adds a balance challenge to the SkiErg.",
+      "summary": "Stand with one foot in front, hinge and pull both handles down to your thighs.",
       "key_points": [
         "One foot slightly in front",
         "Hinge and pull both handles to the thighs",
@@ -986,7 +986,7 @@
       "id": 39,
       "name": "Squat jump",
       "equipment": "Mat and bodyweight",
-      "summary": "A squat into a jump straight up. Builds leg power and gets the heart rate up.",
+      "summary": "Squat down, swing your arms and jump straight up, then land softly.",
       "key_points": [
         "Squat down, swing the arms",
         "Jump straight up",
@@ -1001,7 +1001,7 @@
       "id": 40,
       "name": "Lateral skater bound",
       "equipment": "Mat and bodyweight",
-      "summary": "Bounding side to side from one leg to the other. Builds leg power, balance and agility.",
+      "summary": "Push off one leg and bound sideways, landing softly on the other foot.",
       "key_points": [
         "Push off sideways from one leg",
         "Land softly on the other foot with a bent knee",
@@ -1016,7 +1016,7 @@
       "id": 41,
       "name": "Burpee",
       "equipment": "Mat and bodyweight",
-      "summary": "Down to a plank and back up into a small jump. A full-body conditioning move.",
+      "summary": "Put your hands down, step or jump back to a plank, jump your feet in and stand with a small jump.",
       "key_points": [
         "Hands down, step or jump back to a plank",
         "Straight arms in the plank, hips level",
@@ -1031,7 +1031,7 @@
       "id": 42,
       "name": "Mountain climber",
       "equipment": "Mat and bodyweight",
-      "summary": "Driving the knees to the chest from a high plank. Cardio plus core and shoulders.",
+      "summary": "In a high plank, drive your knees to your chest one at a time.",
       "key_points": [
         "Shoulders over the hands",
         "Drive the knees to the chest one at a time",
@@ -1046,7 +1046,7 @@
       "id": 43,
       "name": "Push-up",
       "equipment": "Mat and bodyweight",
-      "summary": "Lowering and pushing the body up from a plank. Builds the chest, shoulders, triceps and core.",
+      "summary": "In a plank, lower your chest to the floor with your body straight, then push back up.",
       "key_points": [
         "Body straight from head to heels",
         "Elbows angled back, not flared wide",
@@ -1061,7 +1061,7 @@
       "id": 44,
       "name": "Inchworm",
       "equipment": "Mat and bodyweight",
-      "summary": "Walking the hands out to a plank and back. A warm-up for the hamstrings, shoulders and core.",
+      "summary": "Fold forwards, walk your hands out to a plank, then walk them back and stand.",
       "key_points": [
         "Hinge and place the hands down",
         "Walk the hands out to a plank",
@@ -1076,7 +1076,7 @@
       "id": 45,
       "name": "Bear crawl",
       "equipment": "Mat and bodyweight",
-      "summary": "Crawling on hands and feet with the knees hovering. Works the shoulders, core and coordination.",
+      "summary": "With your knees just off the floor, crawl moving the opposite hand and foot together.",
       "key_points": [
         "Knees hover just off the floor",
         "Move the opposite hand and foot together",
@@ -1096,7 +1096,7 @@
       "id": 46,
       "name": "Bicycle crunch",
       "equipment": "Mat and bodyweight",
-      "summary": "Lying down, twisting elbow towards the opposite knee. Works the abs and obliques.",
+      "summary": "Lying down, turn one shoulder towards the opposite knee while the other leg reaches long.",
       "key_points": [
         "Hands light on the head: don't pull the neck",
         "Turn the shoulder towards the opposite knee",
@@ -1111,7 +1111,7 @@
       "id": 47,
       "name": "Glute bridge march",
       "equipment": "Mat and bodyweight",
-      "summary": "Holding a glute bridge while lifting one foot at a time. Works the glutes and core stability.",
+      "summary": "Lift your hips into a bridge, then lift one foot at a time while keeping your hips level.",
       "key_points": [
         "Lift the hips into a bridge",
         "Lift one foot a little at a time",
@@ -1131,7 +1131,7 @@
       "id": 48,
       "name": "Dead bug",
       "equipment": "Mat and bodyweight",
-      "summary": "Lying on the back, reaching opposite arm and leg away. Teaches core control and protects the lower back.",
+      "summary": "Lying on your back, reach the opposite arm and leg away slowly, keeping your back down.",
       "key_points": [
         "Lower back stays gently pressed to the floor",
         "Reach the opposite arm and leg away slowly",
@@ -1146,7 +1146,7 @@
       "id": 49,
       "name": "Bird-dog",
       "equipment": "Mat and bodyweight",
-      "summary": "Reaching opposite arm and leg on hands and knees. Builds core stability and balance.",
+      "summary": "On hands and knees, reach the opposite arm and leg long, then switch.",
       "key_points": [
         "Hands under the shoulders, knees under the hips",
         "Reach the opposite arm and leg long",
@@ -1166,7 +1166,7 @@
       "id": 50,
       "name": "Side plank hip lift",
       "equipment": "Mat and bodyweight",
-      "summary": "Lifting the hips from a forearm side plank. Works the obliques and side of the hips.",
+      "summary": "In a forearm side plank, lower your hips a little, then lift them back into line.",
       "key_points": [
         "Elbow under the shoulder",
         "Lift the hips into a straight line",
@@ -1186,7 +1186,7 @@
       "id": 51,
       "name": "Air squat",
       "equipment": "Mat and bodyweight",
-      "summary": "A bodyweight squat. Builds the legs and glutes and warms up the hips and knees.",
+      "summary": "Push your hips back and squat with your heels down and chest up, then stand.",
       "key_points": [
         "Hips back, chest up",
         "Knees follow the toes, heels down",
@@ -1201,7 +1201,7 @@
       "id": 52,
       "name": "Forward lunge",
       "equipment": "Mat and bodyweight",
-      "summary": "Stepping forwards into a lunge with no weights. Works the legs, glutes and balance.",
+      "summary": "Step forwards and lower until both knees bend, then push back to standing.",
       "key_points": [
         "Long step; both knees bend",
         "Front knee over the ankle, chest lifted",
@@ -1216,7 +1216,7 @@
       "id": 53,
       "name": "High plank hold",
       "equipment": "Mat and bodyweight",
-      "summary": "Holding a straight-arm plank. Builds the core and shoulders.",
+      "summary": "Hold a straight-arm plank with your body in a line from head to heels.",
       "key_points": [
         "Hands under the shoulders, body in a straight line",
         "Brace the stomach and squeeze the glutes",
@@ -1231,7 +1231,7 @@
       "id": 54,
       "name": "Jumping jack",
       "equipment": "Mat and bodyweight",
-      "summary": "Jumping the feet out and in with the arms going up and down. A classic cardio warm-up.",
+      "summary": "Jump your feet out as your arms go up, then jump back in as they come down.",
       "key_points": [
         "Jump the feet out as the arms go up",
         "Land softly on the balls of the feet",
@@ -1246,7 +1246,7 @@
       "id": 55,
       "name": "High knees",
       "equipment": "Mat and bodyweight",
-      "summary": "Running on the spot with the knees up high. Gets the heart rate up fast.",
+      "summary": "Run on the spot, driving your knees up to hip height.",
       "key_points": [
         "Knees up towards hip height",
         "Light, quick feet",
@@ -1261,7 +1261,7 @@
       "id": 56,
       "name": "Calf raise",
       "equipment": "Mat and bodyweight",
-      "summary": "Rising onto the toes with no weights. Strengthens the calves and ankles.",
+      "summary": "Rise high onto your toes, pause, then lower your heels slowly.",
       "key_points": [
         "Tall posture; hold a wall for balance if needed",
         "Rise high and pause",
@@ -1276,7 +1276,7 @@
       "id": 57,
       "name": "Tricep dip",
       "equipment": "Mat and bodyweight",
-      "summary": "Lowering and pushing up from a bench behind you. Works the triceps.",
+      "summary": "With hands on a bench behind you, bend your elbows to lower your hips, then press up.",
       "key_points": [
         "Use a stable bench or box",
         "Bend the elbows straight back, back close to the bench",
@@ -1291,7 +1291,7 @@
       "id": 67,
       "name": "Plank shoulder tap",
       "equipment": "Mat and bodyweight",
-      "summary": "Tapping each shoulder from a high plank. Works the core and shoulder stability.",
+      "summary": "In a high plank with feet wide, tap each shoulder with the opposite hand.",
       "key_points": [
         "Feet wide, hands under the shoulders",
         "Tap the opposite shoulder with one hand at a time",
@@ -1306,7 +1306,7 @@
       "id": 74,
       "name": "Hollow rock",
       "equipment": "Mat and bodyweight",
-      "summary": "Holding a hollow body shape and rocking in it. A tough exercise for the deep abs.",
+      "summary": "Lie in a hollow shape with arms and legs long and rock from your back to your hips.",
       "key_points": [
         "Lower back stays pressed into the mat",
         "Arms and legs long, shoulders off the floor",
@@ -1321,7 +1321,7 @@
       "id": 75,
       "name": "V-sit flutter twist",
       "equipment": "Mat and bodyweight",
-      "summary": "Flutter kicks and twists from a V-sit. Works the abs, obliques and hip flexors.",
+      "summary": "Sit leaning back with feet up, kick your legs quickly and turn your chest side to side.",
       "key_points": [
         "Sit tall and lean back slightly; feet off the floor",
         "Small, quick kicks with the legs",
@@ -1336,7 +1336,7 @@
       "id": 76,
       "name": "Plank hip dip",
       "equipment": "Mat and bodyweight",
-      "summary": "Rotating the hips side to side from a forearm plank. Works the obliques and core.",
+      "summary": "In a forearm plank, rotate your hips to dip one side towards the floor, then the other.",
       "key_points": [
         "Elbows under the shoulders, body in a straight line",
         "Rotate the hips to lower one side towards the floor",
@@ -1351,7 +1351,7 @@
       "id": 78,
       "name": "Cross-body mountain climber",
       "equipment": "Mat and bodyweight",
-      "summary": "Driving each knee across to the opposite elbow from a plank. Cardio plus obliques.",
+      "summary": "In a high plank, drive each knee across towards the opposite elbow.",
       "key_points": [
         "Shoulders over the hands, body straight",
         "Drive each knee towards the opposite elbow",
@@ -1366,7 +1366,7 @@
       "id": 79,
       "name": "Push-up to shoulder tap",
       "equipment": "Mat and bodyweight",
-      "summary": "A push-up followed by a tap on each shoulder. Works the chest, arms and core stability.",
+      "summary": "Do a push-up, then tap each shoulder with the opposite hand.",
       "key_points": [
         "Body straight from head to heels",
         "Do a push-up, then tap each shoulder",
@@ -1381,7 +1381,7 @@
       "id": 80,
       "name": "Bodyweight lateral lunge",
       "equipment": "Mat and bodyweight",
-      "summary": "A side-step lunge with no weights. Works the inner thighs, glutes and hip mobility.",
+      "summary": "Take a big step to the side and sit into that hip with the other leg straight, then push back.",
       "key_points": [
         "Wide step to the side; sit the hips back",
         "Bent knee over the toes, other leg straight",
@@ -1396,7 +1396,7 @@
       "id": 81,
       "name": "Reverse lunge to knee drive",
       "equipment": "Mat and bodyweight",
-      "summary": "A backward lunge finishing with a knee lift, no weights. Works the legs, glutes and balance.",
+      "summary": "Step back into a lunge, then drive up and lift that knee to hip height.",
       "key_points": [
         "Step back and lower the back knee towards the floor",
         "Drive up and lift that knee to hip height",
@@ -1411,7 +1411,7 @@
       "id": 83,
       "name": "Plank jack to pike",
       "equipment": "Mat and bodyweight",
-      "summary": "A plank jack followed by lifting the hips into a pike. Cardio plus core and shoulders.",
+      "summary": "From a high plank, jump your feet out and in, then lift your hips up into a pike.",
       "key_points": [
         "Jump the feet out and in from a high plank",
         "Then lift the hips up into a pike",
@@ -1426,7 +1426,7 @@
       "id": 84,
       "name": "Bird-dog crunch",
       "equipment": "Mat and bodyweight",
-      "summary": "Reaching opposite arm and leg, then crunching them together. Works core stability and the abs.",
+      "summary": "Reach the opposite arm and leg long, then bring the elbow and knee together under you.",
       "key_points": [
         "Reach the opposite arm and leg long, back flat",
         "Draw the elbow and knee in under the body",
@@ -1441,7 +1441,7 @@
       "id": 85,
       "name": "Side plank hip dip with reach",
       "equipment": "Mat and bodyweight",
-      "summary": "Dipping and lifting the hips in a side plank while reaching up. Works the obliques and shoulders.",
+      "summary": "In a side plank, dip your hips, then lift them high as you reach your top arm up.",
       "key_points": [
         "Hand under the shoulder, body in a straight line",
         "Dip the hips towards the floor, then lift them high",

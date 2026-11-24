@@ -224,7 +224,8 @@ export function cleanClasses(data) {
   const slot = (c, label) => {
     const time = text(c?.time, 5, `${label} time`, true);
     if (!TIME.test(time)) fail(`${label}: the time must look like 06:00.`);
-    return { time, type: text(c?.type, 40, `${label} class type`, true), club: text(c?.club, 80, `${label} club`, true) };
+    const place = text(c?.place, 40, `${label} studio or room`);
+    return { time, type: text(c?.type, 40, `${label} class type`, true), club: text(c?.club, 80, `${label} club`, true), ...(place ? { place } : {}) };
   };
   const weekly = list(data.weekly, 100, 'Weekly timetable').map((c, i) => {
     const day = Number(c?.day);
@@ -279,9 +280,22 @@ export function cleanMusic(m = {}) {
   return item;
 }
 
+// Where members comment: Breeze Kobola's Facebook and Instagram pages (added when they are up and running)
+const SOCIAL_HOSTS = { facebook: ['facebook.com', 'www.facebook.com', 'm.facebook.com', 'fb.com', 'web.facebook.com'], instagram: ['instagram.com', 'www.instagram.com'] };
+export function cleanSocial(s = {}) {
+  const out = {};
+  for (const [k, hosts] of Object.entries(SOCIAL_HOSTS)) {
+    const label = k === 'facebook' ? 'Facebook link' : 'Instagram link';
+    const url = httpsUrl(s[k], label);
+    if (url && !hosts.includes(new URL(url).hostname)) fail(`${label} must be a ${k === 'facebook' ? 'facebook.com' : 'instagram.com'} address.`);
+    out[k] = url;
+  }
+  return out;
+}
+
 export function cleanSettings(s) {
   if (!s || typeof s !== 'object') fail('settings.json is not valid.');
-  return { version: 1, donate: cleanDonate(s.donate || {}), comments: cleanComments(s.comments || {}), music: cleanMusic(s.music || {}) };
+  return { version: 1, donate: cleanDonate(s.donate || {}), comments: cleanComments(s.comments || {}), music: cleanMusic(s.music || {}), social: cleanSocial(s.social || {}) };
 }
 
 // Every picture the data uses (exercise pictures, timer pictures, library pictures). Anything else in
