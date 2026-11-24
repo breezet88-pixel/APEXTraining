@@ -241,6 +241,34 @@
       "sources": []
     },
     {
+      "id": 77,
+      "name": "Kettlebell overhead press",
+      "equipment": "Kettlebell",
+      "key_points": [
+        "Bell racked at the shoulder, wrist straight",
+        "Brace the stomach and squeeze the glutes",
+        "Press straight up without leaning back; lower slowly"
+      ],
+      "movement": "Stand tall with a kettlebell held in the rack position at the front of one shoulder, wrist straight and elbow close to the ribs. Brace the stomach and squeeze the glutes, then press the bell straight up until the arm is straight beside the ear. Lower it back to the shoulder with control. Complete the set, then change arms.",
+      "image_cue": "Front view showing the kettlebell racked at the shoulder, then pressed overhead with a straight arm and the body upright.",
+      "image": "images/0c66d7dfecd72fc3e08b4868b8126602.jpg",
+      "sources": []
+    },
+    {
+      "id": 82,
+      "name": "Kettlebell Romanian deadlift",
+      "equipment": "Kettlebell",
+      "key_points": [
+        "Soft knees; push the hips back",
+        "Bell stays close to the legs",
+        "Flat back; stand tall by squeezing the glutes"
+      ],
+      "movement": "Stand holding a kettlebell by the handle with both hands in front of the thighs. Soften the knees and push the hips back, lowering the bell close to the legs until you feel a stretch in the back of the thighs with a flat back. Drive the hips forwards to stand tall.",
+      "image_cue": "Side view showing a tall start with the kettlebell at the thighs, then the hip hinge with the bell below the knees and the back flat.",
+      "image": "images/196eaad1cd48b29f00d9a0da49c41152.jpg",
+      "sources": []
+    },
+    {
       "id": 13,
       "name": "Dumbbell thruster",
       "equipment": "Dumbbell",
@@ -879,7 +907,7 @@
       ],
       "movement": "Start balanced on the left leg with the knee slightly bent. Push sideways and land on the right foot, bending the right hip and knee. Allow the left leg to trail diagonally behind without bearing weight. Push back towards the left, using the arms to help balance and controlling each landing.",
       "image_cue": "Front three-quarter view showing alternating left-foot and right-foot landings, with the free leg trailing behind the supporting leg.",
-      "image": "images/e6f098400f5a08f5aa026cdf007003ac.jpg",
+      "image": "images/4d363bb8517ef18ff10e993449aeee09.jpg",
       "sources": []
     },
     {
@@ -982,7 +1010,7 @@
       ],
       "movement": "Lie on your back with knees bent and feet flat. Lift the hips into a bridge, forming a sloping line from shoulders through hips to knees. Maintain this position while lifting one foot a short distance off the floor, keeping its knee bent. Replace it and lift the other foot, keeping the pelvis level.",
       "image_cue": "Side three-quarter view showing a raised bridge with both feet grounded, followed by the same bridge with one bent leg lifted.",
-      "image": "images/faaf0754fa259c2bf769da9beb08f4a1.jpg",
+      "image": "images/698beb71a28abf45b5be29c85fed05ee.jpg",
       "sources": [
         {
           "title": "ACE - Three core moves to improve running form",
@@ -1152,6 +1180,146 @@
       "movement": "Start in a high plank with the hands beneath the shoulders and the feet hip-width apart or wider. Brace the stomach and squeeze the glutes. Lift one hand to tap the opposite shoulder, place it back down and repeat on the other side. Keep the hips as still and level as you can; widen the feet to make it easier.",
       "image_cue": "Side three-quarter view showing a high plank, then one hand lifted to touch the opposite shoulder with the hips level.",
       "image": "images/6961043a7a8408b6a5a1ef98301eb273.jpg",
+      "sources": []
+    },
+    {
+      "id": 74,
+      "name": "Hollow hold to rock",
+      "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Lower back stays pressed into the mat",
+        "Arms and legs long, shoulders off the floor",
+        "Rock from the upper back to the hips without bending"
+      ],
+      "movement": "Lie on your back, press the lower back into the mat and lift the shoulders and legs off the floor, arms reaching long, so the body makes a shallow banana shape. Hold this position, then keep the same shape and rock gently forwards and back. If the lower back lifts, bend the knees or raise the legs higher.",
+      "image_cue": "Side view showing the hollow hold with shoulders and legs lifted and arms long, then rocked up onto the hips with arms reaching forwards.",
+      "image": "images/c24f80fd8e59e183997063c7af540067.jpg",
+      "sources": []
+    },
+    {
+      "id": 75,
+      "name": "V-sit flutter twist",
+      "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Sit tall and lean back slightly; feet off the floor",
+        "Small, quick kicks with the legs",
+        "Turn the chest side to side, not just the arms"
+      ],
+      "movement": "Sit on the mat, lean back slightly with a long spine and lift both feet off the floor. Flutter the legs with small up-and-down kicks while you rotate the chest and hands from side to side. Keep the stomach braced and breathe steadily; put the hands down behind you to make it easier.",
+      "image_cue": "Front three-quarter view showing a V-sit with feet lifted and hands supporting, then the torso rotated to one side with the legs fluttering.",
+      "image": "images/51694d9d2a0e133df627bcb9f9fdf1cb.jpg",
+      "sources": []
+    },
+    {
+      "id": 76,
+      "name": "Forearm plank hip dip",
+      "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Elbows under the shoulders, body in a straight line",
+        "Rotate the hips to lower one side towards the floor",
+        "Move slowly from side to side; keep the shoulders still"
+      ],
+      "movement": "Start in a forearm plank with elbows under the shoulders and feet together. Brace the stomach and slowly rotate the hips to dip one hip towards the floor, return through the middle and dip to the other side. Keep the shoulders steady over the elbows and don't let the hips sag.",
+      "image_cue": "Front three-quarter view showing a straight plank, then the hips rotated to dip one side towards the floor.",
+      "image": "images/319df1304bbb99f565df8ab6b1dbc9e4.jpg",
+      "sources": []
+    },
+    {
+      "id": 78,
+      "name": "Cross-body mountain climber",
+      "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Shoulders over the hands, body straight",
+        "Drive each knee towards the opposite elbow",
+        "Keep the hips low and level"
+      ],
+      "movement": "Start in a high plank with the hands under the shoulders. Drive the right knee across the body towards the left elbow, return it, then drive the left knee towards the right elbow. Keep alternating at a steady pace with the hips low and the shoulders over the hands.",
+      "image_cue": "Front three-quarter view showing a high plank, then one knee driven across the body towards the opposite elbow.",
+      "image": "images/f7eae20eb080981f2aac0799dce3c1c1.jpg",
+      "sources": []
+    },
+    {
+      "id": 79,
+      "name": "Push-up to shoulder tap",
+      "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Body straight from head to heels",
+        "Do a push-up, then tap each shoulder",
+        "Feet wide to keep the hips still during the taps"
+      ],
+      "movement": "Start in a high plank with the hands under the shoulders and the feet hip-width apart or wider. Do one push-up, keeping the body straight. At the top, tap the right hand to the left shoulder, then the left hand to the right shoulder, keeping the hips still. Drop the knees for the push-up to make it easier.",
+      "image_cue": "Front three-quarter view showing the high plank, then one hand lifted to tap the opposite shoulder with the hips level.",
+      "image": "images/5e834f0f73a38699a833f503e56d1a84.jpg",
+      "sources": []
+    },
+    {
+      "id": 80,
+      "name": "Bodyweight lateral lunge",
+      "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Wide step to the side; sit the hips back",
+        "Bent knee over the toes, other leg straight",
+        "Chest lifted; push off the bent leg to return"
+      ],
+      "movement": "Stand tall with the feet together and the hands at the chest. Take a wide step to one side, push the hips back and bend that knee while keeping the other leg straight and both feet flat. Push through the bent leg to return to standing and alternate sides.",
+      "image_cue": "Front view showing a wide side lunge with one knee bent and the other leg straight, then standing tall with feet together.",
+      "image": "images/c089965ac69e638fdc51c89dfd52406e.jpg",
+      "sources": []
+    },
+    {
+      "id": 81,
+      "name": "Reverse lunge to knee drive",
+      "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Step back and lower the back knee towards the floor",
+        "Drive up and lift that knee to hip height",
+        "Swing the arms like running; stay tall"
+      ],
+      "movement": "Stand tall. Step one foot back and lower into a lunge until the back knee is just above the floor, keeping the front knee over the ankle. Push through the front foot to stand and drive the back knee up to hip height, swinging the opposite arm forwards. Lower the foot straight into the next lunge, then change sides.",
+      "image_cue": "Side three-quarter view showing the bottom of the reverse lunge, then standing on one leg with the other knee driven up to hip height.",
+      "image": "images/10f649543af4a61ee309f495d6f1cf14.jpg",
+      "sources": []
+    },
+    {
+      "id": 83,
+      "name": "Plank jack to pike",
+      "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Jump the feet out and in from a high plank",
+        "Then lift the hips up into a pike",
+        "Shoulders stay over the hands"
+      ],
+      "movement": "Start in a high plank with the feet together. Jump the feet out wide and back in, like a jumping jack, then lift the hips up and back into a pike, keeping the legs straight and the hands still. Lower back to the plank and repeat. Step the feet instead of jumping to make it easier.",
+      "image_cue": "Front three-quarter view showing a high plank, then the hips lifted high into a pike with straight legs.",
+      "image": "images/938987a234fba70c03a333d21e133339.jpg",
+      "sources": []
+    },
+    {
+      "id": 84,
+      "name": "Bird-dog crunch",
+      "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Reach the opposite arm and leg long, back flat",
+        "Draw the elbow and knee in under the body",
+        "Move slowly and keep the hips level"
+      ],
+      "movement": "Begin on hands and knees with the hands under the shoulders and the knees under the hips. Reach one arm forwards and the opposite leg back until both are level with the body. Then bring the elbow and knee in to meet under the stomach, rounding the back slightly. Reach out again; complete the set, then change sides.",
+      "image_cue": "Side three-quarter view showing the bird-dog reach with opposite arm and leg extended, then the elbow and knee drawn together under the body.",
+      "image": "images/dd3be5064bb6b85c507874d2d27e0a8f.jpg",
+      "sources": []
+    },
+    {
+      "id": 85,
+      "name": "Side plank hip dip with reach",
+      "equipment": "Mat and bodyweight",
+      "key_points": [
+        "Hand under the shoulder, body in a straight line",
+        "Dip the hips towards the floor, then lift them high",
+        "Reach the top arm to the ceiling as the hips lift"
+      ],
+      "movement": "Start in a side plank on a straight arm with the hand under the shoulder and the feet stacked. Lower the hips a little towards the floor, then lift them back up into a straight line while reaching the top arm to the ceiling. Keep the chest facing forwards. Bend the bottom knee to make it easier, then change sides.",
+      "image_cue": "Front view showing a side plank on one straight arm, then the hips lifted with the top arm reaching to the ceiling.",
+      "image": "images/f5f056f0edf5fd6cd0684be79655cb94.jpg",
       "sources": []
     }
   ]
